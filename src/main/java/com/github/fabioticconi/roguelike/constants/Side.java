@@ -13,22 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
-
-import com.artemis.Component;
+package com.github.fabioticconi.roguelike.constants;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class Position extends Component
+public enum Side
 {
-    public int x;
-    public int y;
+    HERE(0, 0), N(0, -1), E(1, 0), S(0, 1), W(-1, 0);
 
-    public Position(final int x, final int y)
+    public final int x;
+    public final int y;
+
+    Side(final int x, final int y)
     {
         this.x = x;
         this.y = y;
+    }
+
+    public Side inverse()
+    {
+        switch (this)
+        {
+            case N:
+                return S;
+            case E:
+                return W;
+            case S:
+                return N;
+            case W:
+                return E;
+            default:
+                return HERE;
+        }
     }
 }

@@ -13,22 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
+package com.github.fabioticconi.roguelike.systems;
 
-import com.artemis.Component;
+import com.artemis.Aspect;
+import com.artemis.Aspect.Builder;
+import com.artemis.BaseEntitySystem;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class Position extends Component
+public class PlayerInputSystem extends BaseEntitySystem
 {
-    public int x;
-    public int y;
-
-    public Position(final int x, final int y)
+    /**
+     * @param aspect
+     */
+    public PlayerInputSystem(final Builder aspect)
     {
-        this.x = x;
-        this.y = y;
+        super(Aspect.all());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.artemis.BaseSystem#processSystem()
+     */
+    @Override
+    protected void processSystem()
+    {
+        // TODO:
     }
 }

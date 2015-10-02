@@ -16,19 +16,35 @@
 package com.github.fabioticconi.roguelike.components;
 
 import com.artemis.Component;
+import com.github.fabioticconi.roguelike.constants.Side;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class Position extends Component
+public class MoveTo extends Component
 {
-    public int x;
-    public int y;
+    /**
+     * "Speed" is actually the delay before we can move.
+     * So lowest is fastest, highest is slowest.
+     */
+    public float speed;
+    public float cooldown;
+    public Side  direction;
 
-    public Position(final int x, final int y)
+    public MoveTo()
     {
-        this.x = x;
-        this.y = y;
+        speed = 0.0f;
+        cooldown = 0.0f;
+
+        direction = Side.HERE;
+    }
+
+    public MoveTo(final float speed, final Side direction)
+    {
+        this.speed = speed;
+        cooldown = speed;
+
+        this.direction = direction;
     }
 }

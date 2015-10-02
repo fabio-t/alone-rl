@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
+package com.github.fabioticconi.roguelike.systems;
 
-import com.artemis.Component;
+import com.artemis.BaseSystem;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class Position extends Component
+public class BootstrapSystem extends BaseSystem
 {
-    public int x;
-    public int y;
-
-    public Position(final int x, final int y)
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.artemis.BaseSystem#processSystem()
+     */
+    @Override
+    protected void processSystem()
     {
-        this.x = x;
-        this.y = y;
+        // this must be only run once
+        setEnabled(false);
     }
 }
