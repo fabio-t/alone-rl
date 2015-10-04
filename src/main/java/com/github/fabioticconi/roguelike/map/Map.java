@@ -23,13 +23,13 @@ public class Map
 {
     Cell map[][];
 
-    int max_x;
-    int max_y;
+    public final int maxX;
+    public final int maxY;
 
     public Map(final int max_x, final int max_y)
     {
-        this.max_x = max_x;
-        this.max_y = max_y;
+        maxX = max_x;
+        maxY = max_y;
 
         map = new Cell[max_x][max_y];
 
@@ -44,14 +44,22 @@ public class Map
 
     public boolean isBlockedAt(final int x, final int y)
     {
-        return x > max_x || x < 0 || y > max_y || y < 0 || map[x][y] == Cell.WALL;
+        return x >= maxX || x < 0 || y >= maxY || y < 0 || map[x][y] == Cell.WALL;
     }
 
     public Cell get(final int x, final int y)
     {
-        if (x < 0 || x > max_x || y < 0 || y > max_y)
+        if (x < 0 || x >= maxX || y < 0 || y >= maxY)
             return Cell.EMPTY;
 
         return map[x][y];
+    }
+
+    public void set(final int x, final int y, final Cell type)
+    {
+        if (x < 0 || x >= maxX || y < 0 || y >= maxY)
+            return;
+
+        map[x][y] = type;
     }
 }

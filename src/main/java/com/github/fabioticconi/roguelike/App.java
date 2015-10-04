@@ -31,7 +31,7 @@ public class App
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        config.register(new Map(500, 500));
+        config.register(new Map(200, 200));
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
         config.setSystem(MovementSystem.class);

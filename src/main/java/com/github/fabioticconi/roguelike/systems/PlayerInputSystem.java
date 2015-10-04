@@ -18,10 +18,14 @@ package com.github.fabioticconi.roguelike.systems;
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.App;
 import com.github.fabioticconi.roguelike.components.MoveTo;
 import com.github.fabioticconi.roguelike.components.Player;
+import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.constants.Side;
+import com.github.fabioticconi.roguelike.map.Cell;
+import com.github.fabioticconi.roguelike.map.Map;
 import com.googlecode.lanterna.input.KeyStroke;
 
 /**
@@ -30,17 +34,21 @@ import com.googlecode.lanterna.input.KeyStroke;
  */
 public class PlayerInputSystem extends BaseEntitySystem
 {
-    ComponentMapper<MoveTo> mMoveTo;
+    ComponentMapper<Position> mPosition;
+    ComponentMapper<MoveTo>   mMoveTo;
 
     RenderSystem   render;
     MovementSystem movement;
+
+    @Wire
+    Map map;
 
     /**
      * @param aspect
      */
     public PlayerInputSystem()
     {
-        super(Aspect.all(Player.class));
+        super(Aspect.all(Player.class, Position.class));
     }
 
     /*
@@ -101,6 +109,20 @@ public class PlayerInputSystem extends BaseEntitySystem
                 m.direction = Side.E;
 
                 movement.offerDelay(m.cooldown);
+
+                break;
+            case Character:
+                final Position p = mPosition.get(pID);
+
+                switch (k.getCharacter())
+                {
+                    case 'W':
+                    case 'w':
+                        map.set(p.x, p.y, Cell.WALL);
+                        break;
+                    default:
+                        break;
+                }
 
                 break;
             default:
