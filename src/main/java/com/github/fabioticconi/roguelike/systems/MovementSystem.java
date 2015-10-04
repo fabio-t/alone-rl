@@ -17,10 +17,12 @@ package com.github.fabioticconi.roguelike.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelike.components.MoveTo;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.constants.Side;
+import com.github.fabioticconi.roguelike.map.Map;
 
 /**
  *
@@ -30,6 +32,11 @@ public class MovementSystem extends DelayedIteratingSystem
 {
     ComponentMapper<Position> mPosition;
     ComponentMapper<MoveTo>   mMoveTo;
+
+    RenderSystem render;
+
+    @Wire
+    Map map;
 
     /**
      * @param aspect
@@ -77,9 +84,12 @@ public class MovementSystem extends DelayedIteratingSystem
         final MoveTo m = mMoveTo.get(entityId);
         final Side direction = m.direction;
 
-        p.x += direction.x;
-        p.y += direction.y;
+        if (!map.isBlockedAt(p.x + direction.x, p.y + direction.y))
+        {
+            p.x += direction.x;
+            p.y += direction.y;
 
-        // TODO: must check bounds, walls
+            render.setEnabled(true);
+        }
     }
 }

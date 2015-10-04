@@ -16,8 +16,13 @@
 package com.github.fabioticconi.roguelike.systems;
 
 import com.artemis.Aspect;
-import com.artemis.Aspect.Builder;
 import com.artemis.BaseEntitySystem;
+import com.artemis.ComponentMapper;
+import com.github.fabioticconi.roguelike.App;
+import com.github.fabioticconi.roguelike.components.MoveTo;
+import com.github.fabioticconi.roguelike.components.Player;
+import com.github.fabioticconi.roguelike.constants.Side;
+import com.googlecode.lanterna.input.KeyStroke;
 
 /**
  *
@@ -25,22 +30,81 @@ import com.artemis.BaseEntitySystem;
  */
 public class PlayerInputSystem extends BaseEntitySystem
 {
+    ComponentMapper<MoveTo> mMoveTo;
+
+    RenderSystem   render;
+    MovementSystem movement;
+
     /**
      * @param aspect
      */
-    public PlayerInputSystem(final Builder aspect)
+    public PlayerInputSystem()
     {
-        super(Aspect.all());
+        super(Aspect.all(Player.class));
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.artemis.BaseSystem#processSystem()
      */
     @Override
     protected void processSystem()
     {
-        // TODO:
+        final int pID = subscription.getEntities().get(0);
+
+        final MoveTo m;
+
+        final KeyStroke k = render.getInput();
+
+        if (k == null)
+            return;
+
+        switch (k.getKeyType())
+        {
+            case Escape:
+                // TODO: more termination stuff I guess
+                App.keepRunning = false;
+                render.close();
+                break;
+            case ArrowDown:
+                m = mMoveTo.create(pID);
+
+                m.cooldown = m.speed;
+                m.direction = Side.S;
+
+                movement.offerDelay(m.cooldown);
+
+                break;
+            case ArrowUp:
+                m = mMoveTo.create(pID);
+
+                m.cooldown = m.speed;
+                m.direction = Side.N;
+
+                movement.offerDelay(m.cooldown);
+
+                break;
+            case ArrowLeft:
+                m = mMoveTo.create(pID);
+
+                m.cooldown = m.speed;
+                m.direction = Side.W;
+
+                movement.offerDelay(m.cooldown);
+
+                break;
+            case ArrowRight:
+                m = mMoveTo.create(pID);
+
+                m.cooldown = m.speed;
+                m.direction = Side.E;
+
+                movement.offerDelay(m.cooldown);
+
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
-
-import com.artemis.Component;
+package com.github.fabioticconi.roguelike.map;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class Position extends Component
+public enum Cell
 {
-    public int x;
-    public int y;
+    EMPTY, GROUND('.'), WALL('#');
 
-    public Position(final int x, final int y)
+    public final char c;
+
+    Cell()
     {
-        this.x = x;
-        this.y = y;
+        c = ' ';
     }
 
-    @Override
-    public String toString()
+    Cell(final char c)
     {
-        return String.format("x: %d, y: %d\n", x, y);
+        this.c = c;
     }
 }

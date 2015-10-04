@@ -16,6 +16,9 @@
 package com.github.fabioticconi.roguelike.systems;
 
 import com.artemis.BaseSystem;
+import com.artemis.EntityEdit;
+import com.github.fabioticconi.roguelike.components.Player;
+import com.github.fabioticconi.roguelike.components.Position;
 
 /**
  *
@@ -31,6 +34,11 @@ public class BootstrapSystem extends BaseSystem
     @Override
     protected void processSystem()
     {
+        final int pID = world.create();
+        final EntityEdit edit = world.edit(pID);
+        edit.create(Player.class);
+        edit.add(new Position(0, 0));
+
         // this must be only run once
         setEnabled(false);
     }

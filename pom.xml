@@ -17,19 +17,19 @@
     <dependency>
       <groupId>net.onedaybeard.artemis</groupId>
       <artifactId>artemis-odb</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
       <groupId>net.onedaybeard.artemis</groupId>
       <artifactId>artemis-odb-processor</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
       <groupId>net.onedaybeard.artemis</groupId>
       <artifactId>artemis-odb-serializer-json</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
