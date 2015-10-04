@@ -15,23 +15,42 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor.ANSI;
+
 /**
  *
  * @author Fabio Ticconi
  */
 public enum Cell
 {
-    EMPTY, GROUND('.'), WALL('#');
+    EMPTY, GROUND('.'), GRASS('.', ANSI.GREEN), WALL('#');
 
-    public final char c;
+    public final TextCharacter c;
 
     Cell()
     {
-        c = ' ';
+        c = new TextCharacter(' ');
     }
 
     Cell(final char c)
     {
-        this.c = c;
+        this.c = new TextCharacter(c);
+    }
+
+    Cell(final char c, final ANSI color)
+    {
+        this.c = new TextCharacter(c).withForegroundColor(color);
+    }
+
+    Cell(final char c, final SGR modifier)
+    {
+        this.c = new TextCharacter(c).withModifier(modifier);
+    }
+
+    Cell(final char c, final ANSI color, final SGR modifier)
+    {
+        this.c = new TextCharacter(c).withForegroundColor(color).withModifier(modifier);
     }
 }
