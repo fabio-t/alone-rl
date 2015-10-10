@@ -20,6 +20,8 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.Speed;
+import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.Map;
 
 /**
@@ -42,7 +44,8 @@ public class BootstrapSystem extends BaseSystem
         final int pID = world.create();
         final EntityEdit edit = world.edit(pID);
         edit.create(Player.class);
-        edit.add(new Position(map.maxX / 2, map.maxY / 2));
+        edit.add(new Position(Options.MAP_SIZE_X / 2, Options.MAP_SIZE_Y / 2));
+        edit.create(Speed.class).speed = 0f;
 
         // this must be only run once
         setEnabled(false);

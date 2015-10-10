@@ -15,6 +15,9 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
+import com.github.fabioticconi.roguelike.constants.Options;
+import com.github.fabioticconi.roguelike.utils.SimplexNoise;
+
 /**
  *
  * @author Fabio Ticconi
@@ -23,33 +26,51 @@ public class Map
 {
     Cell map[][];
 
-    public final int maxX;
-    public final int maxY;
+    float heightMap[][];
 
-    public Map(final int max_x, final int max_y)
+    public Map()
     {
-        maxX = max_x;
-        maxY = max_y;
+        // heightMap = SimplexNoise.generateSimplexNoise(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+        heightMap = SimplexNoise.generateOctavedSimplexNoise(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, 3, 0.4f, 0.005f);
 
-        map = new Cell[max_x][max_y];
+        map = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
-        for (int x = 0; x < max_x; x++)
+        for (int x = 0; x < Options.MAP_SIZE_X; x++)
         {
-            for (int y = 0; y < max_y; y++)
+            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                map[x][y] = Cell.GROUND;
+                if (heightMap[x][y] < -0.3)
+                {
+                    map[x][y] = Cell.DEEP_WATER;
+                }
+                else if (heightMap[x][y] < -0.2f)
+                {
+                    map[x][y] = Cell.WATER;
+                }
+                else if (heightMap[x][y] < 0.3f)
+                {
+                    map[x][y] = Cell.GRASS;
+                }
+                else if (heightMap[x][y] < 0.4f)
+                {
+                    map[x][y] = Cell.HILL;
+                }
+                else
+                {
+                    map[x][y] = Cell.MOUNT;
+                }
             }
         }
     }
 
     public boolean isBlockedAt(final int x, final int y)
     {
-        return x >= maxX || x < 0 || y >= maxY || y < 0 || map[x][y] == Cell.WALL;
+        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL;
     }
 
     public Cell get(final int x, final int y)
     {
-        if (x < 0 || x >= maxX || y < 0 || y >= maxY)
+        if (x < 0 || x >= Options.MAP_SIZE_X || y < 0 || y >= Options.MAP_SIZE_Y)
             return Cell.EMPTY;
 
         return map[x][y];
@@ -57,7 +78,7 @@ public class Map
 
     public void set(final int x, final int y, final Cell type)
     {
-        if (x < 0 || x >= maxX || y < 0 || y >= maxY)
+        if (x < 0 || x >= Options.MAP_SIZE_X || y < 0 || y >= Options.MAP_SIZE_Y)
             return;
 
         map[x][y] = type;

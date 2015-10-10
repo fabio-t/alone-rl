@@ -26,12 +26,11 @@ public class App
 
     public static void main(final String[] args) throws IOException
     {
-        // 60 FPS
-        final float delta = 1.0f / 10.0f;
+        final float delta = 1.0f / 15.0f;
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        config.register(new Map(200, 200));
+        config.register(new Map());
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
         config.setSystem(MovementSystem.class);

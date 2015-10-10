@@ -25,7 +25,16 @@ import com.googlecode.lanterna.TextColor.ANSI;
  */
 public enum Cell
 {
-    EMPTY, GROUND('.'), GRASS('.', ANSI.GREEN), WALL('#');
+    EMPTY,
+    GROUND('.'),
+    WALL('#'),
+    OPEN_DOOR('/'),
+    CLOSED_DOOR('+'),
+    DEEP_WATER('=', ANSI.BLUE),
+    WATER('=', ANSI.BLUE, SGR.BOLD),
+    GRASS(',', ANSI.GREEN, SGR.CROSSED_OUT),
+    HILL('^', ANSI.GREEN),
+    MOUNT('^', SGR.BOLD);
 
     public final TextCharacter c;
 

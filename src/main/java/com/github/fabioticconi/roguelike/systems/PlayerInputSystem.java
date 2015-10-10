@@ -20,9 +20,10 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.App;
-import com.github.fabioticconi.roguelike.components.MoveTo;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.Speed;
+import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
 import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.Cell;
 import com.github.fabioticconi.roguelike.map.Map;
@@ -34,8 +35,9 @@ import com.googlecode.lanterna.input.KeyStroke;
  */
 public class PlayerInputSystem extends BaseEntitySystem
 {
-    ComponentMapper<Position> mPosition;
-    ComponentMapper<MoveTo>   mMoveTo;
+    ComponentMapper<Position>    mPosition;
+    ComponentMapper<Speed>       mSpeed;
+    ComponentMapper<MoveCommand> mMoveTo;
 
     RenderSystem   render;
     MovementSystem movement;
@@ -48,7 +50,7 @@ public class PlayerInputSystem extends BaseEntitySystem
      */
     public PlayerInputSystem()
     {
-        super(Aspect.all(Player.class, Position.class));
+        super(Aspect.all(Player.class, Position.class, Speed.class));
     }
 
     /*
@@ -61,7 +63,9 @@ public class PlayerInputSystem extends BaseEntitySystem
     {
         final int pID = subscription.getEntities().get(0);
 
-        final MoveTo m;
+        final float speed = mSpeed.get(pID).speed;
+
+        final MoveCommand m;
 
         final KeyStroke k = render.getInput();
 
@@ -78,7 +82,7 @@ public class PlayerInputSystem extends BaseEntitySystem
             case ArrowDown:
                 m = mMoveTo.create(pID);
 
-                m.cooldown = m.speed;
+                m.cooldown = speed;
                 m.direction = Side.S;
 
                 movement.offerDelay(m.cooldown);
@@ -87,7 +91,7 @@ public class PlayerInputSystem extends BaseEntitySystem
             case ArrowUp:
                 m = mMoveTo.create(pID);
 
-                m.cooldown = m.speed;
+                m.cooldown = speed;
                 m.direction = Side.N;
 
                 movement.offerDelay(m.cooldown);
@@ -96,7 +100,7 @@ public class PlayerInputSystem extends BaseEntitySystem
             case ArrowLeft:
                 m = mMoveTo.create(pID);
 
-                m.cooldown = m.speed;
+                m.cooldown = speed;
                 m.direction = Side.W;
 
                 movement.offerDelay(m.cooldown);
@@ -105,7 +109,7 @@ public class PlayerInputSystem extends BaseEntitySystem
             case ArrowRight:
                 m = mMoveTo.create(pID);
 
-                m.cooldown = m.speed;
+                m.cooldown = speed;
                 m.direction = Side.E;
 
                 movement.offerDelay(m.cooldown);
@@ -116,9 +120,14 @@ public class PlayerInputSystem extends BaseEntitySystem
 
                 switch (k.getCharacter())
                 {
-                    case 'W':
-                    case 'w':
+                    case '#':
                         map.set(p.x, p.y, Cell.WALL);
+                        break;
+                    case '+':
+                        map.set(p.x, p.y, Cell.CLOSED_DOOR);
+                        break;
+                    case '/':
+                        map.set(p.x, p.y, Cell.OPEN_DOOR);
                         break;
                     default:
                         break;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
+package com.github.fabioticconi.roguelike.components.commands;
 
 import com.artemis.Component;
 import com.github.fabioticconi.roguelike.constants.Side;
@@ -22,27 +22,24 @@ import com.github.fabioticconi.roguelike.constants.Side;
  *
  * @author Fabio Ticconi
  */
-public class MoveTo extends Component
+public class MoveCommand extends Component
 {
     /**
      * "Speed" is actually the delay before we can move.
      * So lowest is fastest, highest is slowest.
      */
-    public float speed;
     public float cooldown;
     public Side  direction;
 
-    public MoveTo()
+    public MoveCommand()
     {
-        speed = 0.0f;
         cooldown = 0.0f;
 
         direction = Side.HERE;
     }
 
-    public MoveTo(final float speed, final Side direction)
+    public MoveCommand(final float speed, final Side direction)
     {
-        this.speed = speed;
         cooldown = speed;
 
         this.direction = direction;

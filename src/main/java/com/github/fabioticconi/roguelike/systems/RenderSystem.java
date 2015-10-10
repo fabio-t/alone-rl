@@ -23,6 +23,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.Cell;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.googlecode.lanterna.SGR;
@@ -77,7 +78,7 @@ public class RenderSystem extends BaseEntitySystem
         {
             // FIXME: get terminal size from config
             final DefaultTerminalFactory factory = new DefaultTerminalFactory();
-            factory.setInitialTerminalSize(new TerminalSize(150, 50)); // FIXME: configurable
+            factory.setInitialTerminalSize(new TerminalSize(Options.TERMINAL_SIZE_X, Options.TERMINAL_SIZE_Y));
             terminal = factory.createTerminal();
             screen = new TerminalScreen(terminal);
 

@@ -19,8 +19,8 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelike.components.MoveTo;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
 import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.Map;
 
@@ -31,7 +31,7 @@ import com.github.fabioticconi.roguelike.map.Map;
 public class MovementSystem extends DelayedIteratingSystem
 {
     ComponentMapper<Position> mPosition;
-    ComponentMapper<MoveTo>   mMoveTo;
+    ComponentMapper<MoveCommand>   mMoveTo;
 
     RenderSystem render;
 
@@ -43,7 +43,7 @@ public class MovementSystem extends DelayedIteratingSystem
      */
     public MovementSystem()
     {
-        super(Aspect.all(Position.class, MoveTo.class));
+        super(Aspect.all(Position.class, MoveCommand.class));
     }
 
     /*
@@ -54,7 +54,7 @@ public class MovementSystem extends DelayedIteratingSystem
     @Override
     protected float getRemainingDelay(final int entityId)
     {
-        final MoveTo m = mMoveTo.get(entityId);
+        final MoveCommand m = mMoveTo.get(entityId);
 
         return m.cooldown;
     }
@@ -67,7 +67,7 @@ public class MovementSystem extends DelayedIteratingSystem
     @Override
     protected void processDelta(final int entityId, final float accumulatedDelta)
     {
-        final MoveTo m = mMoveTo.get(entityId);
+        final MoveCommand m = mMoveTo.get(entityId);
 
         m.cooldown -= accumulatedDelta;
     }
@@ -81,7 +81,7 @@ public class MovementSystem extends DelayedIteratingSystem
     protected void processExpired(final int entityId)
     {
         final Position p = mPosition.get(entityId);
-        final MoveTo m = mMoveTo.get(entityId);
+        final MoveCommand m = mMoveTo.get(entityId);
         final Side direction = m.direction;
 
         if (!map.isBlockedAt(p.x + direction.x, p.y + direction.y))
