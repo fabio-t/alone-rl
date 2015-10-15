@@ -44,6 +44,12 @@
       <artifactId>lanterna</artifactId>
       <version>3.0.0-beta1</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.github.fabioticconi</groupId>
+      <artifactId>terrain-generator</artifactId>
+      <version>e3d55c79de</version>
+    </dependency>
   </dependencies>
 
   <build>

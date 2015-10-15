@@ -18,6 +18,7 @@ package com.github.fabioticconi.roguelike.map;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor.ANSI;
+import com.googlecode.lanterna.TextColor.RGB;
 
 /**
  *
@@ -32,9 +33,11 @@ public enum Cell
     CLOSED_DOOR('+'),
     DEEP_WATER('=', ANSI.BLUE),
     WATER('=', ANSI.BLUE, SGR.BOLD),
+    SAND(',', ANSI.YELLOW, SGR.BOLD),
     GRASS(',', ANSI.GREEN, SGR.CROSSED_OUT),
     HILL('^', ANSI.GREEN),
-    MOUNT('^', SGR.BOLD);
+    MOUNTAIN('^', ANSI.YELLOW),
+    HIGH_MOUNTAIN('^', SGR.BOLD);
 
     public final TextCharacter c;
 
@@ -48,6 +51,11 @@ public enum Cell
         this.c = new TextCharacter(c);
     }
 
+    Cell(final char c, final RGB color)
+    {
+        this.c = new TextCharacter(c).withForegroundColor(color);
+    }
+
     Cell(final char c, final ANSI color)
     {
         this.c = new TextCharacter(c).withForegroundColor(color);
@@ -56,6 +64,11 @@ public enum Cell
     Cell(final char c, final SGR modifier)
     {
         this.c = new TextCharacter(c).withModifier(modifier);
+    }
+
+    Cell(final char c, final RGB color, final SGR modifier)
+    {
+        this.c = new TextCharacter(c).withForegroundColor(color).withModifier(modifier);
     }
 
     Cell(final char c, final ANSI color, final SGR modifier)

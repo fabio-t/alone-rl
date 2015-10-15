@@ -36,6 +36,7 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 
 /**
  *
@@ -79,6 +80,7 @@ public class RenderSystem extends BaseEntitySystem
             // FIXME: get terminal size from config
             final DefaultTerminalFactory factory = new DefaultTerminalFactory();
             factory.setInitialTerminalSize(new TerminalSize(Options.TERMINAL_SIZE_X, Options.TERMINAL_SIZE_Y));
+            factory.setSwingTerminalFrameFontConfiguration(SwingTerminalFontConfiguration.newInstance(Options.FONT));
             terminal = factory.createTerminal();
             screen = new TerminalScreen(terminal);
 
