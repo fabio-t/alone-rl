@@ -42,6 +42,10 @@ public class BootstrapSystem extends BaseSystem
     Map        map;
     @Wire
     EntityGrid grid;
+    @Wire
+    Random     r;
+
+    AISystem   ai;
 
     /*
      * (non-Javadoc)
@@ -64,23 +68,23 @@ public class BootstrapSystem extends BaseSystem
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
         edit.add(new Position(x, y));
-        edit.create(Speed.class).speed = 0f;
+        edit.create(Speed.class).speed = 1000.0f;
         edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
                                                             .withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
-
-        final Random r = new Random();
 
         // add a few creatures
         for (int i = 0; i < 10; i++)
         {
             id = world.create();
             edit = world.edit(id);
-            edit.create(AI.class);
+            final AI ai = new AI();
+            ai.cooldown = (float) (r.nextGaussian()) * AISystem.BASIC_TICKTIME;
+            edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
-            edit.create(Speed.class).speed = 0f;
+            edit.create(Speed.class).speed = 1000.0f;
             edit.create(Sprite.class).c = new TextCharacter('E').withForegroundColor(TextColor.ANSI.RED)
                                                                 .withModifier(SGR.BOLD);
 

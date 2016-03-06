@@ -19,7 +19,7 @@ import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelike.App;
+import com.github.fabioticconi.roguelike.Roguelike;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Speed;
@@ -46,7 +46,7 @@ public class PlayerInputSystem extends BaseEntitySystem
     Map                          map;
 
     /**
-     * @param aspect
+     *
      */
     public PlayerInputSystem()
     {
@@ -76,7 +76,7 @@ public class PlayerInputSystem extends BaseEntitySystem
         {
             case Escape:
                 // TODO: more termination stuff I guess
-                App.keepRunning = false;
+                Roguelike.keepRunning = false;
                 render.close();
                 break;
             case ArrowDown:

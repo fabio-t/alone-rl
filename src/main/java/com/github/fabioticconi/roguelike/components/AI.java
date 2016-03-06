@@ -23,5 +23,5 @@ import com.artemis.Component;
  */
 public class AI extends Component
 {
-
+    public float cooldown;
 }

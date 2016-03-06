@@ -15,40 +15,95 @@
  */
 package com.github.fabioticconi.roguelike.systems;
 
+import java.util.Random;
+
 import com.artemis.Aspect;
-import com.artemis.BaseEntitySystem;
+import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
+import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelike.components.AI;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Speed;
+import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
+import com.github.fabioticconi.roguelike.constants.Side;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class AISystem extends BaseEntitySystem
+public class AISystem extends DelayedIteratingSystem
 {
-    // TODO: for later, maybe it's better to use a DelayedIteratingSystem:
-    // each AI will have a personal cooldown, updatable in various ways.
-    // when it times out, the ai kicks off. I would put it to 10-20 seconds,
-    // so that things keep moving enough without clogging the server.
-    // First however we do it by updating all AIs together.
+    // time, in microseconds, around which a each creature should
+    // be updated here
+    public static final float    BASIC_TICKTIME = 5000000.0f;
+
+    // TODO: later, the behaviour should be data-driven,
+    // with behaviour trees or something similar;
+    // at that point, this system will load the active entities'
+    // script and evalute if their current behaviour needs to be changed or not.
+    // Also, this should receive messages that could influence the AIs, and make
+    // according changes to the entities' AI state (ie, interrupt a "food searching" behaviour
+    // for a "flee enemy at all costs" behaviour)
+
+    @Wire
+    Random                       r;
+
+    ComponentMapper<AI>          mAI;
+    ComponentMapper<MoveCommand> mMoveTo;
+    ComponentMapper<Speed>       mSpeed;
+
+    MovementSystem               movement;
 
     /**
-     * @param aspect
+     *
      */
     public AISystem()
     {
+        // TODO: this should only require AI, as some behaviours might not be
+        // linked to position/movement, of course.
+        // We'll see when we get there.
         super(Aspect.all(AI.class, Position.class, Speed.class));
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see com.artemis.BaseSystem#processSystem()
+     * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
      */
     @Override
-    protected void processSystem()
+    protected float getRemainingDelay(final int entityId)
     {
+        return mAI.get(entityId).cooldown;
+    }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
+     */
+    @Override
+    protected void processDelta(final int entityId, final float accumulatedDelta)
+    {
+        mAI.get(entityId).cooldown -= accumulatedDelta;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
+     */
+    @Override
+    protected void processExpired(final int entityId)
+    {
+        // random walking
+
+        final MoveCommand m = mMoveTo.create(entityId);
+        m.cooldown = mSpeed.get(entityId).speed;
+        m.direction = Side.getRandom();
+        movement.offerDelay(m.cooldown);
+
+        final AI ai = mAI.get(entityId);
+        ai.cooldown = (float) (r.nextGaussian()) * BASIC_TICKTIME;
+        offerDelay(ai.cooldown);
     }
 }

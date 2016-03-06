@@ -1,11 +1,13 @@
 package com.github.fabioticconi.roguelike;
 
 import java.io.IOException;
+import java.util.Random;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
+import com.github.fabioticconi.roguelike.systems.AISystem;
 import com.github.fabioticconi.roguelike.systems.BootstrapSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.systems.PlayerInputSystem;
@@ -18,7 +20,7 @@ import com.googlecode.lanterna.TextColor;
  * Hello world!
  *
  */
-public class App
+public class Roguelike
 {
     public static final TextCharacter PLAYER      = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
                                                                           .withModifier(SGR.BOLD);
@@ -33,8 +35,10 @@ public class App
         config = new WorldConfiguration();
         config.register(new Map());
         config.register(new EntityGrid());
+        config.register(new Random());
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
+        config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         config.setSystem(RenderSystem.class);
         final World world = new World(config);

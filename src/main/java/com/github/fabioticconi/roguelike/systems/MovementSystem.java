@@ -57,9 +57,7 @@ public class MovementSystem extends DelayedIteratingSystem
     @Override
     protected float getRemainingDelay(final int entityId)
     {
-        final MoveCommand m = mMoveTo.get(entityId);
-
-        return m.cooldown;
+        return mMoveTo.get(entityId).cooldown;
     }
 
     /*
@@ -70,9 +68,7 @@ public class MovementSystem extends DelayedIteratingSystem
     @Override
     protected void processDelta(final int entityId, final float accumulatedDelta)
     {
-        final MoveCommand m = mMoveTo.get(entityId);
-
-        m.cooldown -= accumulatedDelta;
+        mMoveTo.get(entityId).cooldown -= accumulatedDelta;
     }
 
     /*
@@ -84,7 +80,14 @@ public class MovementSystem extends DelayedIteratingSystem
     protected void processExpired(final int entityId)
     {
         final Position p = mPosition.get(entityId);
+
         final MoveCommand m = mMoveTo.get(entityId);
+        // we should have a flag saying "keep going":
+        // if set, when the timer expires we should reset it to the
+        // creature's Speed.
+        // m.cooldown = speed;
+        mMoveTo.remove(entityId);
+
         final Side direction = m.direction;
 
         final int new_x = p.x + direction.x;

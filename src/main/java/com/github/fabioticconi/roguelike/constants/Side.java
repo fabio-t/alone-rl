@@ -15,6 +15,8 @@
  */
 package com.github.fabioticconi.roguelike.constants;
 
+import java.util.Random;
+
 /**
  *
  * @author Fabio Ticconi
@@ -47,5 +49,41 @@ public enum Side
             default:
                 return HERE;
         }
+    }
+
+    public static Side getSideAt(final int x, final int y)
+    {
+        if (x == 0)
+        {
+            if (y == 0)
+                return HERE;
+
+            if (y == -1)
+                return N;
+
+            if (y == 1)
+                return S;
+        }
+        else if (x == 1)
+            return E;
+        else
+            return W;
+
+        return null;
+    }
+
+    public static Side getRandom()
+    {
+        final Random r = new Random();
+
+        int x = r.nextInt(3) - 1; // -1, 0 or 1
+        int y = r.nextInt(3) - 1;
+
+        if (x == 1 && y == 1)
+        {
+            x = y = 0;
+        }
+
+        return getSideAt(x, y);
     }
 }
