@@ -23,18 +23,17 @@ import java.awt.Font;
  */
 public class Options
 {
-    // public static final int MAP_SIZE_X = 955;
-    // public static final int MAP_SIZE_Y = 350;
-    //
-    // public static final int TERMINAL_SIZE_X = 955;
-    // public static final int TERMINAL_SIZE_Y = 350;
+    public static final int  MAP_SIZE_X      = 1000;
+    public static final int  MAP_SIZE_Y      = 1000;
 
-    public static final int MAP_SIZE_X = 1000;
-    public static final int MAP_SIZE_Y = 1000;
+    public static final int  TERMINAL_SIZE_X = 100;
+    public static final int  TERMINAL_SIZE_Y = 40;
 
-    public static final int TERMINAL_SIZE_X = 150;
-    public static final int TERMINAL_SIZE_Y = 50;
+    public static final int  INPUT_SIZE_Y    = 1;
 
-    public static final int  FONT_SIZE = 12;
-    public static final Font FONT      = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
+    public static final int  OUTPUT_SIZE_X   = 40;
+    public static final int  OUTPUT_SIZE_Y   = 40;
+
+    public static final int  FONT_SIZE       = 12;
+    public static final Font FONT            = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
 }

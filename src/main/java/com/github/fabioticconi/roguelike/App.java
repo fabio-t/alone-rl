@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
+import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.BootstrapSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
@@ -19,10 +20,10 @@ import com.googlecode.lanterna.TextColor;
  */
 public class App
 {
-    public static final TextCharacter PLAYER = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
-                                                                     .withModifier(SGR.BOLD);
+    public static final TextCharacter PLAYER      = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
+                                                                          .withModifier(SGR.BOLD);
 
-    public static boolean keepRunning = true;
+    public static boolean             keepRunning = true;
 
     public static void main(final String[] args) throws IOException
     {
@@ -31,6 +32,7 @@ public class App
         final WorldConfiguration config;
         config = new WorldConfiguration();
         config.register(new Map());
+        config.register(new EntityGrid());
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
         config.setSystem(MovementSystem.class);

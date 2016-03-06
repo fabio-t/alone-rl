@@ -16,6 +16,7 @@
 package com.github.fabioticconi.roguelike.systems;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
@@ -23,20 +24,20 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.Sprite;
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.Cell;
+import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
-import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
+import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 
 /**
  *
@@ -44,18 +45,18 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
  */
 public class RenderSystem extends BaseEntitySystem
 {
-    public static final TextCharacter PLAYER = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
-                                                                     .withModifier(SGR.BOLD);
-
     ComponentMapper<Position> mPosition;
+    ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Player>   mPlayer;
 
     @Wire
-    Map map;
+    Map                       map;
+    @Wire
+    EntityGrid                grid;
 
-    Terminal     terminal;
-    Screen       screen;
-    TextGraphics graphics;
+    Terminal                  terminal;
+    Screen                    screen;
+    TextGraphics              graphics;
 
     /**
      * @param aspect
@@ -75,14 +76,21 @@ public class RenderSystem extends BaseEntitySystem
     {
         super.initialize();
 
+        final int size_x = Options.TERMINAL_SIZE_X;
+        final int size_y = Options.TERMINAL_SIZE_Y;
+
         try
         {
             // FIXME: get terminal size from config
             final DefaultTerminalFactory factory = new DefaultTerminalFactory();
-            factory.setInitialTerminalSize(new TerminalSize(Options.TERMINAL_SIZE_X, Options.TERMINAL_SIZE_Y));
-            factory.setSwingTerminalFrameFontConfiguration(SwingTerminalFontConfiguration.newInstance(Options.FONT));
+            factory.setInitialTerminalSize(new TerminalSize(size_x, size_y));
+            factory.setTerminalEmulatorFontConfiguration(AWTTerminalFontConfiguration.newInstance(Options.FONT));
             terminal = factory.createTerminal();
+            terminal.setCursorVisible(false);
+            terminal.addResizeListener(new SimpleTerminalResizeListener(terminal.getTerminalSize()));
             screen = new TerminalScreen(terminal);
+
+            screen.doResizeIfNecessary();
 
             screen.startScreen();
             screen.clear();
@@ -108,26 +116,71 @@ public class RenderSystem extends BaseEntitySystem
         final int pID = subscription.getEntities().get(0);
 
         final Position p = mPosition.get(pID);
+        final Sprite s = mSprite.get(pID);
+
+        screen.doResizeIfNecessary();
 
         final TerminalSize tsize = screen.getTerminalSize();
 
-        final int halfcols = tsize.getColumns() / 2;
-        final int halfrows = tsize.getRows() / 2;
-
         final int xmax = tsize.getColumns();
         final int ymax = tsize.getRows();
+
+        // final int xmax = Options.TERMINAL_SIZE_X;
+        // final int ymax = Options.TERMINAL_SIZE_Y;
+
+        final int halfcols = xmax / 2;
+        final int halfrows = ymax / 2;
+
+        int pos_x;
+        int pos_y;
+
+        Sprite sprite;
+
+        List<Integer> entities;
 
         for (int x = 0; x < xmax; x++)
         {
             for (int y = 0; y < ymax; y++)
             {
-                final Cell cell = map.get(p.x + x - halfcols, p.y + y - halfrows);
+                pos_x = p.x + x - halfcols;
+                pos_y = p.y + y - halfrows;
+
+                // render terrain
+                final Cell cell = map.get(pos_x, pos_y);
                 graphics.setCharacter(x, y, cell.c);
+
+                entities = grid.getEntities(pos_x, pos_y);
+
+                if (entities == null)
+                {
+                    continue;
+                }
+
+                // render other visible entities
+                for (final int eID : entities)
+                {
+                    sprite = mSprite.get(eID);
+
+                    if (sprite != null)
+                    {
+                        graphics.setCharacter(x, y, sprite.c);
+
+                        // only show the first showable entity on each cell
+                        break;
+                    }
+                }
             }
         }
 
-        graphics.setCharacter(halfcols, halfrows, PLAYER);
+        // in the middle cell we always show the player sprite
+        graphics.setCharacter(halfcols, halfrows, s.c);
 
+        // for (int i = Options.OUTPUT_SIZE_Y - 2; i > r.nextInt(10); i--)
+        // {
+        // graphics.putString(xmax + 2, i, String.format("blablablasdjasdaskdj %d", i));
+        // }
+
+        // refresh the screen, and set the terminal ready for update
         try
         {
             screen.refresh();
@@ -154,7 +207,7 @@ public class RenderSystem extends BaseEntitySystem
 
     public void close()
     {
-        screen.clear();
+        // screen.clear();
         try
         {
             screen.stopScreen();

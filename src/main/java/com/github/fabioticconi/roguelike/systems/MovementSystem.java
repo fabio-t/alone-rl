@@ -22,6 +22,7 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
 import com.github.fabioticconi.roguelike.constants.Side;
+import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 
 /**
@@ -30,13 +31,15 @@ import com.github.fabioticconi.roguelike.map.Map;
  */
 public class MovementSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Position> mPosition;
-    ComponentMapper<MoveCommand>   mMoveTo;
+    ComponentMapper<Position>    mPosition;
+    ComponentMapper<MoveCommand> mMoveTo;
 
-    RenderSystem render;
+    RenderSystem                 render;
 
     @Wire
-    Map map;
+    Map                          map;
+    @Wire
+    EntityGrid                   grid;
 
     /**
      * @param aspect
@@ -84,8 +87,13 @@ public class MovementSystem extends DelayedIteratingSystem
         final MoveCommand m = mMoveTo.get(entityId);
         final Side direction = m.direction;
 
-        if (!map.isBlockedAt(p.x + direction.x, p.y + direction.y))
+        final int new_x = p.x + direction.x;
+        final int new_y = p.y + direction.y;
+
+        if (!map.isBlockedAt(new_x, new_y))
         {
+            grid.moveEntity(entityId, p.x, p.y, new_x, new_y);
+
             p.x += direction.x;
             p.y += direction.y;
 

@@ -39,11 +39,11 @@ public class PlayerInputSystem extends BaseEntitySystem
     ComponentMapper<Speed>       mSpeed;
     ComponentMapper<MoveCommand> mMoveTo;
 
-    RenderSystem   render;
-    MovementSystem movement;
+    RenderSystem                 render;
+    MovementSystem               movement;
 
     @Wire
-    Map map;
+    Map                          map;
 
     /**
      * @param aspect

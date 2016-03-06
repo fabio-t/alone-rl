@@ -15,8 +15,6 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
-import java.awt.Color;
-
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.terrain_generator.ImageWriter;
 import com.github.fabioticconi.terrain_generator.SimplexNoise;
@@ -27,7 +25,7 @@ import com.github.fabioticconi.terrain_generator.SimplexNoise;
  */
 public class Map
 {
-    Cell map[][];
+    Cell  map[][];
 
     float heightMap[][];
 
@@ -104,52 +102,52 @@ public class Map
         }
     }
 
-    Color getColor(float t)
-    {
-        t = (1f + t) / 2f;
-        // value = 0.5f + value;
-
-        if (t > 1f)
-        {
-            // System.out.println("error: " + value);
-            t = 1f;
-        }
-        if (t < 0f)
-        {
-            // System.out.println("error: " + value);
-            t = 0f;
-        }
-
-        final float water = 0.3f;
-
-        if (t < water)
-        {
-            if (t < water * 0.7f)
-                return new Color(0.2f, 0.5f, 0.9f);
-            else
-                return new Color(0.4f, 0.7f, 1f);
-        }
-        else
-        {
-            // final float val = t;
-            // normalize val so 0 is at water level
-            final float val = (t - water) / (1.0f - water);
-
-            // set color based on above the see level
-            // beach, plain, forest, mountains etc
-
-            if (val < 0.1f)
-                return Color.YELLOW;
-            else if (val < 0.3f)
-                return Color.GREEN;
-            else if (val < 0.55f)
-                return new Color(.1f, 0.8f, .2f);
-            else if (val < 0.7f)
-                return Color.GRAY;
-            else
-                return Color.WHITE;
-        }
-    }
+    // public Color getColor(float t)
+    // {
+    // t = (1f + t) / 2f;
+    // // value = 0.5f + value;
+    //
+    // if (t > 1f)
+    // {
+    // // System.out.println("error: " + value);
+    // t = 1f;
+    // }
+    // if (t < 0f)
+    // {
+    // // System.out.println("error: " + value);
+    // t = 0f;
+    // }
+    //
+    // final float water = 0.3f;
+    //
+    // if (t < water)
+    // {
+    // if (t < water * 0.7f)
+    // return new Color(0.2f, 0.5f, 0.9f);
+    // else
+    // return new Color(0.4f, 0.7f, 1f);
+    // }
+    // else
+    // {
+    // // final float val = t;
+    // // normalize val so 0 is at water level
+    // final float val = (t - water) / (1.0f - water);
+    //
+    // // set color based on above the see level
+    // // beach, plain, forest, mountains etc
+    //
+    // if (val < 0.1f)
+    // return Color.YELLOW;
+    // else if (val < 0.3f)
+    // return Color.GREEN;
+    // else if (val < 0.55f)
+    // return new Color(.1f, 0.8f, .2f);
+    // else if (val < 0.7f)
+    // return Color.GRAY;
+    // else
+    // return Color.WHITE;
+    // }
+    // }
 
     public boolean isBlockedAt(final int x, final int y)
     {
