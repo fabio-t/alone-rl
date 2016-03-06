@@ -79,7 +79,8 @@ public class BootstrapSystem extends BaseSystem
             id = world.create();
             edit = world.edit(id);
             final AI ai = new AI();
-            ai.cooldown = (float) (r.nextGaussian()) * AISystem.BASIC_TICKTIME;
+            ai.cooldown = (float) (r.nextGaussian() * AISystem.BASE_TICKTIME) + AISystem.BASE_TICKTIME;
+            ;
             edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;

@@ -35,7 +35,7 @@ public class AISystem extends DelayedIteratingSystem
 {
     // time, in microseconds, around which a each creature should
     // be updated here
-    public static final float    BASIC_TICKTIME = 5000000.0f;
+    public static final float    BASE_TICKTIME = 5000000.0f;
 
     // TODO: later, the behaviour should be data-driven,
     // with behaviour trees or something similar;
@@ -103,7 +103,7 @@ public class AISystem extends DelayedIteratingSystem
         movement.offerDelay(m.cooldown);
 
         final AI ai = mAI.get(entityId);
-        ai.cooldown = (float) (r.nextGaussian()) * BASIC_TICKTIME;
+        ai.cooldown = (float) (r.nextGaussian() * BASE_TICKTIME) + BASE_TICKTIME;
         offerDelay(ai.cooldown);
     }
 }
