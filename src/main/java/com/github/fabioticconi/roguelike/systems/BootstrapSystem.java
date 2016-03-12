@@ -72,7 +72,7 @@ public class BootstrapSystem extends BaseSystem
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
         edit.add(new Position(x, y));
-        edit.create(Speed.class).speed = 1000.0f;
+        edit.create(Speed.class).speed = 0.1f;
         edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
                                                             .withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
@@ -89,7 +89,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Herbivore.class);
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Fear.class).value = 0.0f;
-            edit.create(Speed.class).speed = r.nextFloat() * 1000.0f + 500.0f;
+            edit.create(Speed.class).speed = r.nextFloat() * 1000000.0f;
             edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE)
                                                                 .withModifier(SGR.BOLD);
 
@@ -107,7 +107,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
-            edit.create(Speed.class).speed = r.nextFloat() * 1000.0f + 500.0f;
+            edit.create(Speed.class).speed = r.nextFloat() * 500000.0f;
             edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
                                                                 .withModifier(SGR.BOLD);
 

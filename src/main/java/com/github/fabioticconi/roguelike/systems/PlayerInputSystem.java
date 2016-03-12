@@ -23,9 +23,8 @@ import com.github.fabioticconi.roguelike.Roguelike;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Speed;
-import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
+import com.github.fabioticconi.roguelike.constants.Cell;
 import com.github.fabioticconi.roguelike.constants.Side;
-import com.github.fabioticconi.roguelike.map.Cell;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.googlecode.lanterna.input.KeyStroke;
 
@@ -35,15 +34,14 @@ import com.googlecode.lanterna.input.KeyStroke;
  */
 public class PlayerInputSystem extends BaseEntitySystem
 {
-    ComponentMapper<Position>    mPosition;
-    ComponentMapper<Speed>       mSpeed;
-    ComponentMapper<MoveCommand> mMoveTo;
+    ComponentMapper<Position> mPosition;
+    ComponentMapper<Speed>    mSpeed;
 
-    RenderSystem                 render;
-    MovementSystem               movement;
+    RenderSystem              render;
+    MovementSystem            movement;
 
     @Wire
-    Map                          map;
+    Map                       map;
 
     /**
      *
@@ -61,16 +59,14 @@ public class PlayerInputSystem extends BaseEntitySystem
     @Override
     protected void processSystem()
     {
-        final int pID = subscription.getEntities().get(0);
-
-        final float speed = mSpeed.get(pID).speed;
-
-        final MoveCommand m;
-
         final KeyStroke k = render.getInput();
 
         if (k == null)
             return;
+
+        final int pID = subscription.getEntities().get(0);
+
+        final float speed = mSpeed.get(pID).speed;
 
         switch (k.getKeyType())
         {
@@ -80,39 +76,19 @@ public class PlayerInputSystem extends BaseEntitySystem
                 render.close();
                 break;
             case ArrowDown:
-                m = mMoveTo.create(pID);
-
-                m.cooldown = speed;
-                m.direction = Side.S;
-
-                movement.offerDelay(m.cooldown);
+                movement.moveTo(pID, speed, Side.S);
 
                 break;
             case ArrowUp:
-                m = mMoveTo.create(pID);
-
-                m.cooldown = speed;
-                m.direction = Side.N;
-
-                movement.offerDelay(m.cooldown);
+                movement.moveTo(pID, speed, Side.N);
 
                 break;
             case ArrowLeft:
-                m = mMoveTo.create(pID);
-
-                m.cooldown = speed;
-                m.direction = Side.W;
-
-                movement.offerDelay(m.cooldown);
+                movement.moveTo(pID, speed, Side.W);
 
                 break;
             case ArrowRight:
-                m = mMoveTo.create(pID);
-
-                m.cooldown = speed;
-                m.direction = Side.E;
-
-                movement.offerDelay(m.cooldown);
+                movement.moveTo(pID, speed, Side.E);
 
                 break;
             case Character:

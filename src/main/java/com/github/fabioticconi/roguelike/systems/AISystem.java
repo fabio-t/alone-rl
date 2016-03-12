@@ -15,6 +15,7 @@
  */
 package com.github.fabioticconi.roguelike.systems;
 
+import java.util.List;
 import java.util.Random;
 
 import com.artemis.Aspect;
@@ -31,6 +32,7 @@ import com.github.fabioticconi.roguelike.components.internal_states.Fear;
 import com.github.fabioticconi.roguelike.components.internal_states.Hunger;
 import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
+import com.github.fabioticconi.roguelike.map.Map;
 
 /**
  *
@@ -54,6 +56,8 @@ public class AISystem extends DelayedIteratingSystem
     Random                       r;
     @Wire
     EntityGrid                   grid;
+    @Wire
+    Map                          map;
 
     ComponentMapper<AI>          mAI;
     ComponentMapper<Position>    mPosition;
@@ -109,6 +113,9 @@ public class AISystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
+        final Position pos = mPosition.get(entityId);
+        final float speed = mSpeed.get(entityId).speed;
+
         float actionCooldown = 0.0f;
         float cooldownModifier = 1.0f;
 
@@ -117,15 +124,25 @@ public class AISystem extends DelayedIteratingSystem
             float fear = mFear.get(entityId).value;
 
             // FIXME this should be finer-grained: closer predators should raise fear more
-            // than far away predators. For now it's fine.
-            final Position pos = mPosition.get(entityId);
-            for (final int creatureId : grid.getEntitiesWithinRadius(pos.x, pos.y, 3))
+            // than far away predators. The creature should also run the opposite direction of the
+            // closest predator, as long as it's a free exit.
+
+            int firstPredatorId = 0;
+            final List<Integer> creatures = grid.getClosestEntities(pos.x, pos.y, 3);
+
+            for (final int creatureId : creatures)
             {
                 if (mCarnivore.has(creatureId))
                 {
-                    fear += 0.1f;
+                    fear *= 1.1f;
+
+                    if (firstPredatorId == 0)
+                    {
+                        firstPredatorId = creatureId;
+                    }
                 }
             }
+            fear = Math.max(fear, 1.0f);
 
             final float hunger = mHunger.get(entityId).value;
 
@@ -133,40 +150,86 @@ public class AISystem extends DelayedIteratingSystem
             // down and might make it stay put even in front of a predator
             if (r.nextFloat() < (fear - hunger / 2f))
             {
-                // FIXME flee in a FREE direction, not randomly!
+                // FIXME flee not only in a FREE direction, but in a predator-FREE direction
+                // (complicated: we have the list of creatures, ordered by circles, but we need
+                // to look deeply into them to find out if there's a truly free exit somewhere)
 
-                actionCooldown = randomWalk(entityId);
+                Side direction;
+
+                if (firstPredatorId > 0)
+                {
+                    final Position predatorPos = mPosition.get(firstPredatorId);
+
+                    // if the first predator is in the same cell, flee randomly
+                    // where it's open
+                    if (predatorPos.x == pos.x && predatorPos.y == pos.y)
+                    {
+                        direction = map.getFreeExitRandomised(pos.x, pos.y);
+                    }
+                    else
+                    {
+                        // otherwise, flee in the direction opposite to the predator
+
+                        direction = Side.getSideAt(predatorPos.x - pos.x, predatorPos.y - pos.y);
+
+                        System.out.println(direction);
+                    }
+                }
+                else
+                {
+                    direction = map.getFreeExitRandomised(pos.x, pos.y);
+                }
+
+                actionCooldown = movement.moveTo(entityId, speed, direction);
             }
 
             cooldownModifier = 1.0f - fear;
         }
         else if (mCarnivore.has(entityId))
         {
+            boolean chasing = false;
 
+            // look around in a concentric spiral and stop at the entities found
+            // first, ie in the closest circle (including the current position)
+            final List<Integer> creatures = grid.getClosestEntities(pos.x, pos.y, 3);
+
+            for (final int creatureId : creatures)
+            {
+                if (mHerbivore.has(creatureId))
+                {
+                    final Position preyPos = mPosition.get(creatureId);
+
+                    chasing = true;
+
+                    actionCooldown = movement.moveTo(entityId, speed,
+                                                     Side.getSideAt(pos.x - preyPos.x, pos.y - preyPos.y));
+
+                    break;
+                }
+            }
+
+            // if there aren't any preys around, move randomly towards the first open exit
+            if (!chasing)
+            {
+                actionCooldown = movement.moveTo(entityId, speed, map.getFreeExitRandomised(pos.x, pos.y));
+            }
+
+            final float hunger = mHunger.get(entityId).value;
+
+            cooldownModifier = 1.0f - hunger;
         }
         else
         {
             // random walking
-            actionCooldown = randomWalk(entityId);
+            actionCooldown = movement.moveTo(entityId, speed, map.getFreeExitRandomised(pos.x, pos.y));
         }
 
         final AI ai = mAI.get(entityId);
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME / 1000.0f + BASE_TICKTIME) * cooldownModifier;
         if (ai.cooldown < actionCooldown)
         {
-            ai.cooldown = actionCooldown * 2.0f;
+            ai.cooldown = actionCooldown * 1.5f;
         }
         offerDelay(ai.cooldown);
-    }
-
-    // AI FUNCTIONS
-    private float randomWalk(final int entityId)
-    {
-        final MoveCommand m = mMoveTo.create(entityId);
-        m.cooldown = mSpeed.get(entityId).speed;
-        m.direction = Side.getRandom();
-        movement.offerDelay(m.cooldown);
-
-        return m.cooldown;
     }
 }

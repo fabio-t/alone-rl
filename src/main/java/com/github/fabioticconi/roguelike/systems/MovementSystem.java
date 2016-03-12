@@ -88,19 +88,31 @@ public class MovementSystem extends DelayedIteratingSystem
         // m.cooldown = speed;
         mMoveTo.remove(entityId);
 
-        final Side direction = m.direction;
-
-        final int new_x = p.x + direction.x;
-        final int new_y = p.y + direction.y;
+        final int new_x = p.x + m.direction.x;
+        final int new_y = p.y + m.direction.y;
 
         if (!map.isBlockedAt(new_x, new_y))
         {
             grid.moveEntity(entityId, p.x, p.y, new_x, new_y);
 
-            p.x += direction.x;
-            p.y += direction.y;
+            p.x = new_x;
+            p.y = new_y;
 
             render.setEnabled(true);
         }
+    }
+
+    // Public API
+
+    public float moveTo(final int entityId, final float speed, final Side direction)
+    {
+        final MoveCommand m = mMoveTo.create(entityId);
+
+        m.cooldown = speed;
+        m.direction = direction;
+
+        offerDelay(m.cooldown);
+
+        return m.cooldown;
     }
 }

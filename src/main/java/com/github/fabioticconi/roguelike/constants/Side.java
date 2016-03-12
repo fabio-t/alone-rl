@@ -23,7 +23,7 @@ import java.util.Random;
  */
 public enum Side
 {
-    HERE(0, 0), N(0, -1), E(1, 0), S(0, 1), W(-1, 0);
+    HERE(0, 0), N(0, -1), NE(1, -1), E(1, 0), SE(1, 1), S(0, 1), SW(-1, 1), W(-1, 0), NW(-1, -1);
 
     public final int x;
     public final int y;
@@ -46,13 +46,24 @@ public enum Side
                 return N;
             case W:
                 return E;
+            case NE:
+                return SW;
+            case SE:
+                return NW;
+            case SW:
+                return NE;
+            case NW:
+                return SE;
             default:
                 return HERE;
         }
     }
 
-    public static Side getSideAt(final int x, final int y)
+    public static Side getSideAt(int x, int y)
     {
+        x = Math.max(Math.min(x, 1), -1);
+        y = Math.max(Math.min(x, 1), -1);
+
         if (x == 0)
         {
             if (y == 0)
@@ -69,6 +80,7 @@ public enum Side
         else
             return W;
 
+        // should never happen thanks to the first two lines
         return null;
     }
 

@@ -9,12 +9,10 @@ import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.AISystem;
 import com.github.fabioticconi.roguelike.systems.BootstrapSystem;
+import com.github.fabioticconi.roguelike.systems.HungerSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.systems.PlayerInputSystem;
 import com.github.fabioticconi.roguelike.systems.RenderSystem;
-import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 
 /**
  * Hello world!
@@ -22,15 +20,10 @@ import com.googlecode.lanterna.TextColor;
  */
 public class Roguelike
 {
-    public static final TextCharacter PLAYER      = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
-                                                                          .withModifier(SGR.BOLD);
-
-    public static boolean             keepRunning = true;
+    public static boolean keepRunning = true;
 
     public static void main(final String[] args) throws IOException
     {
-        final float delta = 1.0f / 15.0f;
-
         final WorldConfiguration config;
         config = new WorldConfiguration();
         config.register(new Map());
@@ -38,15 +31,37 @@ public class Roguelike
         config.register(new Random());
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
+        config.setSystem(new HungerSystem(5f));
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         config.setSystem(RenderSystem.class);
         final World world = new World(config);
 
+        final float FPS = 10.0f;
+        final float frameDuration = 1000.0f / FPS;
+        final float dt = frameDuration / 1000.0f;
+
+        long previousTime = System.currentTimeMillis();
+        long currentTime;
+
+        float lag = 0.0f;
+        float elapsed;
+
         while (keepRunning)
         {
-            world.setDelta(delta);
-            world.process();
+            currentTime = System.currentTimeMillis();
+            elapsed = currentTime - previousTime;
+            previousTime = currentTime;
+
+            lag += elapsed;
+
+            while (lag >= frameDuration)
+            {
+                world.setDelta(dt);
+                world.process();
+
+                lag -= frameDuration;
+            }
         }
 
         System.exit(0);

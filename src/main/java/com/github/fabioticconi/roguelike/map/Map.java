@@ -15,7 +15,9 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
+import com.github.fabioticconi.roguelike.constants.Cell;
 import com.github.fabioticconi.roguelike.constants.Options;
+import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.terrain_generator.ImageWriter;
 import com.github.fabioticconi.terrain_generator.SimplexNoise;
 
@@ -151,7 +153,77 @@ public class Map
 
     public boolean isBlockedAt(final int x, final int y)
     {
-        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL;
+        return x >= Options.MAP_SIZE_X ||
+               x < 0 ||
+               y >= Options.MAP_SIZE_Y ||
+               y < 0 ||
+               map[x][y] == Cell.WALL ||
+               map[x][y] == Cell.CLOSED_DOOR;
+    }
+
+    public boolean isBlockedAt(final int x, final int y, final Side direction)
+    {
+        return isBlockedAt(x + direction.x, y + direction.y);
+    }
+
+    /**
+     * Take a position and returns the first free exit (if any), starting from North
+     * and going clockwise.
+     *
+     * @param x
+     * @param y
+     * @return An exit, or HERE if none is available
+     */
+    public Side getFirstFreeExit(final int x, final int y)
+    {
+        int side_x = Side.N.x + x;
+        int side_y = Side.N.y + y;
+
+        if (!isBlockedAt(side_x, side_y))
+            return Side.N;
+
+        side_x = Side.E.x + x;
+        side_y = Side.E.y + y;
+
+        if (!isBlockedAt(side_x, side_y))
+            return Side.E;
+
+        side_x = Side.S.x + x;
+        side_y = Side.S.y + y;
+
+        if (!isBlockedAt(side_x, side_y))
+            return Side.S;
+
+        side_x = Side.W.x + x;
+        side_y = Side.W.y + y;
+
+        if (!isBlockedAt(side_x, side_y))
+            return Side.W;
+
+        return Side.HERE;
+    }
+
+    /**
+     * Takes a position and returns a free exit (if available), with
+     * some randomisation (not guaranteed).
+     *
+     * @param x
+     * @param y
+     * @return An exit, or HERE if none is available
+     */
+    public Side getFreeExitRandomised(final int x, final int y)
+    {
+        final Side firstFree = getFirstFreeExit(x, y);
+
+        if (firstFree == Side.HERE)
+            return firstFree;
+
+        final Side random = Side.getRandom();
+
+        if (isBlockedAt(x, y, random))
+            return firstFree;
+        else
+            return random;
     }
 
     public Cell get(final int x, final int y)

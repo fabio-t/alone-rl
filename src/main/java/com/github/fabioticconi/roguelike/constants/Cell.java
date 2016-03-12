@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.map;
+package com.github.fabioticconi.roguelike.constants;
 
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextCharacter;

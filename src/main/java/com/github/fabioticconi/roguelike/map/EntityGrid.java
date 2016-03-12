@@ -43,6 +43,213 @@ public class EntityGrid
         return entities;
     }
 
+    public List<Integer> getClosestEntities(final int x, final int y, int maxRadius)
+    {
+        List<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+
+        if (curEntities != null)
+            return curEntities;
+
+        final List<Integer> entities = new LinkedList<Integer>();
+
+        // avoid stupid crashes for negative radii
+        maxRadius = Math.abs(maxRadius);
+
+        int cur_y = y;
+        int cur_x = x;
+        for (int d = 1; d < maxRadius; d++)
+        {
+            // FIXME what do we do if the north row is "out of bound" already?
+            // we should skip the next for and position ourselves immediately to the
+            // correct east-side column, at the same y position as we are
+
+            // go one step north, into the upper row of the new circle
+            cur_y--;
+
+            final int max_x = x + d;
+            final int max_y = y + d;
+            final int min_x = x - d;
+            final int min_y = y - d;
+
+            // continue east, through the north row
+            for (; cur_x < max_x; cur_x++)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // continue south, through the east column
+            for (; cur_y < max_y; cur_y++)
+            {
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // continue west, through the south row
+            for (; cur_x > min_x; cur_x--)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // continue north, through the west column of this circle
+            for (; cur_y > min_y; cur_y--)
+            {
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // if at this round we have found entities, we must stop
+            if (!entities.isEmpty())
+                return entities;
+
+            // at this point we are positioned WITHIN the north row of the next cicle
+        }
+
+        // if we are here, we haven't found any entities so we return the empty set we
+        // had created at the beginning
+
+        return entities;
+    }
+
+    public List<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
+    {
+        if (r <= 0)
+            return grid.getOrDefault(x | ((long) y << 32), new LinkedList<Integer>());
+
+        final List<Integer> entities = new LinkedList<Integer>();
+        List<Integer> curEntities;
+
+        int cur_y = y;
+        int cur_x = x;
+
+        // FIXME what do we do if the north row is "out of bound" already?
+        // we should skip the next for and position ourselves immediately to the
+        // correct east-side column, at the same y position as we are
+
+        // go one step north, into the upper row of the new circle
+        cur_y--;
+
+        final int max_x = x + r;
+        final int max_y = y + r;
+        final int min_x = x - r;
+        final int min_y = y - r;
+
+        // continue east, through the north row
+        for (; cur_x < max_x; cur_x++)
+        {
+            // if we are out of bounds
+            if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+            {
+                continue;
+            }
+
+            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+            if (curEntities != null)
+            {
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
+            }
+        }
+
+        // continue south, through the east column
+        for (; cur_y < max_y; cur_y++)
+        {
+            if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+            {
+                continue;
+            }
+
+            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+            if (curEntities != null)
+            {
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
+            }
+        }
+
+        // continue west, through the south row
+        for (; cur_x > min_x; cur_x--)
+        {
+            // if we are out of bounds
+            if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+            {
+                continue;
+            }
+
+            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+            if (curEntities != null)
+            {
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
+            }
+        }
+
+        // continue north, through the west column of this circle
+        for (; cur_y > min_y; cur_y--)
+        {
+            if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+            {
+                continue;
+            }
+
+            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+            if (curEntities != null)
+            {
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
+            }
+        }
+
+        return entities;
+    }
+
     public List<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
     {
         final List<Integer> entities = new LinkedList<Integer>();
