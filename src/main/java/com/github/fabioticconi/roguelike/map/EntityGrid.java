@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.fabioticconi.roguelike.constants.Options;
+
 /**
  *
  * @author Fabio Ticconi
@@ -37,6 +39,32 @@ public class EntityGrid
         final long pos = x | ((long) y << 32);
 
         final List<Integer> entities = grid.getOrDefault(pos, null);
+
+        return entities;
+    }
+
+    public List<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
+    {
+        final List<Integer> entities = new LinkedList<Integer>();
+        List<Integer> curEntities;
+
+        final int min_x = x - r < 0 ? 0 : x - r;
+        final int min_y = y - r < 0 ? 0 : y - r;
+        final int max_x = x + r > Options.MAP_SIZE_X ? Options.MAP_SIZE_X : x + r;
+        final int max_y = y + r > Options.MAP_SIZE_Y ? Options.MAP_SIZE_Y : y + r;
+
+        for (int p_x = min_x; p_x < max_x; p_x++)
+        {
+            for (int p_y = min_y; p_y < max_y; p_y++)
+            {
+                curEntities = grid.getOrDefault(p_x | ((long) p_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    entities.addAll(curEntities);
+                }
+            }
+        }
 
         return entities;
     }

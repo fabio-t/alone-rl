@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components;
+package com.github.fabioticconi.roguelike.components.internal_states;
 
 import com.artemis.Component;
 
@@ -21,12 +21,7 @@ import com.artemis.Component;
  *
  * @author Fabio Ticconi
  */
-public class AI extends Component
+public class Fear extends Component
 {
-    public float cooldown;
-
-    public AI(final float cooldown)
-    {
-        this.cooldown = cooldown;
-    }
+    public float value;
 }

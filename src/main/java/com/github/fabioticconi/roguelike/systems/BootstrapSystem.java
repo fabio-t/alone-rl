@@ -21,10 +21,14 @@ import com.artemis.BaseSystem;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.AI;
+import com.github.fabioticconi.roguelike.components.Carnivore;
+import com.github.fabioticconi.roguelike.components.Herbivore;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Speed;
 import com.github.fabioticconi.roguelike.components.Sprite;
+import com.github.fabioticconi.roguelike.components.internal_states.Fear;
+import com.github.fabioticconi.roguelike.components.internal_states.Hunger;
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
@@ -73,24 +77,41 @@ public class BootstrapSystem extends BaseSystem
                                                             .withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
 
-        // add a few creatures
+        // add a few hervibores
         for (int i = 0; i < 10; i++)
         {
             id = world.create();
             edit = world.edit(id);
-            final AI ai = new AI();
-            ai.cooldown = (float) (r.nextGaussian() * AISystem.BASE_TICKTIME) + AISystem.BASE_TICKTIME;
-            ;
-            edit.add(ai);
+            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1000.0f));
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
-            edit.create(Speed.class).speed = 1000.0f;
-            edit.create(Sprite.class).c = new TextCharacter('E').withForegroundColor(TextColor.ANSI.RED)
+            edit.create(Herbivore.class);
+            edit.create(Hunger.class).value = 0.0f;
+            edit.create(Fear.class).value = 0.0f;
+            edit.create(Speed.class).speed = r.nextFloat() * 1000.0f + 500.0f;
+            edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE)
                                                                 .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
+        }
 
+        // add a few carnivores
+        for (int i = 0; i < 3; i++)
+        {
+            id = world.create();
+            edit = world.edit(id);
+            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1000.0f));
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
+            edit.add(new Position(x, y));
+            edit.create(Carnivore.class);
+            edit.create(Hunger.class).value = 0.0f;
+            edit.create(Speed.class).speed = r.nextFloat() * 1000.0f + 500.0f;
+            edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
+                                                                .withModifier(SGR.BOLD);
+
+            grid.putEntity(id, x, y);
         }
     }
 }

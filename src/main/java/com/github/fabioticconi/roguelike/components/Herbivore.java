@@ -21,12 +21,7 @@ import com.artemis.Component;
  *
  * @author Fabio Ticconi
  */
-public class AI extends Component
+public class Herbivore extends Component
 {
-    public float cooldown;
 
-    public AI(final float cooldown)
-    {
-        this.cooldown = cooldown;
-    }
 }
