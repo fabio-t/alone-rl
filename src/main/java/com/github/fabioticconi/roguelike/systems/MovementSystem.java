@@ -85,7 +85,7 @@ public class MovementSystem extends DelayedIteratingSystem
         // we should have a flag saying "keep going":
         // if set, when the timer expires we should reset it to the
         // creature's Speed.
-        // m.cooldown = speed;
+        // m.cooldown = value;
         mMoveTo.remove(entityId);
 
         final int new_x = p.x + m.direction.x;

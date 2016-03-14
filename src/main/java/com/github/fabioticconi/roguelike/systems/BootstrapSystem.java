@@ -22,13 +22,14 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.AI;
 import com.github.fabioticconi.roguelike.components.Carnivore;
+import com.github.fabioticconi.roguelike.components.Fear;
 import com.github.fabioticconi.roguelike.components.Herbivore;
+import com.github.fabioticconi.roguelike.components.Hunger;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.Sight;
 import com.github.fabioticconi.roguelike.components.Speed;
 import com.github.fabioticconi.roguelike.components.Sprite;
-import com.github.fabioticconi.roguelike.components.internal_states.Fear;
-import com.github.fabioticconi.roguelike.components.internal_states.Hunger;
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
@@ -72,7 +73,8 @@ public class BootstrapSystem extends BaseSystem
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
         edit.add(new Position(x, y));
-        edit.create(Speed.class).speed = 0.1f;
+        edit.create(Sight.class).value = 9;
+        edit.create(Speed.class).value = 0.1f;
         edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
                                                             .withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
@@ -82,14 +84,15 @@ public class BootstrapSystem extends BaseSystem
         {
             id = world.create();
             edit = world.edit(id);
-            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1000.0f));
+            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f));
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
             edit.create(Herbivore.class);
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Fear.class).value = 0.0f;
-            edit.create(Speed.class).speed = r.nextFloat() * 1000000.0f;
+            edit.create(Sight.class).value = 9;
+            edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE)
                                                                 .withModifier(SGR.BOLD);
 
@@ -101,13 +104,14 @@ public class BootstrapSystem extends BaseSystem
         {
             id = world.create();
             edit = world.edit(id);
-            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1000.0f));
+            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f));
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
-            edit.create(Speed.class).speed = r.nextFloat() * 500000.0f;
+            edit.create(Sight.class).value = 9;
+            edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
                                                                 .withModifier(SGR.BOLD);
 

@@ -55,16 +55,13 @@ public class EntityGrid
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
 
-        int cur_y = y;
+        int cur_y = y - 1;
         int cur_x = x;
-        for (int d = 1; d < maxRadius; d++)
+        for (int d = 1; d <= maxRadius; d++)
         {
             // FIXME what do we do if the north row is "out of bound" already?
             // we should skip the next for and position ourselves immediately to the
             // correct east-side column, at the same y position as we are
-
-            // go one step north, into the upper row of the new circle
-            cur_y--;
 
             final int max_x = x + d;
             final int max_y = y + d;
@@ -125,7 +122,7 @@ public class EntityGrid
             }
 
             // continue north, through the west column of this circle
-            for (; cur_y > min_y; cur_y--)
+            for (; cur_y >= min_y; cur_y--)
             {
                 if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
                 {
@@ -156,21 +153,21 @@ public class EntityGrid
 
     public List<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
     {
-        if (r <= 0)
-            return grid.getOrDefault(x | ((long) y << 32), new LinkedList<Integer>());
-
         final List<Integer> entities = new LinkedList<Integer>();
+
+        if (r <= 0)
+            return grid.getOrDefault(x | ((long) y << 32), entities);
+
         List<Integer> curEntities;
 
-        int cur_y = y;
-        int cur_x = x;
+        // we put the cursor where it would have been if we were in one iteration
+        // of "getClosestEntities"
+        int cur_y = y - r;
+        int cur_x = x - r + 1;
 
         // FIXME what do we do if the north row is "out of bound" already?
         // we should skip the next for and position ourselves immediately to the
         // correct east-side column, at the same y position as we are
-
-        // go one step north, into the upper row of the new circle
-        cur_y--;
 
         final int max_x = x + r;
         final int max_y = y + r;
@@ -231,7 +228,7 @@ public class EntityGrid
         }
 
         // continue north, through the west column of this circle
-        for (; cur_y > min_y; cur_y--)
+        for (; cur_y >= min_y; cur_y--)
         {
             if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
             {
@@ -257,8 +254,8 @@ public class EntityGrid
 
         final int min_x = x - r < 0 ? 0 : x - r;
         final int min_y = y - r < 0 ? 0 : y - r;
-        final int max_x = x + r > Options.MAP_SIZE_X ? Options.MAP_SIZE_X : x + r;
-        final int max_y = y + r > Options.MAP_SIZE_Y ? Options.MAP_SIZE_Y : y + r;
+        final int max_x = x + r > Options.MAP_SIZE_X ? Options.MAP_SIZE_X : x + r + 1;
+        final int max_y = y + r > Options.MAP_SIZE_Y ? Options.MAP_SIZE_Y : y + r + 1;
 
         for (int p_x = min_x; p_x < max_x; p_x++)
         {

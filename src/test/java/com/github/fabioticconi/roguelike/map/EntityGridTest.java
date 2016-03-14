@@ -31,7 +31,7 @@ import org.junit.Test;
 public class EntityGridTest
 {
     @Test
-    public final void test()
+    public final void testGetAndMoveEntities()
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -68,4 +68,125 @@ public class EntityGridTest
         assertEquals(e4.size(), 1);
     }
 
+    @Test
+    public void testGetClosestEntities() throws Exception
+    {
+        final EntityGrid grid = new EntityGrid();
+
+        for (int x = 10, i = 1; x < 17; x++)
+        {
+            for (int y = 10; y < 17; y++, i++)
+            {
+                if (x == 13 && y == 13)
+                {
+                    continue;
+                }
+
+                grid.putEntity(i, x, y);
+            }
+        }
+
+        List<Integer> entities = grid.getClosestEntities(13, 13, 0);
+
+        assertNotNull(entities);
+        assertTrue(entities.isEmpty());
+
+        entities = grid.getClosestEntities(13, 13, 1);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 8);
+
+        entities = grid.getClosestEntities(13, 13, 2);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 8);
+
+        entities = grid.getClosestEntities(13, 13, 3);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 8);
+    }
+
+    @Test
+    public void testGetEntitiesAtRadius() throws Exception
+    {
+        final EntityGrid grid = new EntityGrid();
+
+        for (int x = 10, i = 1; x < 17; x++)
+        {
+            for (int y = 10; y < 17; y++, i++)
+            {
+                if (x == 13 && y == 13)
+                {
+                    continue;
+                }
+
+                grid.putEntity(i, x, y);
+            }
+        }
+
+        List<Integer> entities = grid.getEntitiesAtRadius(13, 13, 0);
+
+        assertNotNull(entities);
+        assertTrue(entities.isEmpty());
+
+        entities = grid.getEntitiesAtRadius(13, 13, 1);
+
+        System.out.println();
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 8);
+
+        entities = grid.getEntitiesAtRadius(13, 13, 2);
+
+        System.out.println();
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 16);
+
+        entities = grid.getEntitiesAtRadius(13, 13, 3);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 24);
+    }
+
+    @Test
+    public void testGetEntitiesWithinRadius() throws Exception
+    {
+        final EntityGrid grid = new EntityGrid();
+
+        int i = 1;
+        for (int x = 10; x < 17; x++)
+        {
+            for (int y = 10; y < 17; y++, i++)
+            {
+                if (x == 13 && y == 13)
+                {
+                    continue;
+                }
+
+                grid.putEntity(i, x, y);
+            }
+        }
+
+        List<Integer> entities = grid.getEntitiesWithinRadius(13, 13, 0);
+
+        assertNotNull(entities);
+        assertTrue(entities.isEmpty());
+
+        entities = grid.getEntitiesWithinRadius(13, 13, 1);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 8);
+
+        entities = grid.getEntitiesWithinRadius(13, 13, 2);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 24);
+
+        entities = grid.getEntitiesWithinRadius(13, 13, 3);
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), 48);
+    }
 }

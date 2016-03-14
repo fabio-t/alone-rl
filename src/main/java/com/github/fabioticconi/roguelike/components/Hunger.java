@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Fabio Ticconi
+ * Copyright 2016 Fabio Ticconi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.artemis.Component;
  *
  * @author Fabio Ticconi
  */
-public class Speed extends Component
+public class Hunger extends Component
 {
     public float value;
 }

@@ -18,7 +18,7 @@ package com.github.fabioticconi.roguelike.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
-import com.github.fabioticconi.roguelike.components.internal_states.Hunger;
+import com.github.fabioticconi.roguelike.components.Hunger;
 
 /**
  *
@@ -45,11 +45,9 @@ public class HungerSystem extends IntervalIteratingSystem
     @Override
     protected void process(final int entityId)
     {
-        System.out.println(entityId + ": " + System.currentTimeMillis());
-
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 1.1f;
+        h.value *= 1.0001f;
 
         h.value = Math.max(h.value, 1.0f);
 

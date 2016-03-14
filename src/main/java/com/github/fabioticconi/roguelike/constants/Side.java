@@ -62,7 +62,7 @@ public enum Side
     public static Side getSideAt(int x, int y)
     {
         x = Math.max(Math.min(x, 1), -1);
-        y = Math.max(Math.min(x, 1), -1);
+        y = Math.max(Math.min(y, 1), -1);
 
         if (x == 0)
         {

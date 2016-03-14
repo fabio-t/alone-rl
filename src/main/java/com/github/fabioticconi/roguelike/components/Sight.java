@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelike.components.internal_states;
+package com.github.fabioticconi.roguelike.components;
 
 import com.artemis.Component;
 
@@ -21,7 +21,7 @@ import com.artemis.Component;
  *
  * @author Fabio Ticconi
  */
-public class Hunger extends Component
+public class Sight extends Component
 {
-    public float value;
+    public int value;
 }

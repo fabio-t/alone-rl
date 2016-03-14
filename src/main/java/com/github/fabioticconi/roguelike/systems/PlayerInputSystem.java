@@ -66,7 +66,7 @@ public class PlayerInputSystem extends BaseEntitySystem
 
         final int pID = subscription.getEntities().get(0);
 
-        final float speed = mSpeed.get(pID).speed;
+        final float speed = mSpeed.get(pID).value;
 
         switch (k.getKeyType())
         {
