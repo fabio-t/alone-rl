@@ -38,14 +38,14 @@ public class Roguelike
         config.setSystem(new HungerSystem(5f));
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
-        config.setSystem(RenderSystem.class);
+        config.setSystem(new RenderSystem(1f));
         // behaviours
         config.setSystem(FleeBehaviour.class);
         config.setSystem(ChaseBehaviour.class);
 
         final World world = new World(config);
 
-        final float FPS = 10.0f;
+        final float FPS = 25.0f;
         final float frameDuration = 1000.0f / FPS;
         final float dt = frameDuration / 1000.0f;
 
@@ -61,7 +61,15 @@ public class Roguelike
             elapsed = currentTime - previousTime;
             previousTime = currentTime;
 
+            if (elapsed > 250f)
+            {
+                System.out.println("lagging behind: " + elapsed);
+                elapsed = 250f;
+            }
+
             lag += elapsed;
+
+            world.getSystem(RenderSystem.class).setEnabled(false);
 
             while (lag >= frameDuration)
             {
@@ -70,6 +78,9 @@ public class Roguelike
 
                 lag -= frameDuration;
             }
+
+            world.getSystem(RenderSystem.class).setEnabled(true);
+            world.getSystem(RenderSystem.class).process();
         }
 
         System.exit(0);

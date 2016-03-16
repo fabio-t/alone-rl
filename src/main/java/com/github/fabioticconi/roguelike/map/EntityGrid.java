@@ -15,11 +15,14 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.github.fabioticconi.roguelike.constants.Options;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 /**
  *
@@ -27,11 +30,13 @@ import com.github.fabioticconi.roguelike.constants.Options;
  */
 public class EntityGrid
 {
-    HashMap<Long, List<Integer>> grid;
+    Long2ObjectMap<IntList> grid;
+
+    int                     i = 0;
 
     public EntityGrid()
     {
-        grid = new HashMap<Long, List<Integer>>();
+        grid = new Long2ObjectOpenHashMap<IntList>();
     }
 
     public List<Integer> getEntities(final int x, final int y)
@@ -50,7 +55,7 @@ public class EntityGrid
         if (curEntities != null)
             return curEntities;
 
-        final List<Integer> entities = new LinkedList<Integer>();
+        final List<Integer> entities = new IntArrayList();
 
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
@@ -153,7 +158,7 @@ public class EntityGrid
 
     public List<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
     {
-        final List<Integer> entities = new LinkedList<Integer>();
+        final IntList entities = new IntArrayList();
 
         if (r <= 0)
             return grid.getOrDefault(x | ((long) y << 32), entities);
@@ -249,25 +254,104 @@ public class EntityGrid
 
     public List<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
     {
-        final List<Integer> entities = new LinkedList<Integer>();
-        List<Integer> curEntities;
+        final List<Integer> entities = new IntArrayList();
 
-        final int min_x = x - r < 0 ? 0 : x - r;
-        final int min_y = y - r < 0 ? 0 : y - r;
-        final int max_x = x + r > Options.MAP_SIZE_X ? Options.MAP_SIZE_X : x + r + 1;
-        final int max_y = y + r > Options.MAP_SIZE_Y ? Options.MAP_SIZE_Y : y + r + 1;
+        List<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
 
-        for (int p_x = min_x; p_x < max_x; p_x++)
+        if (curEntities != null)
         {
-            for (int p_y = min_y; p_y < max_y; p_y++)
+            entities.addAll(curEntities);
+        }
+
+        int cur_y = y - 1;
+        int cur_x = x;
+        for (int d = 1; d <= r; d++)
+        {
+            // FIXME what do we do if the north row is "out of bound" already?
+            // we should skip the next for and position ourselves immediately to the
+            // correct east-side column, at the same y position as we are
+
+            final int max_x = x + d;
+            final int max_y = y + d;
+            final int min_x = x - d;
+            final int min_y = y - d;
+
+            // continue east, through the north row
+            for (; cur_x < max_x; cur_x++)
             {
-                curEntities = grid.getOrDefault(p_x | ((long) p_y << 32), null);
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities == entities)
+                {
+                    System.exit(0);
+                }
 
                 if (curEntities != null)
                 {
+                    // accumulate entities within this circle
                     entities.addAll(curEntities);
                 }
             }
+
+            // continue south, through the east column
+            for (; cur_y < max_y; cur_y++)
+            {
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // continue west, through the south row
+            for (; cur_x > min_x; cur_x--)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // continue north, through the west column of this circle
+            for (; cur_y >= min_y; cur_y--)
+            {
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+
+                if (curEntities != null)
+                {
+                    // accumulate entities within this circle
+                    entities.addAll(curEntities);
+                }
+            }
+
+            // at this point we are positioned WITHIN the north row of the next cicle
         }
 
         return entities;
@@ -289,13 +373,13 @@ public class EntityGrid
     {
         final long pos = x | ((long) y << 32);
 
-        List<Integer> entities = grid.getOrDefault(pos, null);
+        IntList entities = grid.getOrDefault(pos, null);
 
         final Integer idVal = Integer.valueOf(id);
 
         if (entities == null)
         {
-            entities = new LinkedList<Integer>();
+            entities = new IntArrayList();
 
             entities.add(idVal);
 
@@ -311,9 +395,11 @@ public class EntityGrid
 
     public boolean moveEntity(final int id, final int start_x, final int start_y, final int end_x, final int end_y)
     {
-        final Integer idVal = Integer.valueOf(id);
+        final long pos = start_x | ((long) start_y << 32);
 
-        final List<Integer> entities = getEntities(start_x, start_y);
+        final IntList entities = grid.getOrDefault(pos, null);
+
+        final Integer idVal = Integer.valueOf(id);
 
         // TODO: just put the object at position "end" (should we check there, too?)
         if (entities == null)

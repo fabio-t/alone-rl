@@ -188,5 +188,7 @@ public class EntityGridTest
 
         assertNotNull(entities);
         assertEquals(entities.size(), 48);
+
+        entities = grid.getEntitiesWithinRadius(13, 13, 3);
     }
 }

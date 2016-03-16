@@ -65,7 +65,7 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final List<Integer> creatures = grid.getClosestEntities(curPos.x, curPos.y, sight);
+        final List<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
 
         for (final int creatureId : creatures)
         {
@@ -73,10 +73,12 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
             {
                 fleeFrom = mPosition.get(creatureId);
 
+                // System.out.println(map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
+
                 // if a predator has just entered the field of view, we are not that much concerned;
                 // if it's in the same cell as we are, we are maximally concerned
                 // FIXME this is wrong we have to maximise!
-                return (float) map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
+                return (float) map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
             }
         }
 
@@ -106,10 +108,10 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
         {
             // otherwise, flee in the direction opposite to the predator
 
-            direction = Side.getSideAt(fleeFrom.x - curPos.x, fleeFrom.y - curPos.y);
+            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
         }
 
-        System.out.println(direction);
+        // System.out.println(direction);
 
         final float speed = mSpeed.get(entityId).value;
 

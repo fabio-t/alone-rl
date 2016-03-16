@@ -56,6 +56,12 @@
       <artifactId>terrain-generator</artifactId>
       <version>e3d55c79de</version>
     </dependency>
+
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil</artifactId>
+      <version>7.0.11</version>
+    </dependency>
   </dependencies>
 
   <build>

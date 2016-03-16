@@ -95,7 +95,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Herbivore.class);
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Fear.class).value = 0.0f;
-            edit.create(Sight.class).value = 9;
+            edit.create(Sight.class).value = 7;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE)
                                                                 .withModifier(SGR.BOLD);
@@ -116,12 +116,14 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
-            edit.create(Sight.class).value = 9;
+            edit.create(Sight.class).value = 8;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
                                                                 .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
+
+        System.out.println("Bootstrap done");
     }
 }

@@ -84,7 +84,7 @@ public class AISystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        System.out.println(entityId);
+        // System.out.println("eId: " + entityId);
 
         float actionCooldown = 0.0f;
 
@@ -95,8 +95,6 @@ public class AISystem extends DelayedIteratingSystem
 
         final AI ai = mAI.get(entityId);
 
-        System.out.println(ai.behaviours.size());
-
         float max_score = 0f;
         Behaviour best_behaviour = null;
 
@@ -104,7 +102,7 @@ public class AISystem extends DelayedIteratingSystem
         {
             final float temp = behaviour.evaluate(entityId);
 
-            System.out.println("score: " + temp);
+            // System.out.println(behaviour.getClass().getSimpleName() + " score: " + temp);
 
             if (temp > max_score)
             {
@@ -113,11 +111,13 @@ public class AISystem extends DelayedIteratingSystem
             }
         }
 
-        System.out.println(best_behaviour);
-
         if (best_behaviour != null && max_score > 0f)
         {
+            // System.out.println("best: " + best_behaviour.getClass().getSimpleName());
+
             actionCooldown = best_behaviour.update();
+
+            // System.out.println(actionCooldown);
         }
 
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * cooldownModifier;

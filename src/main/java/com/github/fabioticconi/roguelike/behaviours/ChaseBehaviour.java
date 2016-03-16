@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelike.components.Carnivore;
+import com.github.fabioticconi.roguelike.components.Herbivore;
 import com.github.fabioticconi.roguelike.components.Hunger;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Sight;
@@ -41,7 +41,7 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Carnivore> mHerbivore;
+    ComponentMapper<Herbivore> mHerbivore;
 
     MovementSystem             movement;
 
@@ -67,7 +67,7 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final List<Integer> creatures = grid.getClosestEntities(curPos.x, curPos.y, sight);
+        final List<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
 
         for (final int creatureId : creatures)
         {
@@ -77,7 +77,8 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
 
                 final float hunger = mHunger.get(entityId).value;
 
-                return hunger - map.distance(curPos.x, curPos.y, chase.x, chase.y) / sight;
+                return 0.5f * hunger +
+                       0.5f * (1f - (float) map.distance(curPos.x, curPos.y, chase.x, chase.y) / (float) sight);
             }
         }
 
@@ -92,9 +93,9 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
     @Override
     public float update()
     {
-        System.out.println(curPos);
         final float speed = mSpeed.get(entityId).value;
-        final Side direction = Side.getSideAt(curPos.x - chase.x, curPos.y - chase.y);
+
+        final Side direction = Side.getSideAt(chase.x - curPos.x, chase.y - curPos.y);
 
         return movement.moveTo(entityId, speed, direction);
     }

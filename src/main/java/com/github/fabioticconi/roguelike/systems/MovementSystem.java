@@ -34,8 +34,6 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<Position>    mPosition;
     ComponentMapper<MoveCommand> mMoveTo;
 
-    RenderSystem                 render;
-
     @Wire
     Map                          map;
     @Wire
@@ -97,8 +95,6 @@ public class MovementSystem extends DelayedIteratingSystem
 
             p.x = new_x;
             p.y = new_y;
-
-            render.setEnabled(true);
         }
     }
 

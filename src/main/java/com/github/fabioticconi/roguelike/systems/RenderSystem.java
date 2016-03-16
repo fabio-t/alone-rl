@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.artemis.Aspect;
-import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
+import com.artemis.systems.IntervalSystem;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Sprite;
@@ -43,7 +43,7 @@ import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
  *
  * @author Fabio Ticconi
  */
-public class RenderSystem extends BaseEntitySystem
+public class RenderSystem extends IntervalSystem
 {
     ComponentMapper<Position> mPosition;
     ComponentMapper<Sprite>   mSprite;
@@ -61,9 +61,9 @@ public class RenderSystem extends BaseEntitySystem
     /**
      * @param aspect
      */
-    public RenderSystem()
+    public RenderSystem(final float interval)
     {
-        super(Aspect.all(Position.class, Player.class));
+        super(Aspect.all(Position.class, Player.class), interval);
     }
 
     /*
@@ -189,7 +189,7 @@ public class RenderSystem extends BaseEntitySystem
             e.printStackTrace();
         }
 
-        setEnabled(false);
+        // setEnabled(false);
     }
 
     public KeyStroke getInput()
