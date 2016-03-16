@@ -15,25 +15,17 @@
  */
 package com.github.fabioticconi.roguelike.systems;
 
-import java.util.List;
 import java.util.Random;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
+import com.github.fabioticconi.roguelike.behaviours.Behaviour;
 import com.github.fabioticconi.roguelike.components.AI;
-import com.github.fabioticconi.roguelike.components.Carnivore;
-import com.github.fabioticconi.roguelike.components.Fear;
-import com.github.fabioticconi.roguelike.components.Herbivore;
-import com.github.fabioticconi.roguelike.components.Hunger;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Sight;
 import com.github.fabioticconi.roguelike.components.Speed;
-import com.github.fabioticconi.roguelike.components.commands.MoveCommand;
-import com.github.fabioticconi.roguelike.constants.Side;
-import com.github.fabioticconi.roguelike.map.EntityGrid;
-import com.github.fabioticconi.roguelike.map.Map;
 
 /**
  *
@@ -43,35 +35,12 @@ public class AISystem extends DelayedIteratingSystem
 {
     // time, in microseconds, around which a each creature should
     // be updated here
-    public static final float    BASE_TICKTIME = 5.0f;
-
-    // TODO: later, the behaviour should be data-driven,
-    // with behaviour trees or something similar;
-    // at that point, this system will load the active entities'
-    // script and evalute if their current behaviour needs to be changed or not.
-    // Also, this should receive messages that could influence the AIs, and make
-    // according changes to the entities' AI state (ie, interrupt a "food searching" behaviour
-    // for a "flee enemy at all costs" behaviour)
+    public static final float BASE_TICKTIME = 5.0f;
 
     @Wire
-    Random                       r;
-    @Wire
-    EntityGrid                   grid;
-    @Wire
-    Map                          map;
+    Random                    r;
 
-    ComponentMapper<AI>          mAI;
-    ComponentMapper<Position>    mPosition;
-    ComponentMapper<Speed>       mSpeed;
-    ComponentMapper<Sight>       mSight;
-
-    ComponentMapper<MoveCommand> mMoveTo;
-    ComponentMapper<Herbivore>   mHerbivore;
-    ComponentMapper<Carnivore>   mCarnivore;
-    ComponentMapper<Hunger>      mHunger;
-    ComponentMapper<Fear>        mFear;
-
-    MovementSystem               movement;
+    ComponentMapper<AI>       mAI;
 
     /**
      *
@@ -115,119 +84,42 @@ public class AISystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        final Position pos = mPosition.get(entityId);
-        final float speed = mSpeed.get(entityId).value;
-        final int sight = mSight.get(entityId).value;
+        System.out.println(entityId);
 
         float actionCooldown = 0.0f;
-        float cooldownModifier = 1.0f;
 
-        if (mHerbivore.has(entityId))
-        {
-            float fear = mFear.get(entityId).value;
-
-            // FIXME this should be finer-grained: closer predators should raise fear more
-            // than far away predators. The creature should also run the opposite direction of the
-            // closest predator, as long as it's a free exit.
-
-            int firstPredatorId = 0;
-            final List<Integer> creatures = grid.getClosestEntities(pos.x, pos.y, sight);
-
-            for (final int creatureId : creatures)
-            {
-                if (mCarnivore.has(creatureId))
-                {
-                    fear *= 1.1f;
-
-                    if (firstPredatorId == 0)
-                    {
-                        firstPredatorId = creatureId;
-                    }
-                }
-            }
-            fear = Math.max(fear, 1.0f);
-
-            final float hunger = mHunger.get(entityId).value;
-
-            // fear is more important than hunger, however TERRIBLE hunger will slow the prey
-            // down and might make it stay put even in front of a predator
-            if (r.nextFloat() < (fear - hunger / 2f))
-            {
-                // FIXME flee not only in a FREE direction, but in a predator-FREE direction
-                // (complicated: we have the list of creatures, ordered by circles, but we need
-                // to look deeply into them to find out if there's a truly free exit somewhere)
-
-                Side direction;
-
-                if (firstPredatorId > 0)
-                {
-                    final Position predatorPos = mPosition.get(firstPredatorId);
-
-                    // if the first predator is in the same cell, flee randomly
-                    // where it's open
-                    if (predatorPos.x == pos.x && predatorPos.y == pos.y)
-                    {
-                        direction = map.getFreeExitRandomised(pos.x, pos.y);
-                    }
-                    else
-                    {
-                        // otherwise, flee in the direction opposite to the predator
-
-                        direction = Side.getSideAt(predatorPos.x - pos.x, predatorPos.y - pos.y);
-
-                        System.out.println(direction);
-                    }
-                }
-                else
-                {
-                    direction = map.getFreeExitRandomised(pos.x, pos.y);
-                }
-
-                actionCooldown = movement.moveTo(entityId, speed, direction);
-            }
-
-            cooldownModifier = 1.0f - fear;
-        }
-        else if (mCarnivore.has(entityId))
-        {
-            boolean chasing = false;
-
-            // look around in a concentric spiral and stop at the entities found
-            // first, ie in the closest circle (including the current position)
-            final List<Integer> creatures = grid.getClosestEntities(pos.x, pos.y, sight);
-
-            for (final int creatureId : creatures)
-            {
-                if (mHerbivore.has(creatureId))
-                {
-                    final Position preyPos = mPosition.get(creatureId);
-
-                    chasing = true;
-
-                    actionCooldown = movement.moveTo(entityId, speed,
-                                                     Side.getSideAt(pos.x - preyPos.x, pos.y - preyPos.y));
-
-                    break;
-                }
-            }
-
-            // if there aren't any preys around, move randomly towards the first open exit
-            if (!chasing)
-            {
-                actionCooldown = movement.moveTo(entityId, speed, map.getFreeExitRandomised(pos.x, pos.y));
-            }
-
-            final float hunger = mHunger.get(entityId).value;
-
-            cooldownModifier = 1.0f - hunger;
-        }
-        else
-        {
-            // random walking
-            actionCooldown = movement.moveTo(entityId, speed, map.getFreeExitRandomised(pos.x, pos.y));
-        }
+        // FIXME re-evaluate if we need cooldownModifier
+        // it should be behaviour-specific or an entity-specific,
+        // or both..
+        final float cooldownModifier = 1.0f;
 
         final AI ai = mAI.get(entityId);
+
+        System.out.println(ai.behaviours.size());
+
+        float max_score = 0f;
+        Behaviour best_behaviour = null;
+
+        for (final Behaviour behaviour : ai.behaviours)
+        {
+            final float temp = behaviour.evaluate(entityId);
+
+            System.out.println("score: " + temp);
+
+            if (temp > max_score)
+            {
+                max_score = temp;
+                best_behaviour = behaviour;
+            }
+        }
+
+        System.out.println(best_behaviour);
+
+        if (best_behaviour != null && max_score > 0f)
+        {
+            actionCooldown = best_behaviour.update();
+        }
+
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * cooldownModifier;
         if (ai.cooldown < actionCooldown)
         {

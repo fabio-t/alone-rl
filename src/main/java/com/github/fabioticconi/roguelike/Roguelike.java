@@ -5,6 +5,8 @@ import java.util.Random;
 
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
+import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.AISystem;
@@ -26,15 +28,21 @@ public class Roguelike
     {
         final WorldConfiguration config;
         config = new WorldConfiguration();
+        // POJO
         config.register(new Map());
         config.register(new EntityGrid());
         config.register(new Random());
+        // systems
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
         config.setSystem(new HungerSystem(5f));
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         config.setSystem(RenderSystem.class);
+        // behaviours
+        config.setSystem(FleeBehaviour.class);
+        config.setSystem(ChaseBehaviour.class);
+
         final World world = new World(config);
 
         final float FPS = 10.0f;

@@ -20,6 +20,8 @@ import java.util.Random;
 import com.artemis.BaseSystem;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
+import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
 import com.github.fabioticconi.roguelike.components.AI;
 import com.github.fabioticconi.roguelike.components.Carnivore;
 import com.github.fabioticconi.roguelike.components.Fear;
@@ -84,7 +86,9 @@ public class BootstrapSystem extends BaseSystem
         {
             id = world.create();
             edit = world.edit(id);
-            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f));
+            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
+            ai.behaviours.add(world.getSystem(FleeBehaviour.class));
+            edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
@@ -104,7 +108,9 @@ public class BootstrapSystem extends BaseSystem
         {
             id = world.create();
             edit = world.edit(id);
-            edit.add(new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f));
+            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
+            ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
+            edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));

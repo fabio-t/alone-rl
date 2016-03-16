@@ -15,7 +15,11 @@
  */
 package com.github.fabioticconi.roguelike.components;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.artemis.Component;
+import com.github.fabioticconi.roguelike.behaviours.Behaviour;
 
 /**
  *
@@ -23,10 +27,16 @@ import com.artemis.Component;
  */
 public class AI extends Component
 {
-    public float cooldown;
+    public float           cooldown;
+
+    public List<Behaviour> behaviours;
+
+    public Behaviour       activeBehaviour;
 
     public AI(final float cooldown)
     {
         this.cooldown = cooldown;
+
+        behaviours = new LinkedList<Behaviour>();
     }
 }
