@@ -17,6 +17,7 @@ package com.github.fabioticconi.roguelike.behaviours;
 
 import java.util.Set;
 
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.Carnivore;
@@ -52,6 +53,19 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
     Position                   curPos;
     Position                   fleeFrom;
 
+    Aspect                     aspect;
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.artemis.BaseSystem#initialize()
+     */
+    @Override
+    protected void initialize()
+    {
+        aspect = Aspect.all(Position.class, Speed.class, Sight.class).build(world);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -61,6 +75,9 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
     public float evaluate(final int entityId)
     {
         this.entityId = entityId;
+
+        if (!aspect.isInterested(world.getEntity(entityId)))
+            return 0f;
 
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
@@ -77,8 +94,7 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
 
                 // if a predator has just entered the field of view, we are not that much concerned;
                 // if it's in the same cell as we are, we are maximally concerned
-                // FIXME this is wrong we have to maximise!
-                return (float) map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
+                return 1f - (float) map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
             }
         }
 

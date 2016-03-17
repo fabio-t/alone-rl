@@ -23,9 +23,6 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelike.behaviours.Behaviour;
 import com.github.fabioticconi.roguelike.components.AI;
-import com.github.fabioticconi.roguelike.components.Position;
-import com.github.fabioticconi.roguelike.components.Sight;
-import com.github.fabioticconi.roguelike.components.Speed;
 
 /**
  *
@@ -35,7 +32,7 @@ public class AISystem extends DelayedIteratingSystem
 {
     // time, in microseconds, around which a each creature should
     // be updated here
-    public static final float BASE_TICKTIME = 5.0f;
+    public static final float BASE_TICKTIME = 3.0f;
 
     @Wire
     Random                    r;
@@ -51,7 +48,7 @@ public class AISystem extends DelayedIteratingSystem
         // linked to position/movement, of course.
         // We'll see when we get there.
 
-        super(Aspect.all(AI.class, Position.class, Speed.class, Sight.class));
+        super(Aspect.all(AI.class));
     }
 
     /*

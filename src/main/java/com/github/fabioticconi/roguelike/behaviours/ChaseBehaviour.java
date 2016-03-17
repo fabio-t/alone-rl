@@ -17,6 +17,7 @@ package com.github.fabioticconi.roguelike.behaviours;
 
 import java.util.Set;
 
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.components.Herbivore;
@@ -54,6 +55,19 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
     Position                   curPos;
     Position                   chase;
 
+    Aspect                     aspect;
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.artemis.BaseSystem#initialize()
+     */
+    @Override
+    protected void initialize()
+    {
+        aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -63,6 +77,9 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
     public float evaluate(final int entityId)
     {
         this.entityId = entityId;
+
+        if (!aspect.isInterested(world.getEntity(entityId)))
+            return 0f;
 
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
