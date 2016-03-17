@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.fabioticconi</groupId>
-  <artifactId>roguelike</artifactId>
+  <artifactId>alone-the-roguelike</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>roguelike</name>
+  <name>alone-the-roguelike</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -115,9 +115,9 @@
   </build>
 
   <scm>
-    <connection>scm:git:git@fabioticconi/roguelike.git</connection>
-    <url>scm:git:git@fabioticconi/roguelike.git</url>
-    <developerConnection>scm:git:git@fabioticconi/roguelike.git</developerConnection>
+    <connection>scm:git:git@fabioticconi/alone-the-roguelike.git</connection>
+    <url>scm:git:git@fabioticconi/alone-the-roguelike.git</url>
+    <developerConnection>scm:git:git@fabioticconi/alone-the-roguelike.git</developerConnection>
   </scm>
 
   <repositories>
