@@ -17,12 +17,13 @@ package com.github.fabioticconi.roguelike.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
+
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 /**
  *
@@ -39,15 +40,17 @@ public class EntityGridTest
         grid.putEntity(2, 10, 5);
         grid.putEntity(3, 100, 500);
 
-        List<Integer> e1 = grid.getEntities(5, 10);
-        List<Integer> e2 = grid.getEntities(10, 5);
-        List<Integer> e3 = grid.getEntities(100, 500);
-        List<Integer> e4 = grid.getEntities(1, 1);
+        Set<Integer> e1 = grid.getEntities(5, 10);
+        Set<Integer> e2 = grid.getEntities(10, 5);
+        Set<Integer> e3 = grid.getEntities(100, 500);
+        Set<Integer> e4 = grid.getEntities(1, 1);
 
         assertNotNull(e1);
         assertNotNull(e2);
         assertNotNull(e3);
-        assertNull(e4);
+        assertNotNull(e4);
+
+        assertEquals(e4, IntSets.EMPTY_SET);
 
         assertTrue(grid.moveEntity(1, 5, 10, 10, 5));
         assertTrue(grid.moveEntity(3, 100, 500, 1, 1));
@@ -86,7 +89,7 @@ public class EntityGridTest
             }
         }
 
-        List<Integer> entities = grid.getClosestEntities(13, 13, 0);
+        Set<Integer> entities = grid.getClosestEntities(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());
@@ -125,7 +128,7 @@ public class EntityGridTest
             }
         }
 
-        List<Integer> entities = grid.getEntitiesAtRadius(13, 13, 0);
+        Set<Integer> entities = grid.getEntitiesAtRadius(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());
@@ -169,7 +172,7 @@ public class EntityGridTest
             }
         }
 
-        List<Integer> entities = grid.getEntitiesWithinRadius(13, 13, 0);
+        Set<Integer> entities = grid.getEntitiesWithinRadius(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());

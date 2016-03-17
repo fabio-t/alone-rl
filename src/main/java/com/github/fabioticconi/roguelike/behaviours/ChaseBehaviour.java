@@ -15,7 +15,7 @@
  */
 package com.github.fabioticconi.roguelike.behaviours;
 
-import java.util.List;
+import java.util.Set;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
@@ -67,7 +67,7 @@ public class ChaseBehaviour extends PassiveSystem implements Behaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final List<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
+        final Set<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
 
         for (final int creatureId : creatures)
         {

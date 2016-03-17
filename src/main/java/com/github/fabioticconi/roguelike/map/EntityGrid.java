@@ -15,12 +15,14 @@
  */
 package com.github.fabioticconi.roguelike.map;
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.fabioticconi.roguelike.constants.Options;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
@@ -30,32 +32,54 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
  */
 public class EntityGrid
 {
-    Long2ObjectMap<IntList> grid;
+    Long2ObjectMap<IntSet> grid;
 
-    int                     i = 0;
+    int                    i = 0;
 
     public EntityGrid()
     {
-        grid = new Long2ObjectOpenHashMap<IntList>();
+        grid = new Long2ObjectOpenHashMap<IntSet>();
     }
 
-    public List<Integer> getEntities(final int x, final int y)
+    /**
+     * Returns all entities in the specified cell.
+     *
+     * NB: the returned set is <b>UNMODIFIABLE</b> to
+     * avoid allocating a new set for each call.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public Set<Integer> getEntities(final int x, final int y)
     {
         final long pos = x | ((long) y << 32);
 
-        final List<Integer> entities = grid.getOrDefault(pos, null);
+        final IntSet entities = grid.getOrDefault(pos, IntSets.EMPTY_SET);
 
-        return entities;
+        return IntSets.unmodifiable(entities);
     }
 
-    public List<Integer> getClosestEntities(final int x, final int y, int maxRadius)
+    /**
+     * Moves concentrically from the specified cell, collecting entities.
+     * If there are any entities in the same cell, returned those only.
+     * If there are any entities in the first ring around the cell,
+     * returns those only. It keeps going around until it finds entities or
+     * up to maxRadius, whichever comes first.
+     *
+     * @param x
+     * @param y
+     * @param maxRadius
+     * @return
+     */
+    public Set<Integer> getClosestEntities(final int x, final int y, int maxRadius)
     {
-        List<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+        Set<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
 
         if (curEntities != null)
             return curEntities;
 
-        final List<Integer> entities = new IntArrayList();
+        final Set<Integer> entities = new IntOpenHashSet();
 
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
@@ -156,14 +180,23 @@ public class EntityGrid
         return entities;
     }
 
-    public List<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
+    /**
+     * Gets all entities inside the squared-ring at distance r from the specified
+     * point.
+     *
+     * @param x
+     * @param y
+     * @param r
+     * @return
+     */
+    public Set<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
     {
-        final IntList entities = new IntArrayList();
+        final IntSet entities = new IntOpenHashSet();
 
         if (r <= 0)
             return grid.getOrDefault(x | ((long) y << 32), entities);
 
-        List<Integer> curEntities;
+        Set<Integer> curEntities;
 
         // we put the cursor where it would have been if we were in one iteration
         // of "getClosestEntities"
@@ -252,11 +285,21 @@ public class EntityGrid
         return entities;
     }
 
-    public List<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
+    /**
+     * Starting from the specified cell, moves concentrically within
+     * the given radius. The returned set is newly allocated and guarantees
+     * the entities are ordered by closeness to the starting point.
+     *
+     * @param x
+     * @param y
+     * @param r
+     * @return
+     */
+    public Set<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
     {
-        final List<Integer> entities = new IntArrayList();
+        final Set<Integer> entities = new IntLinkedOpenHashSet();
 
-        List<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+        Set<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
 
         if (curEntities != null)
         {
@@ -357,55 +400,60 @@ public class EntityGrid
         return entities;
     }
 
-    public int getFirstEntity(final int x, final int y)
-    {
-        final long pos = x | ((long) y << 32);
-
-        final List<Integer> entities = grid.getOrDefault(pos, null);
-
-        if (entities == null || entities.isEmpty())
-            return 0;
-
-        return entities.get(0);
-    }
-
+    /**
+     * Puts the entity at the specified coordinates.
+     * Doesn't do anything if the entity is already there.
+     *
+     * @param id
+     * @param x
+     * @param y
+     */
     public void putEntity(final int id, final int x, final int y)
     {
         final long pos = x | ((long) y << 32);
 
-        IntList entities = grid.getOrDefault(pos, null);
-
-        final Integer idVal = Integer.valueOf(id);
+        IntSet entities = grid.getOrDefault(pos, null);
 
         if (entities == null)
         {
-            entities = new IntArrayList();
+            entities = new IntOpenHashSet();
 
-            entities.add(idVal);
+            entities.add(id);
 
             grid.put(pos, entities);
         }
-        else if (!entities.remove(idVal))
+        else if (!entities.rem(id))
         {
             // TODO: log if it was already present at this position?
 
-            entities.add(idVal);
+            entities.add(id);
         }
     }
 
+    /**
+     * Removes the specified entity from one cell and puts it into another.
+     * Doesn't do anything if the the entity is NOT in the start cell.
+     * Equally, there isn't any change if the entity is already
+     * in the end cell.
+     *
+     * @param id
+     * @param start_x
+     * @param start_y
+     * @param end_x
+     * @param end_y
+     * @return
+     */
     public boolean moveEntity(final int id, final int start_x, final int start_y, final int end_x, final int end_y)
     {
         final long pos = start_x | ((long) start_y << 32);
 
-        final IntList entities = grid.getOrDefault(pos, null);
+        final IntSet entities = grid.getOrDefault(pos, null);
 
-        final Integer idVal = Integer.valueOf(id);
-
-        // TODO: just put the object at position "end" (should we check there, too?)
-        if (entities == null)
+        // TODO: just put the object at position "end"? (should we check there, too?)
+        if (entities == null || entities.isEmpty())
             return false;
 
-        final boolean found = entities.remove(idVal);
+        final boolean found = entities.remove(id);
 
         if (found)
         {

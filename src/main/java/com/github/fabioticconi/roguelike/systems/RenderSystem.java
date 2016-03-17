@@ -16,7 +16,7 @@
 package com.github.fabioticconi.roguelike.systems;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -136,7 +136,7 @@ public class RenderSystem extends IntervalSystem
 
         Sprite sprite;
 
-        List<Integer> entities;
+        Set<Integer> entities;
 
         for (int x = 0; x < xmax; x++)
         {
