@@ -91,6 +91,22 @@ public class PlayerInputSystem extends BaseEntitySystem
                 movement.moveTo(pID, speed, Side.E);
 
                 break;
+            case Home:
+            	movement.moveTo(pID, speed, Side.NW);
+            	
+            	break;            	
+            case End:
+            	movement.moveTo(pID, speed, Side.SW);
+            	
+            	break;            	
+            case PageUp:
+            	movement.moveTo(pID, speed, Side.NE);
+            	
+            	break;            	
+            case PageDown:
+            	movement.moveTo(pID, speed, Side.SE);
+
+                break;   
             case Character:
                 final Position p = mPosition.get(pID);
 
