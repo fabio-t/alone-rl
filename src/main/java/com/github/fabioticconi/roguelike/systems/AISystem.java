@@ -40,14 +40,11 @@ public class AISystem extends DelayedIteratingSystem
     ComponentMapper<AI>       mAI;
 
     /**
-     *
+     * General processing of AIs. Evaluates the best current strategy
+     * and applies it.
      */
     public AISystem()
     {
-        // TODO: this should only require AI, as some behaviours might not be
-        // linked to position/movement, of course.
-        // We'll see when we get there.
-
         super(Aspect.all(AI.class));
     }
 
@@ -92,8 +89,8 @@ public class AISystem extends DelayedIteratingSystem
 
         final AI ai = mAI.get(entityId);
 
-        float max_score = 0f;
-        Behaviour best_behaviour = null;
+        float maxScore = 0f;
+        Behaviour bestBehaviour = null;
 
         for (final Behaviour behaviour : ai.behaviours)
         {
@@ -101,18 +98,18 @@ public class AISystem extends DelayedIteratingSystem
 
             // System.out.println(behaviour.getClass().getSimpleName() + " score: " + temp);
 
-            if (temp > max_score)
+            if (temp > maxScore)
             {
-                max_score = temp;
-                best_behaviour = behaviour;
+                maxScore = temp;
+                bestBehaviour = behaviour;
             }
         }
 
-        if (best_behaviour != null && max_score > 0f)
+        if (bestBehaviour != null && maxScore > 0f)
         {
             // System.out.println("best: " + best_behaviour.getClass().getSimpleName());
 
-            actionCooldown = best_behaviour.update();
+            actionCooldown = bestBehaviour.update();
 
             // System.out.println(actionCooldown);
         }

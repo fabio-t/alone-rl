@@ -15,42 +15,28 @@
  */
 package com.github.fabioticconi.roguelike.behaviours;
 
-import java.util.Set;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelike.components.Herbivore;
 import com.github.fabioticconi.roguelike.components.Hunger;
 import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Sight;
 import com.github.fabioticconi.roguelike.components.Speed;
-import com.github.fabioticconi.roguelike.constants.Side;
-import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
-import com.github.fabioticconi.roguelike.systems.MovementSystem;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class ChaseBehaviour extends AbstractBehaviour
+public class GrazeBehaviour extends AbstractBehaviour
 {
-    ComponentMapper<Hunger>    mHunger;
-    ComponentMapper<Sight>     mSight;
-    ComponentMapper<Position>  mPosition;
-    ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Herbivore> mHerbivore;
-
-    MovementSystem             movement;
+    ComponentMapper<Hunger>   mHunger;
+    ComponentMapper<Sight>    mSight;
+    ComponentMapper<Position> mPosition;
+    ComponentMapper<Speed>    mSpeed;
 
     @Wire
-    EntityGrid                 grid;
-    @Wire
-    Map                        map;
-
-    Position                   curPos;
-    Position                   chase;
+    Map                       map;
 
     @Override
     protected void initialize()
@@ -71,25 +57,9 @@ public class ChaseBehaviour extends AbstractBehaviour
         if (notInterested(entityId))
             return 0f;
 
-        curPos = mPosition.get(entityId);
-        final int sight = mSight.get(entityId).value;
+        final float hunger = mHunger.get(entityId).value;
 
-        final Set<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
-
-        for (final int creatureId : creatures)
-        {
-            if (mHerbivore.has(creatureId))
-            {
-                chase = mPosition.get(creatureId);
-
-                final float hunger = mHunger.get(entityId).value;
-
-                return 0.5f * hunger +
-                       0.5f * (1f - (float) map.distance(curPos.x, curPos.y, chase.x, chase.y) / (float) sight);
-            }
-        }
-
-        return 0f;
+        return 0;
     }
 
     /*
@@ -100,10 +70,8 @@ public class ChaseBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final float speed = mSpeed.get(entityId).value;
-
-        final Side direction = Side.getSideAt(chase.x - curPos.x, chase.y - curPos.y);
-
-        return movement.moveTo(entityId, speed, direction);
+        // TODO Auto-generated method stub
+        return 0;
     }
+
 }

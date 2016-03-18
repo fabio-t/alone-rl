@@ -29,13 +29,11 @@ import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 
-import net.mostlyoriginal.api.system.core.PassiveSystem;
-
 /**
  *
  * @author Fabio Ticconi
  */
-public class FleeBehaviour extends PassiveSystem implements Behaviour
+public class FleeBehaviour extends AbstractBehaviour
 {
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
@@ -49,17 +47,9 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
     @Wire
     Map                        map;
 
-    int                        entityId;
     Position                   curPos;
     Position                   fleeFrom;
 
-    Aspect                     aspect;
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.BaseSystem#initialize()
-     */
     @Override
     protected void initialize()
     {
@@ -76,7 +66,7 @@ public class FleeBehaviour extends PassiveSystem implements Behaviour
     {
         this.entityId = entityId;
 
-        if (!aspect.isInterested(world.getEntity(entityId)))
+        if (notInterested(entityId))
             return 0f;
 
         curPos = mPosition.get(entityId);
