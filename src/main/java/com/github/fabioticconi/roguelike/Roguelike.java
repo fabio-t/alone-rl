@@ -7,6 +7,7 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.GrazeBehaviour;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.AISystem;
@@ -15,6 +16,8 @@ import com.github.fabioticconi.roguelike.systems.HungerSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.systems.PlayerInputSystem;
 import com.github.fabioticconi.roguelike.systems.RenderSystem;
+
+import rlforj.los.PrecisePermissive;
 
 /**
  * Hello world!
@@ -32,6 +35,7 @@ public class Roguelike
         config.register(new Map());
         config.register(new EntityGrid());
         config.register(new Random());
+        config.register(new PrecisePermissive());
         // systems
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
@@ -41,6 +45,7 @@ public class Roguelike
         config.setSystem(new RenderSystem(1f));
         // behaviours
         config.setSystem(FleeBehaviour.class);
+        config.setSystem(GrazeBehaviour.class);
         config.setSystem(ChaseBehaviour.class);
 
         final World world = new World(config);

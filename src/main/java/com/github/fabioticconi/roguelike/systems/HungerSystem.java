@@ -1,17 +1,17 @@
 /**
  * Copyright 2016 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.systems;
 
@@ -47,12 +47,30 @@ public class HungerSystem extends IntervalIteratingSystem
     {
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 1.0001f;
+        h.value *= 1.01f;
 
         h.value = Math.max(h.value, 1.0f);
 
         // TODO: we need a Feeding component, triggered by a player action
-        // or by the AI, that tells us if we have food available - in which case,
+        // or by the AI, that tells us if we have food available - in which
+        // case,
         // hunger should decrease, not grow
+    }
+
+    // Public API
+
+    // TODO this should be dependent on "interval" or on some delta as argument
+    public float feed(final int entityId)
+    {
+        if (!mHunger.has(entityId))
+            return 0f;
+
+        final Hunger h = mHunger.get(entityId);
+
+        h.value *= 0.09f;
+
+        Math.min(h.value, 0.01f);
+
+        return h.value;
     }
 }

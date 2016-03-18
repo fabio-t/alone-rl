@@ -1,17 +1,17 @@
 /**
  * Copyright 2015 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.systems;
 
@@ -24,12 +24,14 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalSystem;
 import com.github.fabioticconi.roguelike.components.Player;
 import com.github.fabioticconi.roguelike.components.Position;
+import com.github.fabioticconi.roguelike.components.Sight;
 import com.github.fabioticconi.roguelike.components.Sprite;
 import com.github.fabioticconi.roguelike.constants.Cell;
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
@@ -38,6 +40,9 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
+
+import it.unimi.dsi.fastutil.longs.LongSet;
+import rlforj.los.PrecisePermissive;
 
 /**
  *
@@ -48,11 +53,14 @@ public class RenderSystem extends IntervalSystem
     ComponentMapper<Position> mPosition;
     ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Player>   mPlayer;
+    ComponentMapper<Sight>    mSight;
 
     @Wire
     Map                       map;
     @Wire
     EntityGrid                grid;
+    @Wire
+    PrecisePermissive         fov;
 
     Terminal                  terminal;
     Screen                    screen;
@@ -117,6 +125,7 @@ public class RenderSystem extends IntervalSystem
 
         final Position p = mPosition.get(pID);
         final Sprite s = mSprite.get(pID);
+        final float sight = mSight.get(pID).value;
 
         screen.doResizeIfNecessary();
 
@@ -138,6 +147,10 @@ public class RenderSystem extends IntervalSystem
 
         Set<Integer> entities;
 
+        map.clearLastVisited();
+        fov.visitFieldOfView(map, p.x, p.y, (int) sight);
+        final LongSet lastVisited = map.getLastVisited();
+
         for (int x = 0; x < xmax; x++)
         {
             for (int y = 0; y < ymax; y++)
@@ -145,29 +158,37 @@ public class RenderSystem extends IntervalSystem
                 pos_x = p.x + x - halfcols;
                 pos_y = p.y + y - halfrows;
 
-                // render terrain
-                final Cell cell = map.get(pos_x, pos_y);
-                graphics.setCharacter(x, y, cell.c);
+                final long key = pos_x | ((long) pos_y << 32);
 
-                entities = grid.getEntities(pos_x, pos_y);
-
-                if (entities == null)
+                if (lastVisited.contains(key))
                 {
-                    continue;
-                }
+                    // render terrain
+                    final Cell cell = map.get(pos_x, pos_y);
+                    graphics.setCharacter(x, y, cell.c);
 
-                // render other visible entities
-                for (final int eID : entities)
-                {
-                    sprite = mSprite.get(eID);
+                    entities = grid.getEntities(pos_x, pos_y);
 
-                    if (sprite != null)
+                    if (entities == null)
                     {
-                        graphics.setCharacter(x, y, sprite.c);
-
-                        // only show the first showable entity on each cell
-                        break;
+                        continue;
                     }
+
+                    // render other visible entities
+                    for (final int eID : entities)
+                    {
+                        sprite = mSprite.get(eID);
+
+                        if (sprite != null)
+                        {
+                            graphics.setCharacter(x, y, sprite.c);
+
+                            // only show the first showable entity on each cell
+                            break;
+                        }
+                    }
+                } else
+                {
+                    graphics.setCharacter(x, y, TextCharacter.DEFAULT_CHARACTER);
                 }
             }
         }
@@ -177,7 +198,8 @@ public class RenderSystem extends IntervalSystem
 
         // for (int i = Options.OUTPUT_SIZE_Y - 2; i > r.nextInt(10); i--)
         // {
-        // graphics.putString(xmax + 2, i, String.format("blablablasdjasdaskdj %d", i));
+        // graphics.putString(xmax + 2, i, String.format("blablablasdjasdaskdj
+        // %d", i));
         // }
 
         // refresh the screen, and set the terminal ready for update

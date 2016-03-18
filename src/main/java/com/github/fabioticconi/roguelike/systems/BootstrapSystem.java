@@ -1,17 +1,17 @@
 /**
  * Copyright 2015 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.systems;
 
@@ -22,6 +22,7 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.GrazeBehaviour;
 import com.github.fabioticconi.roguelike.components.AI;
 import com.github.fabioticconi.roguelike.components.Carnivore;
 import com.github.fabioticconi.roguelike.components.Fear;
@@ -77,8 +78,8 @@ public class BootstrapSystem extends BaseSystem
         edit.add(new Position(x, y));
         edit.create(Sight.class).value = 9;
         edit.create(Speed.class).value = 0.1f;
-        edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
-                                                            .withModifier(SGR.BOLD);
+        edit.create(Sprite.class).c =
+                new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN).withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
 
         // add a few hervibores
@@ -88,6 +89,7 @@ public class BootstrapSystem extends BaseSystem
             edit = world.edit(id);
             final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
             ai.behaviours.add(world.getSystem(FleeBehaviour.class));
+            ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
             edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
@@ -97,8 +99,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Fear.class).value = 0.0f;
             edit.create(Sight.class).value = 7;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c =
+                    new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE).withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
@@ -118,8 +120,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Sight.class).value = 8;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c =
+                    new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
