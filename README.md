@@ -9,6 +9,6 @@ adapting to itself and to the player growing in strength.
 
 ## Field of View
 
-Thanks to rlforj, we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
+Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
 
 ![alt tag](screenshots/fov.png)
