@@ -125,7 +125,7 @@ public class RenderSystem extends IntervalSystem
 
         final Position p = mPosition.get(pID);
         final Sprite s = mSprite.get(pID);
-        final float sight = mSight.get(pID).value;
+        final int sight = mSight.get(pID).value;
 
         screen.doResizeIfNecessary();
 
@@ -148,7 +148,7 @@ public class RenderSystem extends IntervalSystem
         Set<Integer> entities;
 
         map.clearLastVisited();
-        fov.visitFieldOfView(map, p.x, p.y, (int) sight);
+        fov.visitFieldOfView(map, p.x, p.y, sight);
         final LongSet lastVisited = map.getLastVisited();
 
         for (int x = 0; x < xmax; x++)

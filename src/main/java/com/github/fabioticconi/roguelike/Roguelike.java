@@ -42,7 +42,7 @@ public class Roguelike
         config.setSystem(new HungerSystem(5f));
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
-        config.setSystem(new RenderSystem(1f));
+        config.setSystem(new RenderSystem(0.75f));
         // behaviours
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);

@@ -76,14 +76,14 @@ public class BootstrapSystem extends BaseSystem
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
         edit.add(new Position(x, y));
-        edit.create(Sight.class).value = 9;
+        edit.create(Sight.class).value = 18;
         edit.create(Speed.class).value = 0.1f;
         edit.create(Sprite.class).c =
                 new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN).withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
 
         // add a few hervibores
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 1; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -95,7 +95,7 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
             edit.create(Herbivore.class);
-            edit.create(Hunger.class).value = 0.0f;
+            edit.create(Hunger.class).value = 0.5f;
             edit.create(Fear.class).value = 0.0f;
             edit.create(Sight.class).value = 7;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
@@ -106,7 +106,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add a few carnivores
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 1; i++)
         {
             id = world.create();
             edit = world.edit(id);

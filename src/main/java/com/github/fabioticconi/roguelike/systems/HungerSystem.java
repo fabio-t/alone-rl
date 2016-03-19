@@ -49,12 +49,17 @@ public class HungerSystem extends IntervalIteratingSystem
 
         h.value *= 1.01f;
 
-        h.value = Math.max(h.value, 1.0f);
+        h.value = Math.min(h.value, 1.0f);
 
         // TODO: we need a Feeding component, triggered by a player action
         // or by the AI, that tells us if we have food available - in which
         // case,
         // hunger should decrease, not grow
+
+        if (entityId == 1)
+        {
+            System.out.println(h.value);
+        }
     }
 
     // Public API
@@ -67,9 +72,7 @@ public class HungerSystem extends IntervalIteratingSystem
 
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 0.09f;
-
-        Math.min(h.value, 0.01f);
+        h.value *= 0.99f;
 
         return h.value;
     }

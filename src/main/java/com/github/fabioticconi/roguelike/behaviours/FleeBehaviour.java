@@ -1,17 +1,17 @@
 /**
  * Copyright 2016 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.behaviours;
 
@@ -38,7 +38,8 @@ public class FleeBehaviour extends AbstractBehaviour
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom taking a component type
+    ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom
+                                           // taking a component type
 
     MovementSystem             movement;
 
@@ -74,21 +75,33 @@ public class FleeBehaviour extends AbstractBehaviour
 
         final Set<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
 
+        if (creatures.isEmpty())
+            return 0f;
+
+        fleeFrom = new Position(0, 0);
+
+        int count = 0;
+        Position tempPos;
         for (final int creatureId : creatures)
         {
             if (mCarnivore.has(creatureId))
             {
-                fleeFrom = mPosition.get(creatureId);
+                tempPos = mPosition.get(creatureId);
 
-                // System.out.println(map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
+                fleeFrom.x += tempPos.x;
+                fleeFrom.y += tempPos.y;
 
-                // if a predator has just entered the field of view, we are not that much concerned;
-                // if it's in the same cell as we are, we are maximally concerned
-                return 1f - (float) map.distance(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
+                count++;
             }
         }
 
-        return 0f;
+        if (count == 0)
+            return 0f;
+
+        fleeFrom.x = (int) ((float) fleeFrom.x / (float) count);
+        fleeFrom.y = (int) ((float) fleeFrom.y / (float) count);
+
+        return 1f - (float) map.distanceBlock(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
     }
 
     /*
@@ -104,15 +117,13 @@ public class FleeBehaviour extends AbstractBehaviour
 
         Side direction;
 
-        // if the first predator is in the same cell, flee randomly
-        // where it's open
+        // if the predators' center is HERE, flee randomly out
         if (fleeFrom.x == curPos.x && fleeFrom.y == curPos.y)
         {
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
-        }
-        else
+        } else
         {
-            // otherwise, flee in the direction opposite to the predator
+            // otherwise, flee in the opposite direction
 
             direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
         }

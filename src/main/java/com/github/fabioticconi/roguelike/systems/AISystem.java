@@ -1,17 +1,17 @@
 /**
  * Copyright 2016 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.systems;
 
@@ -40,8 +40,8 @@ public class AISystem extends DelayedIteratingSystem
     ComponentMapper<AI>       mAI;
 
     /**
-     * General processing of AIs. Evaluates the best current strategy
-     * and applies it.
+     * General processing of AIs. Evaluates the best current strategy and
+     * applies it.
      */
     public AISystem()
     {
@@ -96,7 +96,10 @@ public class AISystem extends DelayedIteratingSystem
         {
             final float temp = behaviour.evaluate(entityId);
 
-            // System.out.println(behaviour.getClass().getSimpleName() + " score: " + temp);
+            if (entityId == 1)
+            {
+                System.out.println(behaviour.getClass().getSimpleName() + " score: " + temp);
+            }
 
             if (temp > maxScore)
             {
@@ -107,7 +110,8 @@ public class AISystem extends DelayedIteratingSystem
 
         if (bestBehaviour != null && maxScore > 0f)
         {
-            // System.out.println("best: " + best_behaviour.getClass().getSimpleName());
+            // System.out.println("best: " +
+            // best_behaviour.getClass().getSimpleName());
 
             actionCooldown = bestBehaviour.update();
 

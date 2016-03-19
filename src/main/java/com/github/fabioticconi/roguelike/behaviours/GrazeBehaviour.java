@@ -15,6 +15,8 @@
  */
 package com.github.fabioticconi.roguelike.behaviours;
 
+import java.util.EnumSet;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
@@ -65,7 +67,10 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         hunger = mHunger.get(entityId);
 
-        return hunger.value;
+        // 2^x - 1
+        // this exponential function gives more importance to high
+        // hunger values than to low hunger values
+        return (float) (Math.pow(2d, hunger.value)) - 1f;
     }
 
     /*
@@ -77,15 +82,19 @@ public class GrazeBehaviour extends AbstractBehaviour
     public float update()
     {
         final Position pos = mPosition.get(entityId);
+        final int sight = mSight.get(entityId).value;
 
-        final Cell c = map.get(pos.x, pos.y);
+        // FIXME this is crap! we need to handle cell type "expressions",
+        // like GRASS | HILL in this case. It's not overtly
 
-        if (c == Cell.GRASS)
-            return hungerSystem.feed(entityId);
+        final EnumSet<Cell> set = EnumSet.of(Cell.GRASS, Cell.HILL);
 
-        // TODO search for a grass cell around!
+        final long key = map.getFirstOfType(pos.x, pos.y, sight, set);
 
-        return 0f;
+        if (key == -1)
+            return 0f;
+
+        return hungerSystem.feed(entityId);
     }
 
 }
