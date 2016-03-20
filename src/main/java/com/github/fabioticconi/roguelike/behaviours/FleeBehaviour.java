@@ -28,6 +28,7 @@ import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
+import com.github.fabioticconi.roguelike.utils.Coords;
 
 /**
  *
@@ -73,7 +74,7 @@ public class FleeBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final Set<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
+        final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
         if (creatures.isEmpty())
             return 0f;
@@ -101,7 +102,7 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom.x = (int) ((float) fleeFrom.x / (float) count);
         fleeFrom.y = (int) ((float) fleeFrom.y / (float) count);
 
-        return 1f - (float) map.distanceBlock(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / (float) sight;
+        return 1f - Coords.distanceEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
 
     /*

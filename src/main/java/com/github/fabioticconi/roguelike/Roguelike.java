@@ -17,8 +17,6 @@ import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.systems.PlayerInputSystem;
 import com.github.fabioticconi.roguelike.systems.RenderSystem;
 
-import rlforj.los.PrecisePermissive;
-
 /**
  * Hello world!
  *
@@ -35,7 +33,6 @@ public class Roguelike
         config.register(new Map());
         config.register(new EntityGrid());
         config.register(new Random());
-        config.register(new PrecisePermissive());
         // systems
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);

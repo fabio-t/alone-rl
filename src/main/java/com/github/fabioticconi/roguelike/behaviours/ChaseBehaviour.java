@@ -29,6 +29,7 @@ import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
+import com.github.fabioticconi.roguelike.utils.Coords;
 
 /**
  *
@@ -74,7 +75,7 @@ public class ChaseBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final Set<Integer> creatures = grid.getEntitiesWithinRadius(curPos.x, curPos.y, sight);
+        final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
         for (final int creatureId : creatures)
         {
@@ -89,7 +90,7 @@ public class ChaseBehaviour extends AbstractBehaviour
                 // maybe it will normalise itself with more behaviours but let's
                 // keep it in mind
                 return 0.5f * hunger
-                        + 0.5f * (1f - (float) map.distanceBlock(curPos.x, curPos.y, chase.x, chase.y) / (float) sight);
+                        + 0.5f * (1f - Coords.distanceEuclidean(curPos.x, curPos.y, chase.x, chase.y) / sight);
             }
         }
 

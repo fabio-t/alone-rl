@@ -83,7 +83,7 @@ public class BootstrapSystem extends BaseSystem
         grid.putEntity(id, x, y);
 
         // add a few hervibores
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 1000; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -106,7 +106,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add a few carnivores
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 1000; i++)
         {
             id = world.create();
             edit = world.edit(id);

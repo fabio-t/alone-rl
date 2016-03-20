@@ -84,9 +84,6 @@ public class GrazeBehaviour extends AbstractBehaviour
         final Position pos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        // FIXME this is crap! we need to handle cell type "expressions",
-        // like GRASS | HILL in this case. It's not overtly
-
         final EnumSet<Cell> set = EnumSet.of(Cell.GRASS, Cell.HILL);
 
         final long key = map.getFirstOfType(pos.x, pos.y, sight, set);

@@ -55,11 +55,6 @@ public class HungerSystem extends IntervalIteratingSystem
         // or by the AI, that tells us if we have food available - in which
         // case,
         // hunger should decrease, not grow
-
-        if (entityId == 1)
-        {
-            System.out.println(h.value);
-        }
     }
 
     // Public API

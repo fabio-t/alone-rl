@@ -16,10 +16,12 @@
 package com.github.fabioticconi.roguelike.map;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.github.fabioticconi.roguelike.constants.Cell;
 import com.github.fabioticconi.roguelike.constants.Options;
 import com.github.fabioticconi.roguelike.constants.Side;
+import com.github.fabioticconi.roguelike.utils.Coords;
 import com.github.fabioticconi.terrain_generator.ImageWriter;
 import com.github.fabioticconi.terrain_generator.SimplexNoise;
 
@@ -27,6 +29,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import rlforj.los.ILosBoard;
+import rlforj.los.PrecisePermissive;
+import rlforj.math.Point2I;
 
 /**
  *
@@ -34,11 +38,12 @@ import rlforj.los.ILosBoard;
  */
 public class Map implements ILosBoard
 {
-    final Cell    map[][];
+    final Cell        map[][];
+    final float       heightMap[][];
 
-    final LongSet lastVisited;
-
-    final float   heightMap[][];
+    /* FOV/LOS stuff */
+    final LongSet     lastVisited;
+    PrecisePermissive view;
 
     // TODO: when the terrain-generator is done, we'd have not only
     // the height map but also the humidity map and the temperature map,
@@ -48,6 +53,7 @@ public class Map implements ILosBoard
     public Map()
     {
         lastVisited = new LongOpenHashSet();
+        view = new PrecisePermissive();
 
         heightMap = SimplexNoise.generateOctavedSimplexNoise(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, 6, 0.4f, 0.003f);
         final ImageWriter img = new ImageWriter(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, false);
@@ -269,16 +275,6 @@ public class Map implements ILosBoard
         }
     }
 
-    public int distanceBlock(final int x1, final int y1, final int x2, final int y2)
-    {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
-
-    public int distanceChebyshev(final int x1, final int y1, final int x2, final int y2)
-    {
-        return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -319,16 +315,25 @@ public class Map implements ILosBoard
     @Override
     public void visit(final int x, final int y)
     {
-        lastVisited.add(x | ((long) y << 32));
+        lastVisited.add(Coords.packCoords(x, y));
     }
 
-    public void clearLastVisited()
+    public LongSet getVisibleCells(final int x, final int y, final int r)
     {
         lastVisited.clear();
+
+        view.visitFieldOfView(this, x, y, r);
+
+        return LongSets.unmodifiable(lastVisited);
     }
 
-    public LongSet getLastVisited()
+    public List<Point2I> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
-        return LongSets.unmodifiable(lastVisited);
+        final boolean exists = view.existsLineOfSight(this, startX, startY, endX, endY, true);
+
+        if (exists)
+            return view.getProjectPath();
+
+        return null;
     }
 }

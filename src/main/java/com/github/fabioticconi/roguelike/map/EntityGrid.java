@@ -1,17 +1,17 @@
 /**
  * Copyright 2016 Fabio Ticconi
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.fabioticconi.roguelike.map;
 
@@ -44,8 +44,8 @@ public class EntityGrid
     /**
      * Returns all entities in the specified cell.
      *
-     * NB: the returned set is <b>UNMODIFIABLE</b> to
-     * avoid allocating a new set for each call.
+     * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
+     * for each call.
      *
      * @param x
      * @param y
@@ -61,11 +61,50 @@ public class EntityGrid
     }
 
     /**
-     * Moves concentrically from the specified cell, collecting entities.
-     * If there are any entities in the same cell, returned those only.
-     * If there are any entities in the first ring around the cell,
-     * returns those only. It keeps going around until it finds entities or
-     * up to maxRadius, whichever comes first.
+     * Returns all entities in the specified cell.
+     *
+     * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
+     * for each call.
+     *
+     * @param pos
+     *            packed coordinates
+     * @return
+     */
+    public Set<Integer> getEntities(final long pos)
+    {
+        final IntSet entities = grid.getOrDefault(pos, IntSets.EMPTY_SET);
+
+        return IntSets.unmodifiable(entities);
+    }
+
+    /**
+     * Returns all entities in the specified cells.
+     *
+     * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
+     * for each call.
+     *
+     * @param cells
+     *            set of packed coordinates of entities
+     * @return
+     */
+    public Set<Integer> getEntities(final Set<Long> cells)
+    {
+        final IntSet entities = new IntOpenHashSet();
+
+        for (final long pos : cells)
+        {
+            entities.addAll(grid.getOrDefault(pos, IntSets.EMPTY_SET));
+        }
+
+        return entities;
+    }
+
+    /**
+     * Moves concentrically from the specified cell, collecting entities. If
+     * there are any entities in the same cell, returned those only. If there
+     * are any entities in the first ring around the cell, returns those only.
+     * It keeps going around until it finds entities or up to maxRadius,
+     * whichever comes first.
      *
      * @param x
      * @param y
@@ -89,7 +128,8 @@ public class EntityGrid
         for (int d = 1; d <= maxRadius; d++)
         {
             // FIXME what do we do if the north row is "out of bound" already?
-            // we should skip the next for and position ourselves immediately to the
+            // we should skip the next for and position ourselves immediately to
+            // the
             // correct east-side column, at the same y position as we are
 
             final int max_x = x + d;
@@ -171,18 +211,20 @@ public class EntityGrid
             if (!entities.isEmpty())
                 return entities;
 
-            // at this point we are positioned WITHIN the north row of the next cicle
+            // at this point we are positioned WITHIN the north row of the next
+            // cicle
         }
 
-        // if we are here, we haven't found any entities so we return the empty set we
+        // if we are here, we haven't found any entities so we return the empty
+        // set we
         // had created at the beginning
 
         return entities;
     }
 
     /**
-     * Gets all entities inside the squared-ring at distance r from the specified
-     * point.
+     * Gets all entities inside the squared-ring at distance r from the
+     * specified point.
      *
      * @param x
      * @param y
@@ -198,7 +240,8 @@ public class EntityGrid
 
         Set<Integer> curEntities;
 
-        // we put the cursor where it would have been if we were in one iteration
+        // we put the cursor where it would have been if we were in one
+        // iteration
         // of "getClosestEntities"
         int cur_y = y - r;
         int cur_x = x - r + 1;
@@ -286,9 +329,9 @@ public class EntityGrid
     }
 
     /**
-     * Starting from the specified cell, moves concentrically within
-     * the given radius. The returned set is newly allocated and guarantees
-     * the entities are ordered by closeness to the starting point.
+     * Starting from the specified cell, moves concentrically within the given
+     * radius. The returned set is newly allocated and guarantees the entities
+     * are ordered by closeness to the starting point.
      *
      * @param x
      * @param y
@@ -311,7 +354,8 @@ public class EntityGrid
         for (int d = 1; d <= r; d++)
         {
             // FIXME what do we do if the north row is "out of bound" already?
-            // we should skip the next for and position ourselves immediately to the
+            // we should skip the next for and position ourselves immediately to
+            // the
             // correct east-side column, at the same y position as we are
 
             final int max_x = x + d;
@@ -394,15 +438,16 @@ public class EntityGrid
                 }
             }
 
-            // at this point we are positioned WITHIN the north row of the next cicle
+            // at this point we are positioned WITHIN the north row of the next
+            // cicle
         }
 
         return entities;
     }
 
     /**
-     * Puts the entity at the specified coordinates.
-     * Doesn't do anything if the entity is already there.
+     * Puts the entity at the specified coordinates. Doesn't do anything if the
+     * entity is already there.
      *
      * @param id
      * @param x
@@ -421,8 +466,7 @@ public class EntityGrid
             entities.add(id);
 
             grid.put(pos, entities);
-        }
-        else if (!entities.rem(id))
+        } else if (!entities.rem(id))
         {
             // TODO: log if it was already present at this position?
 
@@ -432,9 +476,8 @@ public class EntityGrid
 
     /**
      * Removes the specified entity from one cell and puts it into another.
-     * Doesn't do anything if the the entity is NOT in the start cell.
-     * Equally, there isn't any change if the entity is already
-     * in the end cell.
+     * Doesn't do anything if the the entity is NOT in the start cell. Equally,
+     * there isn't any change if the entity is already in the end cell.
      *
      * @param id
      * @param start_x
@@ -449,7 +492,8 @@ public class EntityGrid
 
         final IntSet entities = grid.getOrDefault(pos, null);
 
-        // TODO: just put the object at position "end"? (should we check there, too?)
+        // TODO: just put the object at position "end"? (should we check there,
+        // too?)
         if (entities == null || entities.isEmpty())
             return false;
 

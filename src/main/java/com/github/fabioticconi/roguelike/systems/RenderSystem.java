@@ -41,9 +41,6 @@ import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 
-import it.unimi.dsi.fastutil.longs.LongSet;
-import rlforj.los.PrecisePermissive;
-
 /**
  *
  * @author Fabio Ticconi
@@ -59,8 +56,6 @@ public class RenderSystem extends IntervalSystem
     Map                       map;
     @Wire
     EntityGrid                grid;
-    @Wire
-    PrecisePermissive         fov;
 
     Terminal                  terminal;
     Screen                    screen;
@@ -147,10 +142,15 @@ public class RenderSystem extends IntervalSystem
 
         Set<Integer> entities;
 
-        map.clearLastVisited();
-        fov.visitFieldOfView(map, p.x, p.y, sight);
-        final LongSet lastVisited = map.getLastVisited();
+        final Set<Long> cells = map.getVisibleCells(p.x, p.y, sight);
 
+        // FIXME we should just fill all as default,
+        // and then just set the visible ones (a single for, not
+        // a double one) by calling grid.getEntities(cells)
+        // and getting the Position of those entities.
+        // not sure if this is more efficient though,
+        // technically the below getEntities doesn't allocate
+        // a new set so it should be fine..
         for (int x = 0; x < xmax; x++)
         {
             for (int y = 0; y < ymax; y++)
@@ -160,7 +160,7 @@ public class RenderSystem extends IntervalSystem
 
                 final long key = pos_x | ((long) pos_y << 32);
 
-                if (lastVisited.contains(key))
+                if (cells.contains(key))
                 {
                     // render terrain
                     final Cell cell = map.get(pos_x, pos_y);
