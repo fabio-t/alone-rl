@@ -15,6 +15,7 @@
  */
 package com.github.fabioticconi.roguelike.behaviours;
 
+import java.util.List;
 import java.util.Set;
 
 import com.artemis.Aspect;
@@ -31,6 +32,8 @@ import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.utils.Coords;
 
+import rlforj.math.Point2I;
+
 /**
  *
  * @author Fabio Ticconi
@@ -43,7 +46,7 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
 
-    MovementSystem             movement;
+    MovementSystem             sMovement;
 
     @Wire
     EntityGrid                 grid;
@@ -85,12 +88,18 @@ public class ChaseBehaviour extends AbstractBehaviour
 
                 final float hunger = mHunger.get(entityId).value;
 
+                System.out.println(curPos
+                        + " | "
+                        + chase
+                        + " --> "
+                        + Coords.distancePseudoEuclidean(curPos.x, curPos.y, chase.x, chase.y));
+
                 // FIXME this should be a smoother mixture of hunger and
                 // prey-catching;
                 // maybe it will normalise itself with more behaviours but let's
                 // keep it in mind
                 return 0.5f * hunger
-                        + 0.5f * (1f - Coords.distanceEuclidean(curPos.x, curPos.y, chase.x, chase.y) / sight);
+                        + 0.5f * (1f - Coords.distancePseudoEuclidean(curPos.x, curPos.y, chase.x, chase.y) / sight);
             }
         }
 
@@ -105,10 +114,24 @@ public class ChaseBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
+        final Position pos = mPosition.get(entityId);
         final float speed = mSpeed.get(entityId).value;
 
-        final Side direction = Side.getSideAt(chase.x - curPos.x, chase.y - curPos.y);
+        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chase.x, chase.y);
 
-        return movement.moveTo(entityId, speed, direction);
+        // is the path is empty, it's not clear what's going on (we know the
+        // prey is visible, from before..)
+        // but if there's only one element, then the prey is right here and we
+        // don't do anything (for now)
+        if (path.size() < 2)
+            return 0f;
+
+        // position 0 is "HERE"
+        final Point2I closest = path.get(1);
+
+        System.out.println("chasing: " + closest.x + ", " + closest.y);
+
+        // move one step towards the prey
+        return sMovement.moveTo(entityId, speed, Side.getSideAt(closest.x - pos.x, closest.y - pos.y));
     }
 }

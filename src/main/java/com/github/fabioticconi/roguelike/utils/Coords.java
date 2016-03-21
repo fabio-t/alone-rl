@@ -12,6 +12,14 @@ public class Coords
         return (float) Math.sqrt(xdiff * xdiff + ydiff * ydiff);
     }
 
+    public static float distancePseudoEuclidean(final int x1, final int y1, final int x2, final int y2)
+    {
+        final float xdiff = x1 - x2;
+        final float ydiff = y1 - y2;
+
+        return (float) Math.floor(Math.sqrt(xdiff * xdiff + ydiff * ydiff));
+    }
+
     public static int distanceBlock(final int x1, final int y1, final int x2, final int y2)
     {
         return Math.abs(x1 - x2) + Math.abs(y1 - y2);
@@ -64,5 +72,15 @@ public class Coords
     public static long packCoords(final int x, final int y)
     {
         return x | ((long) y << 32);
+    }
+
+    public static int[] unpackCoords(final long key)
+    {
+        final int[] coords = new int[2];
+
+        coords[0] = (int) key;
+        coords[1] = (int) (key >> 32);
+
+        return coords;
     }
 }

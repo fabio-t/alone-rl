@@ -181,82 +181,31 @@ public class Map implements ILosBoard
      * @param y
      * @param maxRadius
      * @param cellType
-     * @return -1 if none could be found, the long-key coordinates otherwise
+     * @return -1 if none could be found, the long-packed coordinates otherwise
      */
-    public long getFirstOfType(final int x, final int y, int maxRadius, final EnumSet<Cell> set)
+    public int[] getFirstOfType(final int x, final int y, final int r, final EnumSet<Cell> set)
     {
-        // avoid stupid crashes for negative radii
-        maxRadius = Math.abs(maxRadius);
+        if (set.contains(map[x][y]))
+            return new int[] { x, y };
 
-        int cur_y = y - 1;
-        int cur_x = x;
-        for (int d = 1; d <= maxRadius; d++)
+        lastVisited.clear();
+
+        view.visitFieldOfView(this, x, y, r);
+
+        int[] coords;
+        Cell cell;
+        for (final long key : lastVisited)
         {
-            // FIXME what do we do if the north row is "out of bound" already?
-            // we should skip the next for and position ourselves immediately to
-            // the
-            // correct east-side column, at the same y position as we are
+            coords = Coords.unpackCoords(key);
+            cell = map[coords[0]][coords[1]];
 
-            final int max_x = x + d;
-            final int max_y = y + d;
-            final int min_x = x - d;
-            final int min_y = y - d;
+            System.out.println(cell.name());
 
-            // continue east, through the north row
-            for (; cur_x < max_x; cur_x++)
-            {
-                // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
-                {
-                    continue;
-                }
-
-                if (set.contains(map[cur_x][cur_y]))
-                    return cur_x | ((long) cur_y << 32);
-            }
-
-            // continue south, through the east column
-            for (; cur_y < max_y; cur_y++)
-            {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
-                {
-                    continue;
-                }
-
-                if (set.contains(map[cur_x][cur_y]))
-                    return cur_x | ((long) cur_y << 32);
-            }
-
-            // continue west, through the south row
-            for (; cur_x > min_x; cur_x--)
-            {
-                // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
-                {
-                    continue;
-                }
-
-                if (set.contains(map[cur_x][cur_y]))
-                    return cur_x | ((long) cur_y << 32);
-            }
-
-            // continue north, through the west column of this circle
-            for (; cur_y >= min_y; cur_y--)
-            {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
-                {
-                    continue;
-                }
-
-                if (set.contains(map[cur_x][cur_y]))
-                    return cur_x | ((long) cur_y << 32);
-            }
-
-            // at this point we are positioned WITHIN the north row of the next
-            // cicle
+            if (set.contains(cell))
+                return coords;
         }
 
-        return -1;
+        return null;
     }
 
     public Cell get(final int x, final int y)

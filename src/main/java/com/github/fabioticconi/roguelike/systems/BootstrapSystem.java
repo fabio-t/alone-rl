@@ -83,7 +83,7 @@ public class BootstrapSystem extends BaseSystem
         grid.putEntity(id, x, y);
 
         // add a few hervibores
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -97,7 +97,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Herbivore.class);
             edit.create(Hunger.class).value = 0.5f;
             edit.create(Fear.class).value = 0.0f;
-            edit.create(Sight.class).value = 7;
+            edit.create(Sight.class).value = 10;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c =
                     new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE).withModifier(SGR.BOLD);
@@ -106,7 +106,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add a few carnivores
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -118,7 +118,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
-            edit.create(Sight.class).value = 8;
+            edit.create(Sight.class).value = 10;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c =
                     new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);

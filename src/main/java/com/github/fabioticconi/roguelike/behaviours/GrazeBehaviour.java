@@ -16,6 +16,7 @@
 package com.github.fabioticconi.roguelike.behaviours;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -25,8 +26,12 @@ import com.github.fabioticconi.roguelike.components.Position;
 import com.github.fabioticconi.roguelike.components.Sight;
 import com.github.fabioticconi.roguelike.components.Speed;
 import com.github.fabioticconi.roguelike.constants.Cell;
+import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.HungerSystem;
+import com.github.fabioticconi.roguelike.systems.MovementSystem;
+
+import rlforj.math.Point2I;
 
 /**
  *
@@ -39,7 +44,8 @@ public class GrazeBehaviour extends AbstractBehaviour
     ComponentMapper<Position> mPosition;
     ComponentMapper<Speed>    mSpeed;
 
-    HungerSystem              hungerSystem;
+    HungerSystem              sHunger;
+    MovementSystem            sMovement;
 
     @Wire
     Map                       map;
@@ -83,15 +89,39 @@ public class GrazeBehaviour extends AbstractBehaviour
     {
         final Position pos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
+        final float speed = mSpeed.get(entityId).value;
 
-        final EnumSet<Cell> set = EnumSet.of(Cell.GRASS, Cell.HILL);
+        // FIXME: should differentiate on the "feeding capability"
+        // and also, possibly, on the creature's preference (ie, the EnumSet
+        // should be within a
+        // EatingPreference component of some kind)
+        final int[] coords = map.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL));
 
-        final long key = map.getFirstOfType(pos.x, pos.y, sight, set);
-
-        if (key == -1)
+        // TODO: the behaviour actually FAILED here, couldn't do anything:
+        // should we somehow relay this information to the AISystem, so that
+        // at the next tick it can try a different thing? Otherwise we are stuck
+        // in a "Graze loop"
+        if (coords == null)
             return 0f;
 
-        return hungerSystem.feed(entityId);
-    }
+        System.out.println("grazing to (final dest): " + coords[0] + ", " + coords[1]);
 
+        // we are right on a feed-friendly cell, so let's eat
+        if (coords[0] == pos.x && coords[1] == pos.y)
+            return sHunger.feed(entityId);
+
+        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, coords[0], coords[1]);
+
+        // TODO same as above
+        if (path.size() < 2)
+            return 0f;
+
+        // position 0 is "HERE"
+        final Point2I closest = path.get(1);
+
+        System.out.println("grazing to: " + closest.x + ", " + closest.y);
+
+        // move one step towards the cell type we need
+        return sMovement.moveTo(entityId, speed, Side.getSideAt(closest.x - pos.x, closest.y - pos.y));
+    }
 }

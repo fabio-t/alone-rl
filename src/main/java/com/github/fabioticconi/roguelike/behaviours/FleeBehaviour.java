@@ -102,7 +102,13 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom.x = (int) ((float) fleeFrom.x / (float) count);
         fleeFrom.y = (int) ((float) fleeFrom.y / (float) count);
 
-        return 1f - Coords.distanceEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
+        System.out.println(curPos
+                + " | "
+                + fleeFrom
+                + " --> "
+                + Coords.distancePseudoEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
+
+        return 1f - Coords.distancePseudoEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
 
     /*
@@ -124,10 +130,24 @@ public class FleeBehaviour extends AbstractBehaviour
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
         } else
         {
-            // otherwise, flee in the opposite direction
+            // otherwise, flee in one or the other free direction
 
-            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
+            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y);
+
+            if (map.isObstacle(curPos.x, curPos.y, direction))
+            {
+                direction = Side.getSideAt(curPos.x, curPos.y - fleeFrom.y);
+            }
+
+            // if both opposite directions are blocked, get a random one
+            if (map.isObstacle(curPos.x, curPos.y, direction))
+            {
+                direction = map.getFreeExitRandomised(curPos.x, curPos.y);
+            }
         }
+
+        if (direction == Side.HERE)
+            return 0f;
 
         // System.out.println(direction);
 
