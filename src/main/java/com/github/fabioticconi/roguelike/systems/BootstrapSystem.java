@@ -22,10 +22,13 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.FlockBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.GrazeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.WanderBehaviour;
 import com.github.fabioticconi.roguelike.components.AI;
 import com.github.fabioticconi.roguelike.components.Carnivore;
 import com.github.fabioticconi.roguelike.components.Fear;
+import com.github.fabioticconi.roguelike.components.Group;
 import com.github.fabioticconi.roguelike.components.Herbivore;
 import com.github.fabioticconi.roguelike.components.Hunger;
 import com.github.fabioticconi.roguelike.components.Player;
@@ -82,14 +85,45 @@ public class BootstrapSystem extends BaseSystem
                 new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN).withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
 
-        // add a few hervibores
-        for (int i = 0; i < 1; i++)
+        // add group of herbivores
+        final Group group = new Group();
+        for (int i = 0; i < 15; i++)
         {
             id = world.create();
             edit = world.edit(id);
             final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
             ai.behaviours.add(world.getSystem(FleeBehaviour.class));
             ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
+            ai.behaviours.add(world.getSystem(FlockBehaviour.class));
+            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
+            ai.defaultBehaviour = world.getSystem(WanderBehaviour.class);
+            edit.add(ai);
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
+            edit.add(new Position(x, y));
+            edit.create(Herbivore.class);
+            group.members.add(id);
+            edit.add(group);
+            edit.create(Hunger.class).value = 0.5f;
+            edit.create(Fear.class).value = 0.0f;
+            edit.create(Sight.class).value = 10;
+            edit.create(Speed.class).value = r.nextFloat() * 1.0f;
+            edit.create(Sprite.class).c =
+                    new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA).withModifier(SGR.BOLD);
+
+            grid.putEntity(id, x, y);
+        }
+
+        // add un-grouped herbivores
+        for (int i = 0; i < 15; i++)
+        {
+            id = world.create();
+            edit = world.edit(id);
+            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
+            ai.behaviours.add(world.getSystem(FleeBehaviour.class));
+            ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
+            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
+            ai.defaultBehaviour = world.getSystem(WanderBehaviour.class);
             edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
@@ -112,6 +146,8 @@ public class BootstrapSystem extends BaseSystem
             edit = world.edit(id);
             final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
             ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
+            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
+            ai.defaultBehaviour = world.getSystem(WanderBehaviour.class);
             edit.add(ai);
             x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;

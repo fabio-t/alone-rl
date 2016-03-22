@@ -7,7 +7,9 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.github.fabioticconi.roguelike.behaviours.ChaseBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.FleeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.FlockBehaviour;
 import com.github.fabioticconi.roguelike.behaviours.GrazeBehaviour;
+import com.github.fabioticconi.roguelike.behaviours.WanderBehaviour;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.AISystem;
@@ -44,6 +46,8 @@ public class Roguelike
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);
         config.setSystem(ChaseBehaviour.class);
+        config.setSystem(FlockBehaviour.class);
+        config.setSystem(WanderBehaviour.class);
 
         final World world = new World(config);
 

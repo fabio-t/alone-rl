@@ -42,7 +42,7 @@ public class FleeBehaviour extends AbstractBehaviour
     ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom
                                            // taking a component type
 
-    MovementSystem             movement;
+    MovementSystem             sMovement;
 
     @Wire
     EntityGrid                 grid;
@@ -56,6 +56,8 @@ public class FleeBehaviour extends AbstractBehaviour
     protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class).build(world);
+
+        fleeFrom = new Position(0, 0);
     }
 
     /*
@@ -79,7 +81,8 @@ public class FleeBehaviour extends AbstractBehaviour
         if (creatures.isEmpty())
             return 0f;
 
-        fleeFrom = new Position(0, 0);
+        fleeFrom.x = 0;
+        fleeFrom.y = 0;
 
         int count = 0;
         Position tempPos;
@@ -99,14 +102,15 @@ public class FleeBehaviour extends AbstractBehaviour
         if (count == 0)
             return 0f;
 
-        fleeFrom.x = (int) ((float) fleeFrom.x / (float) count);
-        fleeFrom.y = (int) ((float) fleeFrom.y / (float) count);
+        fleeFrom.x = Math.floorDiv(fleeFrom.x, count);
+        fleeFrom.y = Math.floorDiv(fleeFrom.y, count);
 
-        System.out.println(curPos
-                + " | "
-                + fleeFrom
-                + " --> "
-                + Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
+        // System.out.println(curPos
+        // + " | "
+        // + fleeFrom
+        // + " --> "
+        // + Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x,
+        // fleeFrom.y));
 
         return 1f - (float) Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
@@ -119,9 +123,6 @@ public class FleeBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        // FIXME maybe we should take the center of mass of multiple predators,
-        // instead of the closest one
-
         Side direction;
 
         // if the predators' center is HERE, flee randomly out
@@ -153,6 +154,6 @@ public class FleeBehaviour extends AbstractBehaviour
 
         final float speed = mSpeed.get(entityId).value;
 
-        return movement.moveTo(entityId, speed, direction);
+        return sMovement.moveTo(entityId, speed, direction);
     }
 }

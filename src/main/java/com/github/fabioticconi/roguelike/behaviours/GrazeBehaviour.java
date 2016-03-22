@@ -73,10 +73,15 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         hunger = mHunger.get(entityId);
 
+        final float value = hunger.value;
+
+        if (value < 0.4f)
+            return 0f;
+
         // 2^x - 1
         // this exponential function gives more importance to high
         // hunger values than to low hunger values
-        return (float) (Math.pow(2d, hunger.value)) - 1f;
+        return (float) (Math.pow(2d, value)) - 1f;
     }
 
     /*
@@ -104,7 +109,8 @@ public class GrazeBehaviour extends AbstractBehaviour
         if (coords == null)
             return 0f;
 
-        System.out.println("grazing to (final dest): " + coords[0] + ", " + coords[1]);
+        // System.out.println("grazing to (final dest): " + coords[0] + ", " +
+        // coords[1]);
 
         // we are right on a feed-friendly cell, so let's eat
         if (coords[0] == pos.x && coords[1] == pos.y)
@@ -119,7 +125,7 @@ public class GrazeBehaviour extends AbstractBehaviour
         // position 0 is "HERE"
         final Point2I closest = path.get(1);
 
-        System.out.println("grazing to: " + closest.x + ", " + closest.y);
+        // System.out.println("grazing to: " + closest.x + ", " + closest.y);
 
         // move one step towards the cell type we need
         return sMovement.moveTo(entityId, speed, Side.getSideAt(closest.x - pos.x, closest.y - pos.y));

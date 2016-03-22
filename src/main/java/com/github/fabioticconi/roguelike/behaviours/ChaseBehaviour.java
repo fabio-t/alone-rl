@@ -88,11 +88,12 @@ public class ChaseBehaviour extends AbstractBehaviour
 
                 final float hunger = mHunger.get(entityId).value;
 
-                System.out.println(curPos
-                        + " | "
-                        + chase
-                        + " --> "
-                        + Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y));
+                // System.out.println(curPos
+                // + " | "
+                // + chase
+                // + " --> "
+                // + Coords.distanceChebyshev(curPos.x, curPos.y, chase.x,
+                // chase.y));
 
                 // FIXME this should be a smoother mixture of hunger and
                 // prey-catching;
@@ -129,7 +130,7 @@ public class ChaseBehaviour extends AbstractBehaviour
         // position 0 is "HERE"
         final Point2I closest = path.get(1);
 
-        System.out.println("chasing: " + closest.x + ", " + closest.y);
+        // System.out.println("chasing: " + closest.x + ", " + closest.y);
 
         // move one step towards the prey
         return sMovement.moveTo(entityId, speed, Side.getSideAt(closest.x - pos.x, closest.y - pos.y));

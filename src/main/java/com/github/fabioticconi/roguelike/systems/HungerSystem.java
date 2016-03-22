@@ -67,7 +67,7 @@ public class HungerSystem extends IntervalIteratingSystem
 
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 0.99f;
+        h.value *= 0.9f;
 
         return h.value;
     }

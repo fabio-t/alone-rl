@@ -82,9 +82,13 @@ public class AISystem extends DelayedIteratingSystem
 
         float actionCooldown = 0.0f;
 
-        // FIXME re-evaluate if we need cooldownModifier
-        // it should be behaviour-specific or an entity-specific,
-        // or both..
+        // FIXME re-evaluate if we need cooldownModifier:
+        // may be a good way to reintroduce Fear, or change it to
+        // Alertness? the cooldownModifier would then be 1-Alertness,
+        // so that very alert creatures tick more often.
+        // This is also a good way to reduce load on areas far away from the
+        // player, for example: by default keep the alertness to a minimum,
+        // raise it in case of predators or if the player comes around.
         final float cooldownModifier = 1.0f;
 
         final AI ai = mAI.get(entityId);
@@ -96,7 +100,8 @@ public class AISystem extends DelayedIteratingSystem
         {
             final float temp = behaviour.evaluate(entityId);
 
-            System.out.println(entityId + ": " + behaviour.getClass().getSimpleName() + " (" + temp + ")");
+            // System.out.println(entityId + ": " +
+            // behaviour.getClass().getSimpleName() + " (" + temp + ")");
 
             if (temp > maxScore)
             {
@@ -107,12 +112,16 @@ public class AISystem extends DelayedIteratingSystem
 
         if (bestBehaviour != null && maxScore > 0f)
         {
-            // System.out.println(entityId + ": " +
-            // bestBehaviour.getClass().getSimpleName() + " (" + maxScore +
-            // ")");
+            System.out.println(entityId + ": " + bestBehaviour.getClass().getSimpleName() + " (" + maxScore + ")");
 
             actionCooldown = bestBehaviour.update();
             ai.activeBehaviour = bestBehaviour;
+        } else
+        {
+            System.out.println(entityId + ": " + ai.defaultBehaviour.getClass().getSimpleName() + " (default)");
+
+            actionCooldown = ai.defaultBehaviour.update();
+            ai.activeBehaviour = ai.defaultBehaviour;
         }
 
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * cooldownModifier;
