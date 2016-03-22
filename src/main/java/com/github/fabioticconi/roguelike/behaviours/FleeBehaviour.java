@@ -106,9 +106,9 @@ public class FleeBehaviour extends AbstractBehaviour
                 + " | "
                 + fleeFrom
                 + " --> "
-                + Coords.distancePseudoEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
+                + Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y));
 
-        return 1f - Coords.distancePseudoEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
+        return 1f - (float) Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
 
     /*

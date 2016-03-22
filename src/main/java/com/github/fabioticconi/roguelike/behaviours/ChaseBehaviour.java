@@ -92,14 +92,14 @@ public class ChaseBehaviour extends AbstractBehaviour
                         + " | "
                         + chase
                         + " --> "
-                        + Coords.distancePseudoEuclidean(curPos.x, curPos.y, chase.x, chase.y));
+                        + Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y));
 
                 // FIXME this should be a smoother mixture of hunger and
                 // prey-catching;
                 // maybe it will normalise itself with more behaviours but let's
                 // keep it in mind
                 return 0.5f * hunger
-                        + 0.5f * (1f - Coords.distancePseudoEuclidean(curPos.x, curPos.y, chase.x, chase.y) / sight);
+                        + 0.5f * (1f - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
             }
         }
 
