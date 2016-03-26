@@ -87,10 +87,10 @@ public class BootstrapSystem extends BaseSystem
                 new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN).withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
 
-        // add group of herbivores
-        final int groupId = sGroup.createGroup();
-        final IntSet group = sGroup.getGroup(groupId);
-        for (int i = 0; i < 5; i++)
+        // add group of short-sighted herbivores
+        int groupId = sGroup.createGroup();
+        IntSet group = sGroup.getGroup(groupId);
+        for (int i = 0; i < 0; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -109,7 +109,7 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Hunger.class).value = 0.5f;
             edit.create(Fear.class).value = 0.0f;
-            edit.create(Sight.class).value = 10;
+            edit.create(Sight.class).value = 5;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c =
                     new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA).withModifier(SGR.BOLD);
@@ -117,8 +117,8 @@ public class BootstrapSystem extends BaseSystem
             grid.putEntity(id, x, y);
         }
 
-        // add un-grouped herbivores
-        for (int i = 0; i < 5; i++)
+        // add un-grouped, longer-sighted herbivores
+        for (int i = 0; i < 0; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -137,13 +137,41 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Sight.class).value = 10;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c =
-                    new TextCharacter('H').withForegroundColor(TextColor.ANSI.BLUE).withModifier(SGR.BOLD);
+                    new TextCharacter('h').withForegroundColor(TextColor.ANSI.BLUE).withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
 
-        // add a few carnivores
+        // add a group of medium-sighted carnivores
+        groupId = sGroup.createGroup();
+        group = sGroup.getGroup(groupId);
         for (int i = 0; i < 2; i++)
+        {
+            id = world.create();
+            edit = world.edit(id);
+            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
+            ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
+            ai.behaviours.add(world.getSystem(FlockBehaviour.class));
+            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
+            ai.defaultBehaviour = world.getSystem(WanderBehaviour.class);
+            edit.add(ai);
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
+            edit.add(new Position(x, y));
+            edit.create(Carnivore.class);
+            edit.create(Group.class).groupId = groupId;
+            group.add(id);
+            edit.create(Hunger.class).value = 0.0f;
+            edit.create(Sight.class).value = 7;
+            edit.create(Speed.class).value = r.nextFloat() * 1.0f;
+            edit.create(Sprite.class).c =
+                    new TextCharacter('c').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);
+
+            grid.putEntity(id, x, y);
+        }
+
+        // add a few un-grouped, long-sighted carnivores
+        for (int i = 0; i < 0; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -157,7 +185,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
-            edit.create(Sight.class).value = 10;
+            edit.create(Sight.class).value = 9;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c =
                     new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);
