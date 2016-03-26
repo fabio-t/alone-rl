@@ -43,6 +43,8 @@ import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  *
  * @author Fabio Ticconi
@@ -50,13 +52,13 @@ import com.googlecode.lanterna.TextColor;
 public class BootstrapSystem extends BaseSystem
 {
     @Wire
-    Map        map;
+    Map         map;
     @Wire
-    EntityGrid grid;
+    EntityGrid  grid;
     @Wire
-    Random     r;
+    Random      r;
 
-    AISystem   ai;
+    GroupSystem sGroup;
 
     /*
      * (non-Javadoc)
@@ -86,8 +88,9 @@ public class BootstrapSystem extends BaseSystem
         grid.putEntity(id, x, y);
 
         // add group of herbivores
-        final Group group = new Group();
-        for (int i = 0; i < 15; i++)
+        final int groupId = sGroup.createGroup();
+        final IntSet group = sGroup.getGroup(groupId);
+        for (int i = 0; i < 5; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -102,8 +105,8 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.add(new Position(x, y));
             edit.create(Herbivore.class);
-            group.members.add(id);
-            edit.add(group);
+            edit.create(Group.class).groupId = groupId;
+            group.add(id);
             edit.create(Hunger.class).value = 0.5f;
             edit.create(Fear.class).value = 0.0f;
             edit.create(Sight.class).value = 10;
@@ -115,7 +118,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add un-grouped herbivores
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 5; i++)
         {
             id = world.create();
             edit = world.edit(id);
@@ -140,7 +143,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add a few carnivores
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 2; i++)
         {
             id = world.create();
             edit = world.edit(id);

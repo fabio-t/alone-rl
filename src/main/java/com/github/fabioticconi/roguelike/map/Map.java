@@ -199,8 +199,6 @@ public class Map implements ILosBoard
             coords = Coords.unpackCoords(key);
             cell = map[coords[0]][coords[1]];
 
-            System.out.println(cell.name());
-
             if (set.contains(cell))
                 return coords;
         }

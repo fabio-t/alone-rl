@@ -14,6 +14,7 @@ import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.github.fabioticconi.roguelike.systems.AISystem;
 import com.github.fabioticconi.roguelike.systems.BootstrapSystem;
+import com.github.fabioticconi.roguelike.systems.GroupSystem;
 import com.github.fabioticconi.roguelike.systems.HungerSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.systems.PlayerInputSystem;
@@ -39,6 +40,7 @@ public class Roguelike
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerInputSystem.class);
         config.setSystem(new HungerSystem(5f));
+        config.setSystem(GroupSystem.class);
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         config.setSystem(new RenderSystem(0.75f));

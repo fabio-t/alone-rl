@@ -120,7 +120,7 @@ public class ChaseBehaviour extends AbstractBehaviour
 
         final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chase.x, chase.y);
 
-        // is the path is empty, it's not clear what's going on (we know the
+        // if the path is empty, it's not clear what's going on (we know the
         // prey is visible, from before..)
         // but if there's only one element, then the prey is right here and we
         // don't do anything (for now)

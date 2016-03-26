@@ -12,8 +12,11 @@ import com.github.fabioticconi.roguelike.components.Speed;
 import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.EntityGrid;
 import com.github.fabioticconi.roguelike.map.Map;
+import com.github.fabioticconi.roguelike.systems.GroupSystem;
 import com.github.fabioticconi.roguelike.systems.MovementSystem;
 import com.github.fabioticconi.roguelike.utils.Coords;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class FlockBehaviour extends AbstractBehaviour
 {
@@ -23,6 +26,7 @@ public class FlockBehaviour extends AbstractBehaviour
     ComponentMapper<Group>    mGroup;
 
     MovementSystem            sMovement;
+    GroupSystem               sGroup;
 
     @Wire
     EntityGrid                grid;
@@ -48,9 +52,10 @@ public class FlockBehaviour extends AbstractBehaviour
         if (notInterested(entityId))
             return 0f;
 
-        final Set<Integer> members = mGroup.get(entityId).members;
+        final int groupId = mGroup.get(entityId).groupId;
+        final IntSet members = sGroup.getGroup(groupId);
 
-        if (members.isEmpty())
+        if (members.size() < 2)
             return 0f;
 
         curPos = mPosition.get(entityId);
@@ -65,9 +70,9 @@ public class FlockBehaviour extends AbstractBehaviour
         Position temp;
         for (final int memberId : members)
         {
-            if (creatures.equals(memberId))
+            if (creatures.contains(memberId) && memberId != entityId)
             {
-                temp = mPosition.getSafe(entityId);
+                temp = mPosition.getSafe(memberId);
 
                 if (temp == null)
                 {
@@ -92,7 +97,7 @@ public class FlockBehaviour extends AbstractBehaviour
         if (dist == 0)
             return 0f;
 
-        return dist;
+        return (float) dist / sight;
     }
 
     @Override
