@@ -32,7 +32,6 @@ public class AI extends Component
     public List<Behaviour> behaviours;
 
     public Behaviour       activeBehaviour;
-    public Behaviour       defaultBehaviour;
 
     public AI(final float cooldown)
     {

@@ -32,7 +32,10 @@ public class WanderBehaviour extends AbstractBehaviour
     {
         this.entityId = entityId;
 
-        return 0f;
+        if (notInterested(entityId))
+            return 0f;
+
+        return 0.2f;
     }
 
     @Override

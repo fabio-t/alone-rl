@@ -131,18 +131,14 @@ public class FleeBehaviour extends AbstractBehaviour
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
         } else
         {
-            // otherwise, flee in one or the other free direction
-
-            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y);
+            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
 
             if (map.isObstacle(curPos.x, curPos.y, direction))
             {
-                direction = Side.getSideAt(curPos.x, curPos.y - fleeFrom.y);
-            }
+                // FIXME is that even possible, since we are looking at visible
+                // cells and moving diagonally?
+                // if so, we should try the closest exits to the target one
 
-            // if both opposite directions are blocked, get a random one
-            if (map.isObstacle(curPos.x, curPos.y, direction))
-            {
                 direction = map.getFreeExitRandomised(curPos.x, curPos.y);
             }
         }

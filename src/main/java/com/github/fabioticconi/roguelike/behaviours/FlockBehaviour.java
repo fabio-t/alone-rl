@@ -52,6 +52,11 @@ public class FlockBehaviour extends AbstractBehaviour
         if (notInterested(entityId))
             return 0f;
 
+        final int sight = mSight.get(entityId).value;
+
+        if (sight == 0)
+            return 0f;
+
         final int groupId = mGroup.get(entityId).groupId;
         final IntSet members = sGroup.getGroup(groupId);
 
@@ -59,7 +64,6 @@ public class FlockBehaviour extends AbstractBehaviour
             return 0f;
 
         curPos = mPosition.get(entityId);
-        final int sight = mSight.get(entityId).value;
 
         final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
@@ -94,7 +98,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
         final int dist = Coords.distanceChebyshev(curPos.x, curPos.y, centerOfGroup.x, centerOfGroup.y);
 
-        if (dist == 0)
+        if (dist < 2)
             return 0f;
 
         return (float) dist / sight;
@@ -109,10 +113,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
         direction = Side.getSideAt(centerOfGroup.x - curPos.x, centerOfGroup.y - curPos.y);
 
-        if (!map.isObstacle(curPos.x, curPos.y, direction))
-        {
-            direction = Side.getSideAt(curPos.x, centerOfGroup.y - curPos.y);
-        } else
+        if (map.isObstacle(curPos.x, curPos.y, direction))
         {
             // FIXME is that even possible, since we are looking at visible
             // cells and moving diagonally?

@@ -116,12 +116,6 @@ public class AISystem extends DelayedIteratingSystem
 
             actionCooldown = bestBehaviour.update();
             ai.activeBehaviour = bestBehaviour;
-        } else
-        {
-            System.out.println(entityId + ": " + ai.defaultBehaviour.getClass().getSimpleName() + " (default)");
-
-            actionCooldown = ai.defaultBehaviour.update();
-            ai.activeBehaviour = ai.defaultBehaviour;
         }
 
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * cooldownModifier;
