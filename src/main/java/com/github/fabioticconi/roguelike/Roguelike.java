@@ -63,6 +63,12 @@ public class Roguelike
         float lag = 0.0f;
         float elapsed;
 
+        // FIXME: https://github.com/TomGrill/logic-render-game-loop
+        // needs to modify that, so that I can divide systems in three groups:
+        // input collection/processing, logic, output sending
+        // this is because the first and the last will be only processed once,
+        // while the logic ones can be re-processed until the lag is gone
+
         while (keepRunning)
         {
             currentTime = System.currentTimeMillis();

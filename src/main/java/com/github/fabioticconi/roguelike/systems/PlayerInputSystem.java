@@ -27,6 +27,7 @@ import com.github.fabioticconi.roguelike.constants.Cell;
 import com.github.fabioticconi.roguelike.constants.Side;
 import com.github.fabioticconi.roguelike.map.Map;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 
 /**
  *
@@ -42,6 +43,8 @@ public class PlayerInputSystem extends BaseEntitySystem
 
     @Wire
     Map                       map;
+
+    KeyType                   currentKey;
 
     /**
      *
@@ -76,19 +79,55 @@ public class PlayerInputSystem extends BaseEntitySystem
                 render.close();
                 break;
             case ArrowDown:
-                movement.moveTo(pID, speed, Side.S);
+                if (currentKey == KeyType.ArrowLeft)
+                {
+                    movement.moveTo(pID, speed, Side.SW);
+                } else if (currentKey == KeyType.ArrowRight)
+                {
+                    movement.moveTo(pID, speed, Side.SE);
+                } else
+                {
+                    movement.moveTo(pID, speed, Side.S);
+                }
 
                 break;
             case ArrowUp:
-                movement.moveTo(pID, speed, Side.N);
+                if (currentKey == KeyType.ArrowLeft)
+                {
+                    movement.moveTo(pID, speed, Side.NW);
+                } else if (currentKey == KeyType.ArrowRight)
+                {
+                    movement.moveTo(pID, speed, Side.NE);
+                } else
+                {
+                    movement.moveTo(pID, speed, Side.N);
+                }
 
                 break;
             case ArrowLeft:
-                movement.moveTo(pID, speed, Side.W);
+                if (currentKey == KeyType.ArrowUp)
+                {
+                    movement.moveTo(pID, speed, Side.NW);
+                } else if (currentKey == KeyType.ArrowDown)
+                {
+                    movement.moveTo(pID, speed, Side.SW);
+                } else
+                {
+                    movement.moveTo(pID, speed, Side.W);
+                }
 
                 break;
             case ArrowRight:
-                movement.moveTo(pID, speed, Side.E);
+                if (currentKey == KeyType.ArrowUp)
+                {
+                    movement.moveTo(pID, speed, Side.NE);
+                } else if (currentKey == KeyType.ArrowDown)
+                {
+                    movement.moveTo(pID, speed, Side.SE);
+                } else
+                {
+                    movement.moveTo(pID, speed, Side.E);
+                }
 
                 break;
             case Home:
@@ -129,5 +168,7 @@ public class PlayerInputSystem extends BaseEntitySystem
             default:
                 break;
         }
+
+        currentKey = k.getKeyType();
     }
 }
