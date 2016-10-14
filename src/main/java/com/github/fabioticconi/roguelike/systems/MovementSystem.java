@@ -104,6 +104,9 @@ public class MovementSystem extends DelayedIteratingSystem
     {
         final MoveCommand m = mMoveTo.create(entityId);
 
+        if (m.direction == direction)
+            return m.cooldown;
+
         m.cooldown = speed;
         m.direction = direction;
 
