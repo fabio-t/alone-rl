@@ -33,6 +33,11 @@ public class AI extends Component
 
     public Behaviour       activeBehaviour;
 
+    public AI()
+    {
+        behaviours = new LinkedList<Behaviour>();
+    }
+
     public AI(final float cooldown)
     {
         this.cooldown = cooldown;

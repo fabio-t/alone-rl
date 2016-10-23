@@ -26,6 +26,11 @@ public class Position extends Component
     public int x;
     public int y;
 
+    public Position()
+    {
+
+    }
+
     public Position(final int x, final int y)
     {
         this.x = x;

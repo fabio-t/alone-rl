@@ -76,7 +76,7 @@ public class FlockBehaviour extends AbstractBehaviour
         {
             if (creatures.contains(memberId) && memberId != entityId)
             {
-                temp = mPosition.getSafe(memberId);
+                temp = mPosition.getSafe(memberId, null);
 
                 if (temp == null)
                 {

@@ -42,7 +42,7 @@ public class WanderBehaviour extends AbstractBehaviour
     public float update()
     {
         final Position pos = mPosition.get(entityId);
-        final Sight sight = mSight.getSafe(entityId);
+        final Sight sight = mSight.getSafe(entityId, null);
         final float speed = mSpeed.get(entityId).value;
 
         Side direction;
