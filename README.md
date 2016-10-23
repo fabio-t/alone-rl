@@ -1,13 +1,13 @@
-# Alone: the roguelike
+# Alone: the roguelite
 
-Simple single-player ANSI roguelike. It's intended as a toy project to learn a bit about single-player game programming
+Simple single-player ANSI roguelite. It's intended as a toy project to learn a bit about single-player game programming
 (and also specifically to learn artemis-odb) without the hassle of game physics and most importantly graphics.
 
-It deviates a bit from the "roguelike canon" already at this early stage: the creatures and objects are permanent.
+It deviates a bit from the "roguelite canon" already at this early stage: the creatures and objects are permanent.
 A basic reproductive ability and genetic modification should allow for an increasingly difficult environment,
 adapting to itself and to the player growing in strength.
 
-**NB: this is not even in alpha state.** Lurk freely if you like the concept, but know this is not playable, by far. Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelike/releases) area, for the future.
+**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far. Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
 
 # Features
 
