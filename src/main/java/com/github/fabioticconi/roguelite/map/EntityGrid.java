@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,16 +15,15 @@
  */
 package com.github.fabioticconi.roguelite.map;
 
-import java.util.Set;
-
 import com.github.fabioticconi.roguelite.constants.Options;
-
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+
+import java.util.Set;
 
 /**
  *
@@ -34,11 +33,9 @@ public class EntityGrid
 {
     Long2ObjectMap<IntSet> grid;
 
-    int                    i = 0;
-
     public EntityGrid()
     {
-        grid = new Long2ObjectOpenHashMap<IntSet>();
+        grid = new Long2ObjectOpenHashMap<>();
     }
 
     /**
@@ -212,7 +209,7 @@ public class EntityGrid
                 return entities;
 
             // at this point we are positioned WITHIN the north row of the next
-            // cicle
+            // cycle
         }
 
         // if we are here, we haven't found any entities so we return the empty

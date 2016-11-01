@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -14,9 +14,6 @@
  * the License.
  */
 package com.github.fabioticconi.roguelite.behaviours;
-
-import java.util.EnumSet;
-import java.util.List;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -30,8 +27,10 @@ import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.Map;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
-
 import rlforj.math.Point2I;
+
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  *
@@ -44,16 +43,14 @@ public class GrazeBehaviour extends AbstractBehaviour
     ComponentMapper<Position> mPosition;
     ComponentMapper<Speed>    mSpeed;
 
-    HungerSystem              sHunger;
-    MovementSystem            sMovement;
+    HungerSystem   sHunger;
+    MovementSystem sMovement;
 
-    @Wire
-    Map                       map;
+    @Wire Map map;
 
-    Hunger                    hunger;
+    Hunger hunger;
 
-    @Override
-    protected void initialize()
+    @Override protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
     }
@@ -63,12 +60,11 @@ public class GrazeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate(int)
      */
-    @Override
-    public float evaluate(final int entityId)
+    @Override public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
-        if (notInterested(entityId))
+        if (!interested(entityId))
             return 0f;
 
         hunger = mHunger.get(entityId);
@@ -89,12 +85,11 @@ public class GrazeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override
-    public float update()
+    @Override public float update()
     {
-        final Position pos = mPosition.get(entityId);
-        final int sight = mSight.get(entityId).value;
-        final float speed = mSpeed.get(entityId).value;
+        final Position pos   = mPosition.get(entityId);
+        final int      sight = mSight.get(entityId).value;
+        final float    speed = mSpeed.get(entityId).value;
 
         // FIXME: should differentiate on the "feeding capability"
         // and also, possibly, on the creature's preference (ie, the EnumSet

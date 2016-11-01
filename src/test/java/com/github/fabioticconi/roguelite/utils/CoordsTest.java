@@ -1,34 +1,28 @@
 package com.github.fabioticconi.roguelite.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-import com.github.fabioticconi.roguelite.utils.Coords;
+import static org.junit.Assert.assertEquals;
 
 public class CoordsTest
 {
 
-    @Test
-    public void testDistances() throws Exception
+    @Test public void testDistances() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test
-    public void testVisitVonNeumannNeighbours() throws Exception
+    @Test public void testVisitVonNeumannNeighbours() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test
-    public void testVisitMooreNeighbours() throws Exception
+    @Test public void testVisitMooreNeighbours() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test
-    public void testPackUnpackCoords() throws Exception
+    @Test public void testPackUnpackCoords() throws Exception
     {
         final int[] x = { 0, 100, 1000, Integer.MAX_VALUE - 1, Integer.MAX_VALUE };
         final int[] y = { 0, 100, 1000, Integer.MAX_VALUE - 1, Integer.MAX_VALUE };

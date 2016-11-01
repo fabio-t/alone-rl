@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,24 +15,19 @@
  */
 package com.github.fabioticconi.roguelite.behaviours;
 
-import java.util.List;
-import java.util.Set;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelite.components.Herbivore;
-import com.github.fabioticconi.roguelite.components.Hunger;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Sight;
-import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
-
 import rlforj.math.Point2I;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -46,18 +41,15 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
 
-    MovementSystem             sMovement;
+    MovementSystem sMovement;
 
-    @Wire
-    EntityGrid                 grid;
-    @Wire
-    Map                        map;
+    @Wire EntityGrid grid;
+    @Wire Map        map;
 
-    Position                   curPos;
-    Position                   chase;
+    Position curPos;
+    Position chase;
 
-    @Override
-    protected void initialize()
+    @Override protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
     }
@@ -67,12 +59,11 @@ public class ChaseBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate(int)
      */
-    @Override
-    public float evaluate(final int entityId)
+    @Override public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
-        if (notInterested(entityId))
+        if (!interested(entityId))
             return 0f;
 
         curPos = mPosition.get(entityId);
@@ -99,8 +90,8 @@ public class ChaseBehaviour extends AbstractBehaviour
                 // prey-catching;
                 // maybe it will normalise itself with more behaviours but let's
                 // keep it in mind
-                return 0.5f * hunger
-                        + 0.5f * (1f - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
+                return 0.5f * hunger + 0.5f * (1f
+                        - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
             }
         }
 
@@ -112,11 +103,10 @@ public class ChaseBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override
-    public float update()
+    @Override public float update()
     {
-        final Position pos = mPosition.get(entityId);
-        final float speed = mSpeed.get(entityId).value;
+        final Position pos   = mPosition.get(entityId);
+        final float    speed = mSpeed.get(entityId).value;
 
         final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chase.x, chase.y);
 

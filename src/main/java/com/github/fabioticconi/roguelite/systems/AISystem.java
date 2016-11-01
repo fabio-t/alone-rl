@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,14 +15,14 @@
  */
 package com.github.fabioticconi.roguelite.systems;
 
-import java.util.Random;
-
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.behaviours.Behaviour;
 import com.github.fabioticconi.roguelite.components.AI;
+
+import java.util.Random;
 
 /**
  *
@@ -34,10 +34,9 @@ public class AISystem extends DelayedIteratingSystem
     // be updated here
     public static final float BASE_TICKTIME = 3.0f;
 
-    @Wire
-    Random                    r;
+    @Wire Random r;
 
-    ComponentMapper<AI>       mAI;
+    ComponentMapper<AI> mAI;
 
     /**
      * General processing of AIs. Evaluates the best current strategy and
@@ -53,8 +52,7 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
      */
-    @Override
-    protected float getRemainingDelay(final int entityId)
+    @Override protected float getRemainingDelay(final int entityId)
     {
         return mAI.get(entityId).cooldown;
     }
@@ -64,8 +62,7 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
      */
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
+    @Override protected void processDelta(final int entityId, final float accumulatedDelta)
     {
         mAI.get(entityId).cooldown -= accumulatedDelta;
     }
@@ -75,8 +72,7 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
      */
-    @Override
-    protected void processExpired(final int entityId)
+    @Override protected void processExpired(final int entityId)
     {
         // System.out.println("eId: " + entityId);
 
@@ -93,7 +89,7 @@ public class AISystem extends DelayedIteratingSystem
 
         final AI ai = mAI.get(entityId);
 
-        float maxScore = 0f;
+        float     maxScore      = 0f;
         Behaviour bestBehaviour = null;
 
         for (final Behaviour behaviour : ai.behaviours)

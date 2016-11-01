@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,35 +15,21 @@
  */
 package com.github.fabioticconi.roguelite.systems;
 
-import java.util.Random;
-
 import com.artemis.BaseSystem;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelite.behaviours.ChaseBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.FleeBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.FlockBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.GrazeBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.WanderBehaviour;
-import com.github.fabioticconi.roguelite.components.AI;
-import com.github.fabioticconi.roguelite.components.Carnivore;
-import com.github.fabioticconi.roguelite.components.Fear;
-import com.github.fabioticconi.roguelite.components.Group;
-import com.github.fabioticconi.roguelite.components.Herbivore;
-import com.github.fabioticconi.roguelite.components.Hunger;
-import com.github.fabioticconi.roguelite.components.Player;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Sight;
-import com.github.fabioticconi.roguelite.components.Speed;
-import com.github.fabioticconi.roguelite.components.Sprite;
+import com.artemis.managers.PlayerManager;
+import com.github.fabioticconi.roguelite.behaviours.*;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
-
 import it.unimi.dsi.fastutil.ints.IntSet;
+
+import java.util.Random;
 
 /**
  *
@@ -51,22 +37,20 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class BootstrapSystem extends BaseSystem
 {
-    @Wire
-    Map         map;
-    @Wire
-    EntityGrid  grid;
-    @Wire
-    Random      r;
+    @Wire Map        map;
+    @Wire EntityGrid grid;
+    @Wire Random     r;
 
     GroupSystem sGroup;
+
+    PlayerManager pManager;
 
     /*
      * (non-Javadoc)
      *
      * @see com.artemis.BaseSystem#processSystem()
      */
-    @Override
-    protected void processSystem()
+    @Override protected void processSystem()
     {
         // this must be only run once
         setEnabled(false);
@@ -75,7 +59,7 @@ public class BootstrapSystem extends BaseSystem
         int y;
 
         // add player at the center of the map
-        int id = world.create();
+        int        id   = world.create();
         EntityEdit edit = world.edit(id);
         edit.create(Player.class);
         x = Options.MAP_SIZE_X / 2;
@@ -83,13 +67,15 @@ public class BootstrapSystem extends BaseSystem
         edit.add(new Position(x, y));
         edit.create(Sight.class).value = 18;
         edit.create(Speed.class).value = 0.1f;
-        edit.create(Sprite.class).c =
-                new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN).withModifier(SGR.BOLD);
+        edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
+                                                            .withModifier(SGR.BOLD);
         grid.putEntity(id, x, y);
+        pManager.setPlayer(world.getEntity(id), "player");
+        System.out.println("setPlayer");
 
         // add group of short-sighted herbivores
-        int groupId = sGroup.createGroup();
-        IntSet group = sGroup.getGroup(groupId);
+        int    groupId = sGroup.createGroup();
+        IntSet group   = sGroup.getGroup(groupId);
         for (int i = 0; i < 5; i++)
         {
             id = world.create();
@@ -110,8 +96,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Fear.class).value = 0.0f;
             edit.create(Sight.class).value = 5;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c =
-                    new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA).withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA)
+                                                                .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
@@ -134,8 +120,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Fear.class).value = 0.0f;
             edit.create(Sight.class).value = 10;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c =
-                    new TextCharacter('h').withForegroundColor(TextColor.ANSI.BLUE).withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c = new TextCharacter('h').withForegroundColor(TextColor.ANSI.BLUE)
+                                                                .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
@@ -161,8 +147,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Sight.class).value = 7;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c =
-                    new TextCharacter('c').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c = new TextCharacter('c').withForegroundColor(TextColor.ANSI.RED)
+                                                                .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }
@@ -183,8 +169,8 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Hunger.class).value = 0.0f;
             edit.create(Sight.class).value = 9;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
-            edit.create(Sprite.class).c =
-                    new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED).withModifier(SGR.BOLD);
+            edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
+                                                                .withModifier(SGR.BOLD);
 
             grid.putEntity(id, x, y);
         }

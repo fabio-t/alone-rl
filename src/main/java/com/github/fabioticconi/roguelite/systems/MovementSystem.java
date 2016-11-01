@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,6 +21,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.commands.MoveCommand;
+import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
@@ -34,14 +35,9 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<Position>    mPosition;
     ComponentMapper<MoveCommand> mMoveTo;
 
-    @Wire
-    Map                          map;
-    @Wire
-    EntityGrid                   grid;
+    @Wire Map        map;
+    @Wire EntityGrid grid;
 
-    /**
-     * @param aspect
-     */
     public MovementSystem()
     {
         super(Aspect.all(Position.class, MoveCommand.class));
@@ -52,8 +48,7 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
      */
-    @Override
-    protected float getRemainingDelay(final int entityId)
+    @Override protected float getRemainingDelay(final int entityId)
     {
         return mMoveTo.get(entityId).cooldown;
     }
@@ -63,8 +58,7 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
      */
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
+    @Override protected void processDelta(final int entityId, final float accumulatedDelta)
     {
         mMoveTo.get(entityId).cooldown -= accumulatedDelta;
     }
@@ -74,27 +68,30 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
      */
-    @Override
-    protected void processExpired(final int entityId)
+    @Override protected void processExpired(final int entityId)
     {
-        final Position p = mPosition.get(entityId);
-
+        final Position p    = mPosition.get(entityId);
         final MoveCommand m = mMoveTo.get(entityId);
-        // we should have a flag saying "keep going":
-        // if set, when the timer expires we should reset it to the
-        // creature's Speed.
-        // m.cooldown = value;
+
         mMoveTo.remove(entityId);
 
-        final int new_x = p.x + m.direction.x;
-        final int new_y = p.y + m.direction.y;
+        final int newX = p.x + m.direction.x;
+        final int newY = p.y + m.direction.y;
 
-        if (!map.isObstacle(new_x, new_y))
+        if (!map.isObstacle(newX, newY))
         {
-            grid.moveEntity(entityId, p.x, p.y, new_x, new_y);
+            grid.moveEntity(entityId, p.x, p.y, newX, newY);
 
-            p.x = new_x;
-            p.y = new_y;
+            p.x = newX;
+            p.y = newY;
+        }
+        else
+        {
+            // moving towards a closed door opens it, instead of actually moving
+            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
+            {
+                map.set(newX, newY, Cell.OPEN_DOOR);
+            }
         }
     }
 

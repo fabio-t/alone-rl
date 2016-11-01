@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -32,31 +32,6 @@ public enum Side
     {
         this.x = x;
         this.y = y;
-    }
-
-    public Side inverse()
-    {
-        switch (this)
-        {
-            case N:
-                return S;
-            case E:
-                return W;
-            case S:
-                return N;
-            case W:
-                return E;
-            case NE:
-                return SW;
-            case SE:
-                return NW;
-            case SW:
-                return NE;
-            case NW:
-                return SE;
-            default:
-                return HERE;
-        }
     }
 
     public static Side getSideAt(int x, int y)
@@ -102,5 +77,30 @@ public enum Side
         final int y = r.nextInt(3) - 1;
 
         return getSideAt(x, y);
+    }
+
+    public Side inverse()
+    {
+        switch (this)
+        {
+            case N:
+                return S;
+            case E:
+                return W;
+            case S:
+                return N;
+            case W:
+                return E;
+            case NE:
+                return SW;
+            case SE:
+                return NW;
+            case SW:
+                return NE;
+            case NW:
+                return SE;
+            default:
+                return HERE;
+        }
     }
 }

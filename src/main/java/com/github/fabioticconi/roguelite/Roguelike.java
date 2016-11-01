@@ -1,67 +1,107 @@
 package com.github.fabioticconi.roguelite;
 
-import java.io.IOException;
-import java.util.Random;
-
+import asciiPanel.AsciiFont;
+import asciiPanel.AsciiPanel;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
-import com.github.fabioticconi.roguelite.behaviours.ChaseBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.FleeBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.FlockBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.GrazeBehaviour;
-import com.github.fabioticconi.roguelite.behaviours.WanderBehaviour;
+import com.artemis.managers.PlayerManager;
+import com.artemis.utils.BitVector;
+import com.github.fabioticconi.roguelite.behaviours.*;
+import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
-import com.github.fabioticconi.roguelite.systems.AISystem;
-import com.github.fabioticconi.roguelite.systems.BootstrapSystem;
-import com.github.fabioticconi.roguelite.systems.GroupSystem;
-import com.github.fabioticconi.roguelite.systems.HungerSystem;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
-import com.github.fabioticconi.roguelite.systems.PlayerInputSystem;
-import com.github.fabioticconi.roguelite.systems.RenderSystem;
+import com.github.fabioticconi.roguelite.systems.*;
 
-/**
- * Hello world!
- *
- */
-public class Roguelike
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Random;
+
+public class Roguelike extends JFrame implements KeyListener
 {
     public static boolean keepRunning = true;
 
-    public static void main(final String[] args) throws IOException
+    private final int   fps          = 25;
+    private final long  deltaNanos   = Math.round(1000000000.0d / (double) fps);
+    private final float deltaSeconds = 1.0f / (float) fps;
+
+    private final AsciiPanel        terminal;
+    private final World             world;
+    private final PlayerInputSystem input;
+    private final RenderSystem      render;
+
+    // currently pressed keys
+    private final BitVector pressed;
+
+
+    public Roguelike()
     {
+        super();
+        terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.CP437_12x12);
+        add(terminal);
+        pack();
+
+        pressed = new BitVector(255);
+
+        // Input and render are sort of "binders" between the GUI and the logic.
+        // They are both passive: the input system receives raw player commands (when in "play screen")
+        // and converts it to artemis "things", then starts a player action. Should be pretty immediate.
+        // The render system is called whenever the play screen is active and the map needs to be painted.
+        // It needs to be a system for us to be able to leverage the components on the entities, of course.
+        input = new PlayerInputSystem();
+        render = new RenderSystem();
+
         final WorldConfiguration config;
         config = new WorldConfiguration();
         // POJO
         config.register(new Map());
         config.register(new EntityGrid());
         config.register(new Random());
-        // systems
-        config.setSystem(BootstrapSystem.class);
-        config.setSystem(PlayerInputSystem.class);
-        config.setSystem(new HungerSystem(5f));
+        // passive systems, one-timers, managers etc
+        config.setSystem(BootstrapSystem.class); // once
+        config.setSystem(PlayerManager.class);
         config.setSystem(GroupSystem.class);
+        config.setSystem(input);
+        config.setSystem(render);
+        // fixed interval
+        config.setSystem(new HungerSystem(5f));
+        // by-entity interval
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
-        config.setSystem(new RenderSystem(0.75f));
-        // behaviours
+        // ai behaviours (passive)
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);
         config.setSystem(ChaseBehaviour.class);
         config.setSystem(FlockBehaviour.class);
         config.setSystem(WanderBehaviour.class);
 
-        final World world = new World(config);
+        world = new World(config);
 
-        final float FPS = 25.0f;
-        final float frameDuration = 1000.0f / FPS;
-        final float dt = frameDuration / 1000.0f;
+        addKeyListener(this);
+    }
 
-        long previousTime = System.currentTimeMillis();
+    public static void main(final String[] args)
+    {
+        final Roguelike app = new Roguelike();
+        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        app.setLocationRelativeTo(null);
+        app.setVisible(true);
+
+        app.loop();
+
+        app.dispose();
+    }
+
+    public void loop()
+    {
+        long previousTime = System.nanoTime();
         long currentTime;
 
-        float lag = 0.0f;
-        float elapsed;
+        long lag = 0l;
+        long elapsed;
+
+        // FIXME
+        world.process();
 
         // FIXME: https://github.com/TomGrill/logic-render-game-loop
         // needs to modify that, so that I can divide systems in three groups:
@@ -71,32 +111,70 @@ public class Roguelike
 
         while (keepRunning)
         {
-            currentTime = System.currentTimeMillis();
+            currentTime = System.nanoTime();
             elapsed = currentTime - previousTime;
             previousTime = currentTime;
 
-            if (elapsed > 250f)
+            if (elapsed > 250000000l)
             {
-                System.out.println("lagging behind: " + elapsed);
-                elapsed = 250f;
+                System.out.println("lagging behind: " + elapsed/1000000.0f + " ms");
+                elapsed = 250000000l;
             }
 
             lag += elapsed;
 
-            world.getSystem(RenderSystem.class).setEnabled(false);
+            // TODO: we can poll the active keys from the "key map" (thread-safe!)
+            // In this way, the system will not know
+            input.handleKeys(pressed);
 
-            while (lag >= frameDuration)
+            // we do the actual computation in nanoseconds, using long numbers to avoid sneaky float
+            // incorrectness.
+            // however, artemis-odb wants a float delta representing seconds, so that's what we give.
+            // since we use fixed timestep, this is equivalent
+            // FIXME: check if deltaNanos rounding affects the system with certain fps (eg, 60)
+            while (lag >= deltaNanos)
             {
-                world.setDelta(dt);
+                world.setDelta(deltaSeconds);
                 world.process();
 
-                lag -= frameDuration;
+                lag -= deltaNanos;
             }
 
-            world.getSystem(RenderSystem.class).setEnabled(true);
-            world.getSystem(RenderSystem.class).process();
-        }
+            repaint();
 
-        System.exit(0);
+            // FIXME: to remove when actual rendering and input processing is implemented
+            try
+            {
+                Thread.sleep(40);
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override public void repaint()
+    {
+        terminal.clear();
+        render.display(terminal);
+        super.repaint();
+    }
+
+    @Override public void keyPressed(final KeyEvent e)
+    {
+        pressed.set(e.getKeyCode());
+
+        System.out.println(e.getKeyCode() + " " + e.getKeyChar() + " (" + KeyEvent.VK_NUMBER_SIGN + ")");
+        System.out.println(e.getExtendedKeyCode() + " " + e.getKeyLocation());
+    }
+
+    @Override public void keyReleased(final KeyEvent e)
+    {
+        // we don't check the capacity because we know the key must have been pressed before
+        pressed.unsafeClear(e.getKeyCode());
+    }
+
+    @Override public void keyTyped(final KeyEvent e)
+    {
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,122 +15,59 @@
  */
 package com.github.fabioticconi.roguelite.systems;
 
-import java.io.IOException;
-import java.util.Set;
-
+import asciiPanel.AsciiPanel;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.IntervalSystem;
+import com.artemis.managers.PlayerManager;
 import com.github.fabioticconi.roguelite.components.Player;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Sight;
 import com.github.fabioticconi.roguelite.components.Sprite;
 import com.github.fabioticconi.roguelite.constants.Cell;
-import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
+
+import java.awt.*;
+import java.util.Set;
 
 /**
  *
  * @author Fabio Ticconi
  */
-public class RenderSystem extends IntervalSystem
+public class RenderSystem extends PassiveSystem
 {
     ComponentMapper<Position> mPosition;
     ComponentMapper<Sprite>   mSprite;
-    ComponentMapper<Player>   mPlayer;
     ComponentMapper<Sight>    mSight;
 
-    @Wire
-    Map                       map;
-    @Wire
-    EntityGrid                grid;
+    @Wire Map        map;
+    @Wire EntityGrid grid;
 
-    Terminal                  terminal;
-    Screen                    screen;
-    TextGraphics              graphics;
+    PlayerManager pManager;
 
-    /**
-     * @param aspect
-     */
-    public RenderSystem(final float interval)
+    Aspect aspect;
+
+    @Override protected void initialize()
     {
-        super(Aspect.all(Position.class, Player.class), interval);
+        aspect = Aspect.all(Position.class, Player.class).build(world);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.BaseSystem#initialize()
-     */
-    @Override
-    protected void initialize()
+    public void display(final AsciiPanel terminal)
     {
-        super.initialize();
+        // FIXME: hackish, very crappy but it should work
+        int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final int size_x = Options.TERMINAL_SIZE_X;
-        final int size_y = Options.TERMINAL_SIZE_Y;
+        final Position p     = mPosition.get(pID);
+        final Sprite   s     = mSprite.get(pID);
+        final int      sight = mSight.get(pID).value;
 
-        try
-        {
-            // FIXME: get terminal size from config
-            final DefaultTerminalFactory factory = new DefaultTerminalFactory();
-            factory.setInitialTerminalSize(new TerminalSize(size_x, size_y));
-            factory.setTerminalEmulatorFontConfiguration(AWTTerminalFontConfiguration.newInstance(Options.FONT));
-            terminal = factory.createTerminal();
-            terminal.setCursorVisible(false);
-            terminal.addResizeListener(new SimpleTerminalResizeListener(terminal.getTerminalSize()));
-            screen = new TerminalScreen(terminal);
+        final int xmax = terminal.getWidthInCharacters();
+        final int ymax = terminal.getHeightInCharacters();
 
-            screen.doResizeIfNecessary();
-
-            screen.startScreen();
-            screen.clear();
-
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-
-            throw new RuntimeException("failed rendering");
-        }
-
-        graphics = screen.newTextGraphics();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.BaseSystem#processSystem()
-     */
-    @Override
-    protected void processSystem()
-    {
-        final int pID = subscription.getEntities().get(0);
-
-        final Position p = mPosition.get(pID);
-        final Sprite s = mSprite.get(pID);
-        final int sight = mSight.get(pID).value;
-
-        screen.doResizeIfNecessary();
-
-        final TerminalSize tsize = screen.getTerminalSize();
-
-        final int xmax = tsize.getColumns();
-        final int ymax = tsize.getRows();
-
-        // final int xmax = Options.TERMINAL_SIZE_X;
-        // final int ymax = Options.TERMINAL_SIZE_Y;
+//         final int xmax = Options.TERMINAL_SIZE_X;
+//         final int ymax = Options.TERMINAL_SIZE_Y;
 
         final int halfcols = xmax / 2;
         final int halfrows = ymax / 2;
@@ -164,7 +101,8 @@ public class RenderSystem extends IntervalSystem
                 {
                     // render terrain
                     final Cell cell = map.get(pos_x, pos_y);
-                    graphics.setCharacter(x, y, cell.c);
+
+                    terminal.write(cell.c.getCharacter(), x, y, cell.c.getForegroundColor().toColor());
 
                     entities = grid.getEntities(pos_x, pos_y);
 
@@ -180,7 +118,7 @@ public class RenderSystem extends IntervalSystem
 
                         if (sprite != null)
                         {
-                            graphics.setCharacter(x, y, sprite.c);
+                            terminal.write(sprite.c.getCharacter(), x, y, sprite.c.getForegroundColor().toColor());
 
                             // only show the first showable entity on each cell
                             break;
@@ -188,54 +126,10 @@ public class RenderSystem extends IntervalSystem
                     }
                 } else
                 {
-                    graphics.setCharacter(x, y, TextCharacter.DEFAULT_CHARACTER);
+                    terminal.write(' ', x, y, Color.darkGray);
+//                    graphics.setCharacter(x, y, TextCharacter.DEFAULT_CHARACTER);
                 }
             }
-        }
-
-        // in the middle cell we always show the player sprite
-        graphics.setCharacter(halfcols, halfrows, s.c);
-
-        // for (int i = Options.OUTPUT_SIZE_Y - 2; i > r.nextInt(10); i--)
-        // {
-        // graphics.putString(xmax + 2, i, String.format("blablablasdjasdaskdj
-        // %d", i));
-        // }
-
-        // refresh the screen, and set the terminal ready for update
-        try
-        {
-            screen.refresh();
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        // setEnabled(false);
-    }
-
-    public KeyStroke getInput()
-    {
-        try
-        {
-            return screen.pollInput();
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-
-            return null;
-        }
-    }
-
-    public void close()
-    {
-        // screen.clear();
-        try
-        {
-            screen.stopScreen();
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
         }
     }
 }

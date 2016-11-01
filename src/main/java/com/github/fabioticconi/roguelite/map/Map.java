@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,16 +15,12 @@
  */
 package com.github.fabioticconi.roguelite.map;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import com.github.fabioticconi.terrain_generator.ImageWriter;
 import com.github.fabioticconi.terrain_generator.SimplexNoise;
-
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -32,17 +28,20 @@ import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
 import rlforj.math.Point2I;
 
+import java.util.EnumSet;
+import java.util.List;
+
 /**
  *
  * @author Fabio Ticconi
  */
 public class Map implements ILosBoard
 {
-    final Cell        map[][];
-    final float       heightMap[][];
+    final Cell  map[][];
+    final float heightMap[][];
 
     /* FOV/LOS stuff */
-    final LongSet     lastVisited;
+    final LongSet lastVisited;
     PrecisePermissive view;
 
     // TODO: when the terrain-generator is done, we'd have not only
@@ -193,7 +192,7 @@ public class Map implements ILosBoard
         view.visitFieldOfView(this, x, y, r);
 
         int[] coords;
-        Cell cell;
+        Cell  cell;
         for (final long key : lastVisited)
         {
             coords = Coords.unpackCoords(key);
@@ -227,8 +226,7 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#contains(int, int)
      */
-    @Override
-    public boolean contains(final int x, final int y)
+    @Override public boolean contains(final int x, final int y)
     {
         return x >= 0 && x < Options.MAP_SIZE_X && y >= 0 && y < Options.MAP_SIZE_Y;
     }
@@ -238,14 +236,9 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#isObstacle(int, int)
      */
-    @Override
-    public boolean isObstacle(final int x, final int y)
+    @Override public boolean isObstacle(final int x, final int y)
     {
-        return x >= Options.MAP_SIZE_X
-                || x < 0
-                || y >= Options.MAP_SIZE_Y
-                || y < 0
-                || map[x][y] == Cell.WALL
+        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL
                 || map[x][y] == Cell.CLOSED_DOOR;
     }
 
@@ -259,8 +252,7 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#visit(int, int)
      */
-    @Override
-    public void visit(final int x, final int y)
+    @Override public void visit(final int x, final int y)
     {
         lastVisited.add(Coords.packCoords(x, y));
     }

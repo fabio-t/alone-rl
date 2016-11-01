@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -14,8 +14,6 @@
  * the License.
  */
 package com.github.fabioticconi.roguelite.behaviours;
-
-import java.util.Set;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -30,6 +28,8 @@ import com.github.fabioticconi.roguelite.map.Map;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 
+import java.util.Set;
+
 /**
  *
  * @author Fabio Ticconi
@@ -40,20 +40,17 @@ public class FleeBehaviour extends AbstractBehaviour
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom
-                                           // taking a component type
+    // taking a component type
 
-    MovementSystem             sMovement;
+    MovementSystem sMovement;
 
-    @Wire
-    EntityGrid                 grid;
-    @Wire
-    Map                        map;
+    @Wire EntityGrid grid;
+    @Wire Map        map;
 
-    Position                   curPos;
-    Position                   fleeFrom;
+    Position curPos;
+    Position fleeFrom;
 
-    @Override
-    protected void initialize()
+    @Override protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class).build(world);
 
@@ -65,12 +62,11 @@ public class FleeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate()
      */
-    @Override
-    public float evaluate(final int entityId)
+    @Override public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
-        if (notInterested(entityId))
+        if (!interested(entityId))
             return 0f;
 
         curPos = mPosition.get(entityId);
@@ -84,7 +80,7 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom.x = 0;
         fleeFrom.y = 0;
 
-        int count = 0;
+        int      count = 0;
         Position tempPos;
         for (final int creatureId : creatures)
         {
@@ -120,8 +116,7 @@ public class FleeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override
-    public float update()
+    @Override public float update()
     {
         Side direction;
 

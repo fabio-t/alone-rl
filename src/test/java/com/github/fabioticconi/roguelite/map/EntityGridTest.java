@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Fabio Ticconi
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,12 @@
  */
 package com.github.fabioticconi.roguelite.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import org.junit.Test;
 
 import java.util.Set;
 
-import org.junit.Test;
-
-import com.github.fabioticconi.roguelite.map.EntityGrid;
-
-import it.unimi.dsi.fastutil.ints.IntSets;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -33,8 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
  */
 public class EntityGridTest
 {
-    @Test
-    public final void testGetAndMoveEntities()
+    @Test public final void testGetAndMoveEntities()
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -73,8 +67,7 @@ public class EntityGridTest
         assertEquals(e4.size(), 1);
     }
 
-    @Test
-    public void testGetClosestEntities() throws Exception
+    @Test public void testGetClosestEntities() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -112,8 +105,7 @@ public class EntityGridTest
         assertEquals(entities.size(), 8);
     }
 
-    @Test
-    public void testGetEntitiesAtRadius() throws Exception
+    @Test public void testGetEntitiesAtRadius() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -155,8 +147,7 @@ public class EntityGridTest
         assertEquals(entities.size(), 24);
     }
 
-    @Test
-    public void testGetEntitiesWithinRadius() throws Exception
+    @Test public void testGetEntitiesWithinRadius() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 

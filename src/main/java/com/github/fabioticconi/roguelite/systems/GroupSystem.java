@@ -4,7 +4,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.utils.Bag;
 import com.artemis.utils.IntDeque;
 import com.github.fabioticconi.roguelite.components.Group;
-
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -13,9 +12,9 @@ public class GroupSystem extends PassiveSystem
 {
     ComponentMapper<Group> mGroup;
 
-    Bag<IntSet>            groups;
+    Bag<IntSet> groups;
 
-    IntDeque               recycling;
+    IntDeque recycling;
 
     public GroupSystem()
     {
