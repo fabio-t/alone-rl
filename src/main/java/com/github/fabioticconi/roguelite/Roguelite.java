@@ -17,7 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
-public class Roguelike extends JFrame implements KeyListener
+public class Roguelite extends JFrame implements KeyListener
 {
     public static boolean keepRunning = true;
 
@@ -34,10 +34,10 @@ public class Roguelike extends JFrame implements KeyListener
     private final BitVector pressed;
 
 
-    public Roguelike()
+    public Roguelite()
     {
         super();
-        terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.CP437_12x12);
+        terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.CP437_16x16);
         add(terminal);
         pack();
 
@@ -82,7 +82,7 @@ public class Roguelike extends JFrame implements KeyListener
 
     public static void main(final String[] args)
     {
-        final Roguelike app = new Roguelike();
+        final Roguelite app = new Roguelite();
         app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         app.setLocationRelativeTo(null);
         app.setVisible(true);
@@ -100,7 +100,7 @@ public class Roguelike extends JFrame implements KeyListener
         long lag = 0l;
         long elapsed;
 
-        // FIXME
+        // FIXME: without this the first rendering happens before the first process
         world.process();
 
         // FIXME: https://github.com/TomGrill/logic-render-game-loop
@@ -123,8 +123,6 @@ public class Roguelike extends JFrame implements KeyListener
 
             lag += elapsed;
 
-            // TODO: we can poll the active keys from the "key map" (thread-safe!)
-            // In this way, the system will not know
             input.handleKeys(pressed);
 
             // we do the actual computation in nanoseconds, using long numbers to avoid sneaky float
@@ -163,9 +161,6 @@ public class Roguelike extends JFrame implements KeyListener
     @Override public void keyPressed(final KeyEvent e)
     {
         pressed.set(e.getKeyCode());
-
-        System.out.println(e.getKeyCode() + " " + e.getKeyChar() + " (" + KeyEvent.VK_NUMBER_SIGN + ")");
-        System.out.println(e.getExtendedKeyCode() + " " + e.getKeyLocation());
     }
 
     @Override public void keyReleased(final KeyEvent e)

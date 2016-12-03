@@ -3,7 +3,7 @@ package com.github.fabioticconi.roguelite.systems;
 import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.roguelite.Roguelike;
+import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.constants.Side;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -73,7 +73,7 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
-            Roguelike.keepRunning = false;
+            Roguelite.keepRunning = false;
         }
     }
 }
