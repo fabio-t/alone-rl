@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class ChaseBehaviour extends AbstractBehaviour
@@ -79,19 +78,11 @@ public class ChaseBehaviour extends AbstractBehaviour
 
                 final float hunger = mHunger.get(entityId).value;
 
-                // System.out.println(curPos
-                // + " | "
-                // + chase
-                // + " --> "
-                // + Coords.distanceChebyshev(curPos.x, curPos.y, chase.x,
-                // chase.y));
-
                 // FIXME this should be a smoother mixture of hunger and
                 // prey-catching;
                 // maybe it will normalise itself with more behaviours but let's
                 // keep it in mind
-                return 0.5f * hunger + 0.5f * (1f
-                        - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
+                return 0.5f * (hunger + 1f - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
             }
         }
 

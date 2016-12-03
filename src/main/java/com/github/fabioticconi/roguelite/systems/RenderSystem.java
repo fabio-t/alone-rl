@@ -60,7 +60,6 @@ public class RenderSystem extends PassiveSystem
         int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Position p     = mPosition.get(pID);
-        final Sprite   s     = mSprite.get(pID);
         final int      sight = mSight.get(pID).value;
 
         final int xmax = terminal.getWidthInCharacters();
@@ -127,7 +126,6 @@ public class RenderSystem extends PassiveSystem
                 } else
                 {
                     terminal.write(' ', x, y, Color.darkGray);
-//                    graphics.setCharacter(x, y, TextCharacter.DEFAULT_CHARACTER);
                 }
             }
         }

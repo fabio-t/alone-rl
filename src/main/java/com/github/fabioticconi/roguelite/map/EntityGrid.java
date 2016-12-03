@@ -26,7 +26,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Set;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class EntityGrid
@@ -40,7 +39,7 @@ public class EntityGrid
 
     /**
      * Returns all entities in the specified cell.
-     *
+     * <p>
      * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
      * for each call.
      *
@@ -59,12 +58,11 @@ public class EntityGrid
 
     /**
      * Returns all entities in the specified cell.
-     *
+     * <p>
      * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
      * for each call.
      *
-     * @param pos
-     *            packed coordinates
+     * @param pos packed coordinates
      * @return
      */
     public Set<Integer> getEntities(final long pos)
@@ -76,12 +74,11 @@ public class EntityGrid
 
     /**
      * Returns all entities in the specified cells.
-     *
+     * <p>
      * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
      * for each call.
      *
-     * @param cells
-     *            set of packed coordinates of entities
+     * @param cells set of packed coordinates of entities
      * @return
      */
     public Set<Integer> getEntities(final Set<Long> cells)
@@ -504,5 +501,40 @@ public class EntityGrid
         }
 
         return false;
+    }
+
+    /**
+     * Returns the number of entities present at the specified position.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public int count(final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        final IntSet entities = grid.getOrDefault(pos, null);
+
+        if (entities == null)
+            return 0;
+
+        return entities.size();
+    }
+
+    /**
+     * Returns the number of entities present at the specified position.
+     *
+     * @param pos
+     * @return
+     */
+    public int count(final long pos)
+    {
+        final IntSet entities = grid.getOrDefault(pos, null);
+
+        if (entities == null)
+            return 0;
+
+        return entities.size();
     }
 }

@@ -32,7 +32,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class Map implements ILosBoard
@@ -174,13 +173,9 @@ public class Map implements ILosBoard
 
     /**
      * Searches concentrically for a cell of the specified type, and returns the
-     * compacted coordinate if it finds one.
+     * coordinate array if it finds one.
      *
-     * @param x
-     * @param y
-     * @param maxRadius
-     * @param cellType
-     * @return -1 if none could be found, the long-packed coordinates otherwise
+     * @return null if none could be found, the coordinate array otherwise
      */
     public int[] getFirstOfType(final int x, final int y, final int r, final EnumSet<Cell> set)
     {

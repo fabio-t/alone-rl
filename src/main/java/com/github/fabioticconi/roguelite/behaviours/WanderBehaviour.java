@@ -54,6 +54,9 @@ public class WanderBehaviour extends AbstractBehaviour
         if (direction == Side.HERE)
             return 0f;
 
+        // FIXME this should be normalised in a way that the return cooldown is always dependent on
+        // some specific property (ie, "alertness") which can change for various reasons - but outside the behaviours.
+        // this would mean that this update function wouldn't return anything.
         return sMovement.moveTo(entityId, speed, direction);
     }
 }
