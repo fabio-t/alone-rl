@@ -18,7 +18,6 @@ package com.github.fabioticconi.roguelite.constants;
 import java.util.Random;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public enum Side

@@ -18,7 +18,6 @@ package com.github.fabioticconi.roguelite.constants;
 import java.awt.*;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class Options

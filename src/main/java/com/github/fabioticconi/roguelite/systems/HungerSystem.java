@@ -21,7 +21,6 @@ import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Hunger;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class HungerSystem extends IntervalIteratingSystem

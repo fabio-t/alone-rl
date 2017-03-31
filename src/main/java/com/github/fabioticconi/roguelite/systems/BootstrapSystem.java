@@ -32,7 +32,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.Random;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class BootstrapSystem extends BaseSystem

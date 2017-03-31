@@ -53,7 +53,7 @@ public class Roguelite extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        // POJO
+        // POJOs
         config.register(new Map());
         config.register(new EntityGrid());
         config.register(new Random());
@@ -63,9 +63,8 @@ public class Roguelite extends JFrame implements KeyListener
         config.setSystem(GroupSystem.class);
         config.setSystem(input);
         config.setSystem(render);
-        // fixed interval
+        // actual game logic
         config.setSystem(new HungerSystem(5f));
-        // by-entity interval
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         // ai behaviours (passive)
@@ -83,7 +82,7 @@ public class Roguelite extends JFrame implements KeyListener
     public static void main(final String[] args)
     {
         final Roguelite app = new Roguelite();
-        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         app.setLocationRelativeTo(null);
         app.setVisible(true);
 
@@ -115,10 +114,10 @@ public class Roguelite extends JFrame implements KeyListener
             elapsed = currentTime - previousTime;
             previousTime = currentTime;
 
-            if (elapsed > 250000000l)
+            if (elapsed > 250000000L)
             {
                 System.out.println("lagging behind: " + elapsed/1000000.0f + " ms");
-                elapsed = 250000000l;
+                elapsed = 250000000L;
             }
 
             lag += elapsed;
@@ -144,7 +143,7 @@ public class Roguelite extends JFrame implements KeyListener
             try
             {
                 Thread.sleep(40);
-            } catch (InterruptedException e)
+            } catch (final InterruptedException e)
             {
                 e.printStackTrace();
             }

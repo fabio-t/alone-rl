@@ -23,7 +23,7 @@ public class PlayerInputSystem extends PassiveSystem
         // FIXME: hackish, very crappy but it should work
         int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final float speed  = mSpeed.get(pID).value;
+        final float speed = mSpeed.get(pID).value;
 
         if (keys.get(KeyEvent.VK_UP))
         {
@@ -31,47 +31,39 @@ public class PlayerInputSystem extends PassiveSystem
             {
                 // northwest
                 movement.moveTo(pID, speed, Side.NW);
-            }
-            else if (keys.get(KeyEvent.VK_RIGHT))
+            } else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // northeast
                 movement.moveTo(pID, speed, Side.NE);
-            }
-            else
+            } else
             {
                 // north
                 movement.moveTo(pID, speed, Side.N);
             }
-        }
-        else if (keys.get(KeyEvent.VK_DOWN))
+        } else if (keys.get(KeyEvent.VK_DOWN))
         {
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
                 movement.moveTo(pID, speed, Side.SW);
-            }
-            else if (keys.get(KeyEvent.VK_RIGHT))
+            } else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // southeast
                 movement.moveTo(pID, speed, Side.SE);
-            }
-            else
+            } else
             {
                 // south
                 movement.moveTo(pID, speed, Side.S);
             }
-        }
-        else if (keys.get(KeyEvent.VK_RIGHT))
+        } else if (keys.get(KeyEvent.VK_RIGHT))
         {
             // northeast
             movement.moveTo(pID, speed, Side.E);
-        }
-        else if (keys.get(KeyEvent.VK_LEFT))
+        } else if (keys.get(KeyEvent.VK_LEFT))
         {
             // northwest
             movement.moveTo(pID, speed, Side.W);
-        }
-        else if (keys.get(KeyEvent.VK_ESCAPE))
+        } else if (keys.get(KeyEvent.VK_ESCAPE))
         {
             Roguelite.keepRunning = false;
         }

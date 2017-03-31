@@ -21,7 +21,6 @@ import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.TextColor.RGB;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public enum Cell

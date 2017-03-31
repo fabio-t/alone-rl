@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class AI extends Component

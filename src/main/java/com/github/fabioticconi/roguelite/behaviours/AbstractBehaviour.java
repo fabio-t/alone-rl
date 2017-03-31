@@ -19,7 +19,6 @@ import com.artemis.Aspect;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public abstract class AbstractBehaviour extends PassiveSystem implements Behaviour

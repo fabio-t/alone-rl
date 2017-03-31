@@ -33,7 +33,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class GrazeBehaviour extends AbstractBehaviour

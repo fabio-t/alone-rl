@@ -19,7 +19,6 @@ import com.artemis.Component;
 import com.googlecode.lanterna.TextCharacter;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class Sprite extends Component

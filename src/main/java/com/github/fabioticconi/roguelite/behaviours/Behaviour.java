@@ -19,7 +19,7 @@ package com.github.fabioticconi.roguelite.behaviours;
  * The contract of a Behaviour is two-fold: on the one side,
  * it provides a function that evaluates the conditions for
  * this behaviour, returning a score.
- *
+ * <p>
  * On the other side, it must also provide an update function
  * that will be called each tick by entities using this behaviour.
  *

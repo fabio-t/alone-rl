@@ -18,7 +18,6 @@ package com.github.fabioticconi.roguelite.components;
 import com.artemis.Component;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class Fear extends Component

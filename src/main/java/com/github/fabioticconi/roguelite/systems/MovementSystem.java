@@ -27,7 +27,6 @@ import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class MovementSystem extends DelayedIteratingSystem
@@ -70,7 +69,7 @@ public class MovementSystem extends DelayedIteratingSystem
      */
     @Override protected void processExpired(final int entityId)
     {
-        final Position p    = mPosition.get(entityId);
+        final Position    p = mPosition.get(entityId);
         final MoveCommand m = mMoveTo.get(entityId);
 
         mMoveTo.remove(entityId);
@@ -84,8 +83,7 @@ public class MovementSystem extends DelayedIteratingSystem
 
             p.x = newX;
             p.y = newY;
-        }
-        else
+        } else
         {
             // moving towards a closed door opens it, instead of actually moving
             if (map.get(newX, newY) == Cell.CLOSED_DOOR)

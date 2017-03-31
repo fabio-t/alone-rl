@@ -33,7 +33,6 @@ import java.awt.*;
 import java.util.Set;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class RenderSystem extends PassiveSystem
@@ -65,8 +64,8 @@ public class RenderSystem extends PassiveSystem
         final int xmax = terminal.getWidthInCharacters();
         final int ymax = terminal.getHeightInCharacters();
 
-//         final int xmax = Options.TERMINAL_SIZE_X;
-//         final int ymax = Options.TERMINAL_SIZE_Y;
+        //         final int xmax = Options.TERMINAL_SIZE_X;
+        //         final int ymax = Options.TERMINAL_SIZE_Y;
 
         final int halfcols = xmax / 2;
         final int halfrows = ymax / 2;

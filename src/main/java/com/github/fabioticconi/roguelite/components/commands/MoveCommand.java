@@ -19,7 +19,6 @@ import com.artemis.Component;
 import com.github.fabioticconi.roguelite.constants.Side;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class MoveCommand extends Component

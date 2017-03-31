@@ -25,7 +25,6 @@ import com.github.fabioticconi.roguelite.components.AI;
 import java.util.Random;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class AISystem extends DelayedIteratingSystem

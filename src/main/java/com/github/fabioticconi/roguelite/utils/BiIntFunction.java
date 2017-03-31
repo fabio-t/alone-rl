@@ -26,10 +26,8 @@ package com.github.fabioticconi.roguelite.utils;
     /**
      * Applies this function to the given arguments.
      *
-     * @param value1
-     *            first function argument
-     * @param value2
-     *            second function argument
+     * @param value1 first function argument
+     * @param value2 second function argument
      * @return the function result
      */
     R apply(int value1, int value2);

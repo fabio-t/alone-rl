@@ -31,7 +31,6 @@ import com.github.fabioticconi.roguelite.utils.Coords;
 import java.util.Set;
 
 /**
- *
  * @author Fabio Ticconi
  */
 public class FleeBehaviour extends AbstractBehaviour
