@@ -11,6 +11,8 @@ import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 import com.github.fabioticconi.roguelite.systems.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -33,6 +35,7 @@ public class Roguelite extends JFrame implements KeyListener
     // currently pressed keys
     private final BitVector pressed;
 
+    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
 
     public Roguelite()
     {
@@ -116,7 +119,7 @@ public class Roguelite extends JFrame implements KeyListener
 
             if (elapsed > 250000000L)
             {
-                System.out.println("lagging behind: " + elapsed/1000000.0f + " ms");
+                log.info("lagging behind: {} ms",  elapsed/1000000.0f);
                 elapsed = 250000000L;
             }
 

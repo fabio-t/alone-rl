@@ -92,7 +92,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Hunger.class).value = 0.5f;
-            edit.create(Fear.class).value = 0.0f;
+            edit.create(Alertness.class).value = 0.0f;
             edit.create(Sight.class).value = 5;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA)
@@ -116,7 +116,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Herbivore.class);
             edit.create(Hunger.class).value = 0.5f;
-            edit.create(Fear.class).value = 0.0f;
+            edit.create(Alertness.class).value = 0.0f;
             edit.create(Sight.class).value = 10;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('h').withForegroundColor(TextColor.ANSI.BLUE)
@@ -144,6 +144,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Hunger.class).value = 0.0f;
+            edit.create(Alertness.class).value = 0.0f;
             edit.create(Sight.class).value = 7;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('c').withForegroundColor(TextColor.ANSI.RED)
@@ -166,6 +167,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(new Position(x, y));
             edit.create(Carnivore.class);
             edit.create(Hunger.class).value = 0.0f;
+            edit.create(Alertness.class).value = 0.0f;
             edit.create(Sight.class).value = 9;
             edit.create(Speed.class).value = r.nextFloat() * 1.0f;
             edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)

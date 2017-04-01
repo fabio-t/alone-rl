@@ -20,16 +20,16 @@ import com.artemis.Component;
 /**
  * @author Fabio Ticconi
  */
-public class Fear extends Component
+public class Alertness extends Component
 {
     public float value;
 
-    public Fear()
+    public Alertness()
     {
 
     }
 
-    public Fear(final float value)
+    public Alertness(final float value)
     {
         this.value = value;
     }

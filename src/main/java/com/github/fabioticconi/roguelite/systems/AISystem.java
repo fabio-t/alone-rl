@@ -21,6 +21,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.behaviours.Behaviour;
 import com.github.fabioticconi.roguelite.components.AI;
+import com.github.fabioticconi.roguelite.components.Alertness;
 
 import java.util.Random;
 
@@ -29,13 +30,14 @@ import java.util.Random;
  */
 public class AISystem extends DelayedIteratingSystem
 {
-    // time, in microseconds, around which a each creature should
+    // time, in millis, around which a each creature should
     // be updated here
     public static final float BASE_TICKTIME = 3.0f;
 
     @Wire Random r;
 
     ComponentMapper<AI> mAI;
+    ComponentMapper<Alertness> mAlert;
 
     /**
      * General processing of AIs. Evaluates the best current strategy and
@@ -43,7 +45,7 @@ public class AISystem extends DelayedIteratingSystem
      */
     public AISystem()
     {
-        super(Aspect.all(AI.class));
+        super(Aspect.all(AI.class, Alertness.class));
     }
 
     /*
@@ -77,14 +79,9 @@ public class AISystem extends DelayedIteratingSystem
 
         float actionCooldown = 0.0f;
 
-        // FIXME re-evaluate if we need cooldownModifier:
-        // may be a good way to reintroduce Fear, or change it to
-        // Alertness? the cooldownModifier would then be 1-Alertness,
-        // so that very alert creatures tick more often.
-        // This is also a good way to reduce load on areas far away from the
-        // player, for example: by default keep the alertness to a minimum,
-        // raise it in case of predators or if the player comes around.
-        final float cooldownModifier = 1.0f;
+        // Alertness can be modified by many things. It's net effect here is
+        // as a "cooldown modifier", influencing how often a creature's AI ticks
+        final float alertness = 1f - mAlert.get(entityId).value;
 
         final AI ai = mAI.get(entityId);
 
@@ -113,7 +110,7 @@ public class AISystem extends DelayedIteratingSystem
             ai.activeBehaviour = bestBehaviour;
         }
 
-        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * cooldownModifier;
+        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * alertness;
         if (ai.cooldown < actionCooldown)
         {
             ai.cooldown = actionCooldown * 1.5f;

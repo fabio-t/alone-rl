@@ -40,4 +40,25 @@ public class Position extends Component
     {
         return String.format("x: %d, y: %d", x, y);
     }
+
+    @Override public boolean equals(final Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final Position position = (Position) o;
+
+        if (x != position.x)
+            return false;
+        return y == position.y;
+    }
+
+    @Override public int hashCode()
+    {
+        int result = x;
+        result = 31 * result + y;
+        return result;
+    }
 }

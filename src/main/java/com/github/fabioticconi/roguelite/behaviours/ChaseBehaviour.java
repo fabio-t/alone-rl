@@ -18,12 +18,16 @@ package com.github.fabioticconi.roguelite.behaviours;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
+import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rlforj.math.Point2I;
 
 import java.util.List;
@@ -41,12 +45,16 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Herbivore> mHerbivore;
 
     MovementSystem sMovement;
+    HungerSystem   sHunger;
 
     @Wire EntityGrid grid;
     @Wire Map        map;
 
     Position curPos;
-    Position chase;
+    Position chasePos;
+    int chaseId;
+
+    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
 
     @Override protected void initialize()
     {
@@ -67,26 +75,40 @@ public class ChaseBehaviour extends AbstractBehaviour
 
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
+        final float hunger = mHunger.get(entityId).value;
 
+        // all creatures in the visible area for this predator
         final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
+        float minDistance = Float.MAX_VALUE;
+
+        Position temp;
         for (final int creatureId : creatures)
         {
             if (mHerbivore.has(creatureId))
             {
-                chase = mPosition.get(creatureId);
+                temp = mPosition.get(creatureId);
 
-                final float hunger = mHunger.get(entityId).value;
+                final float distance = (float)Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y) / sight;
 
-                // FIXME this should be a smoother mixture of hunger and
-                // prey-catching;
-                // maybe it will normalise itself with more behaviours but let's
-                // keep it in mind
-                return 0.5f * (hunger + 1f - Coords.distanceChebyshev(curPos.x, curPos.y, chase.x, chase.y) / sight);
+                // we want the closest prey
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    chasePos = temp;
+                    chaseId = creatureId;
+                }
             }
         }
 
-        return 0f;
+        // might be there's no prey
+        if (chaseId == 0)
+            return 0f;
+
+        // average between our hunger and the prey's closeness
+        float v = 0.5f * (hunger + 1f - minDistance);
+
+        return v;
     }
 
     /*
@@ -99,14 +121,27 @@ public class ChaseBehaviour extends AbstractBehaviour
         final Position pos   = mPosition.get(entityId);
         final float    speed = mSpeed.get(entityId).value;
 
-        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chase.x, chase.y);
+        if (pos.equals(chasePos))
+        {
+            // prey is right here! Let's eat!
+            sHunger.feed(entityId);
+
+            world.delete(chaseId);
+
+            return 0f;
+        }
+
+        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chasePos.x, chasePos.y);
 
         // if the path is empty, it's not clear what's going on (we know the
         // prey is visible, from before..)
         // but if there's only one element, then the prey is right here and we
         // don't do anything (for now)
-        if (path.size() < 2)
+        if (path.isEmpty())
+        {
+            log.warn("path shouldn't be empty");
             return 0f;
+        }
 
         // position 0 is "HERE"
         final Point2I closest = path.get(1);
