@@ -36,7 +36,7 @@ public class AISystem extends DelayedIteratingSystem
 
     @Wire Random r;
 
-    ComponentMapper<AI> mAI;
+    ComponentMapper<AI>        mAI;
     ComponentMapper<Alertness> mAlert;
 
     /**

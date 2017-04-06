@@ -122,7 +122,8 @@ public class RenderSystem extends PassiveSystem
                             break;
                         }
                     }
-                } else
+                }
+                else
                 {
                     terminal.write(' ', x, y, Color.darkGray);
                 }

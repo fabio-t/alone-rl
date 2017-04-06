@@ -28,7 +28,6 @@ public class HungerSystem extends IntervalIteratingSystem
     ComponentMapper<Hunger> mHunger;
 
     /**
-     * @param aspect
      * @param interval
      */
     public HungerSystem(final float interval)

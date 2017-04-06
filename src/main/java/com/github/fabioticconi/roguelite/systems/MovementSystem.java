@@ -20,7 +20,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.commands.MoveCommand;
+import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
@@ -31,15 +31,15 @@ import com.github.fabioticconi.roguelite.map.Map;
  */
 public class MovementSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Position>    mPosition;
-    ComponentMapper<MoveCommand> mMoveTo;
+    ComponentMapper<Position>   mPosition;
+    ComponentMapper<MoveAction> mMove;
 
     @Wire Map        map;
     @Wire EntityGrid grid;
 
     public MovementSystem()
     {
-        super(Aspect.all(Position.class, MoveCommand.class));
+        super(Aspect.all(Position.class, MoveAction.class));
     }
 
     /*
@@ -49,7 +49,7 @@ public class MovementSystem extends DelayedIteratingSystem
      */
     @Override protected float getRemainingDelay(final int entityId)
     {
-        return mMoveTo.get(entityId).cooldown;
+        return mMove.get(entityId).cooldown;
     }
 
     /*
@@ -59,7 +59,7 @@ public class MovementSystem extends DelayedIteratingSystem
      */
     @Override protected void processDelta(final int entityId, final float accumulatedDelta)
     {
-        mMoveTo.get(entityId).cooldown -= accumulatedDelta;
+        mMove.get(entityId).cooldown -= accumulatedDelta;
     }
 
     /*
@@ -69,10 +69,10 @@ public class MovementSystem extends DelayedIteratingSystem
      */
     @Override protected void processExpired(final int entityId)
     {
-        final Position    p = mPosition.get(entityId);
-        final MoveCommand m = mMoveTo.get(entityId);
+        final Position   p = mPosition.get(entityId);
+        final MoveAction m = mMove.get(entityId);
 
-        mMoveTo.remove(entityId);
+        mMove.remove(entityId);
 
         final int newX = p.x + m.direction.x;
         final int newY = p.y + m.direction.y;
@@ -83,7 +83,8 @@ public class MovementSystem extends DelayedIteratingSystem
 
             p.x = newX;
             p.y = newY;
-        } else
+        }
+        else
         {
             // moving towards a closed door opens it, instead of actually moving
             if (map.get(newX, newY) == Cell.CLOSED_DOOR)
@@ -97,7 +98,7 @@ public class MovementSystem extends DelayedIteratingSystem
 
     public float moveTo(final int entityId, final float speed, final Side direction)
     {
-        final MoveCommand m = mMoveTo.create(entityId);
+        final MoveAction m = mMove.create(entityId);
 
         if (m.direction == direction)
             return m.cooldown;

@@ -46,7 +46,8 @@ public class WanderBehaviour extends AbstractBehaviour
         if (sight == null || sight.value == 0)
         {
             direction = Side.getRandom();
-        } else
+        }
+        else
         {
             direction = map.getFreeExitRandomised(pos.x, pos.y);
         }

@@ -460,7 +460,8 @@ public class EntityGrid
             entities.add(id);
 
             grid.put(pos, entities);
-        } else if (!entities.rem(id))
+        }
+        else if (!entities.rem(id))
         {
             // TODO: log if it was already present at this position?
 

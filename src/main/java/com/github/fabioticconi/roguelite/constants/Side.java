@@ -47,7 +47,8 @@ public enum Side
                 return S;
 
             return HERE;
-        } else if (x == 1)
+        }
+        else if (x == 1)
         {
             if (y == -1)
                 return NE;
@@ -56,7 +57,8 @@ public enum Side
                 return SE;
 
             return E;
-        } else
+        }
+        else
         {
             if (y == -1)
                 return NW;

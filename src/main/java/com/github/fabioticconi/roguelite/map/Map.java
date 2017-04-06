@@ -77,11 +77,13 @@ public class Map implements ILosBoard
                     if (value < water * 0.7f)
                     {
                         map[x][y] = Cell.DEEP_WATER;
-                    } else
+                    }
+                    else
                     {
                         map[x][y] = Cell.WATER;
                     }
-                } else
+                }
+                else
                 {
                     // final float val = t;
                     // normalize val so 0 is at water level
@@ -93,16 +95,20 @@ public class Map implements ILosBoard
                     if (val < 0.1f)
                     {
                         map[x][y] = Cell.SAND;
-                    } else if (val < 0.3f)
+                    }
+                    else if (val < 0.3f)
                     {
                         map[x][y] = Cell.GRASS;
-                    } else if (val < 0.55f)
+                    }
+                    else if (val < 0.55f)
                     {
                         map[x][y] = Cell.HILL;
-                    } else if (val < 0.7f)
+                    }
+                    else if (val < 0.7f)
                     {
                         map[x][y] = Cell.MOUNTAIN;
-                    } else
+                    }
+                    else
                     {
                         map[x][y] = Cell.HIGH_MOUNTAIN;
                     }

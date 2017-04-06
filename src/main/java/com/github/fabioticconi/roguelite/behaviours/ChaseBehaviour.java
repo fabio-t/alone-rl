@@ -38,23 +38,19 @@ import java.util.Set;
  */
 public class ChaseBehaviour extends AbstractBehaviour
 {
+    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
     ComponentMapper<Hunger>    mHunger;
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
-
     MovementSystem sMovement;
     HungerSystem   sHunger;
-
     @Wire EntityGrid grid;
     @Wire Map        map;
-
     Position curPos;
     Position chasePos;
-    int chaseId;
-
-    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
+    int      chaseId;
 
     @Override protected void initialize()
     {
@@ -74,7 +70,7 @@ public class ChaseBehaviour extends AbstractBehaviour
             return 0f;
 
         curPos = mPosition.get(entityId);
-        final int sight = mSight.get(entityId).value;
+        final int   sight  = mSight.get(entityId).value;
         final float hunger = mHunger.get(entityId).value;
 
         // all creatures in the visible area for this predator
@@ -89,7 +85,7 @@ public class ChaseBehaviour extends AbstractBehaviour
             {
                 temp = mPosition.get(creatureId);
 
-                final float distance = (float)Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y) / sight;
+                final float distance = (float) Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y) / sight;
 
                 // we want the closest prey
                 if (distance < minDistance)

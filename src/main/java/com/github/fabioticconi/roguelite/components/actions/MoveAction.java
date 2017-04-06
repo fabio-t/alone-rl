@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.fabioticconi.roguelite.components.commands;
+package com.github.fabioticconi.roguelite.components.actions;
 
 import com.artemis.Component;
 import com.github.fabioticconi.roguelite.constants.Side;
@@ -21,7 +21,7 @@ import com.github.fabioticconi.roguelite.constants.Side;
 /**
  * @author Fabio Ticconi
  */
-public class MoveCommand extends Component
+public class MoveAction extends Component
 {
     /**
      * "Speed" is actually the delay before we can move.
@@ -30,14 +30,14 @@ public class MoveCommand extends Component
     public float cooldown;
     public Side  direction;
 
-    public MoveCommand()
+    public MoveAction()
     {
         cooldown = 0.0f;
 
         direction = Side.HERE;
     }
 
-    public MoveCommand(final float speed, final Side direction)
+    public MoveAction(final float speed, final Side direction)
     {
         cooldown = speed;
 

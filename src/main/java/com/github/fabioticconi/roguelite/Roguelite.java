@@ -21,21 +21,17 @@ import java.util.Random;
 
 public class Roguelite extends JFrame implements KeyListener
 {
+    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
     public static boolean keepRunning = true;
-
     private final int   fps          = 25;
     private final long  deltaNanos   = Math.round(1000000000.0d / (double) fps);
     private final float deltaSeconds = 1.0f / (float) fps;
-
     private final AsciiPanel        terminal;
     private final World             world;
     private final PlayerInputSystem input;
     private final RenderSystem      render;
-
     // currently pressed keys
     private final BitVector pressed;
-
-    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
 
     public Roguelite()
     {
@@ -119,7 +115,7 @@ public class Roguelite extends JFrame implements KeyListener
 
             if (elapsed > 250000000L)
             {
-                log.info("lagging behind: {} ms",  elapsed/1000000.0f);
+                log.info("lagging behind: {} ms", elapsed / 1000000.0f);
                 elapsed = 250000000L;
             }
 

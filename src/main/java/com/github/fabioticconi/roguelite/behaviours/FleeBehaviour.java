@@ -123,7 +123,8 @@ public class FleeBehaviour extends AbstractBehaviour
         if (fleeFrom.x == curPos.x && fleeFrom.y == curPos.y)
         {
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
-        } else
+        }
+        else
         {
             direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
 

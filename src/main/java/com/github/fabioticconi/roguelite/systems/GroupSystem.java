@@ -36,7 +36,8 @@ public class GroupSystem extends PassiveSystem
         if (recycling.isEmpty())
         {
             newId = groups.size();
-        } else
+        }
+        else
         {
             newId = recycling.popFirst();
         }
