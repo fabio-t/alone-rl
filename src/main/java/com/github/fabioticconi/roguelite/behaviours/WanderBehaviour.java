@@ -18,14 +18,17 @@ public class WanderBehaviour extends AbstractBehaviour
 
     MovementSystem sMovement;
 
-    @Wire Map map;
+    @Wire
+    Map map;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class).build(world);
     }
 
-    @Override public float evaluate(final int entityId)
+    @Override
+    public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
@@ -35,7 +38,8 @@ public class WanderBehaviour extends AbstractBehaviour
         return 0.2f;
     }
 
-    @Override public float update()
+    @Override
+    public float update()
     {
         final Position pos   = mPosition.get(entityId);
         final Sight    sight = mSight.getSafe(entityId, null);

@@ -45,11 +45,13 @@ public class GrazeBehaviour extends AbstractBehaviour
     HungerSystem   sHunger;
     MovementSystem sMovement;
 
-    @Wire Map map;
+    @Wire
+    Map map;
 
     Hunger hunger;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
     }
@@ -59,7 +61,8 @@ public class GrazeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate(int)
      */
-    @Override public float evaluate(final int entityId)
+    @Override
+    public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
@@ -84,7 +87,8 @@ public class GrazeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override public float update()
+    @Override
+    public float update()
     {
         final Position pos   = mPosition.get(entityId);
         final int      sight = mSight.get(entityId).value;

@@ -9,33 +9,39 @@ public class MapTest
 {
     Map map;
 
-    @Before public void setup()
+    @Before
+    public void setup()
     {
         map = new Map();
     }
 
-    @Test public void testGetFirstFreeExit() throws Exception
+    @Test
+    public void testGetFirstFreeExit() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test public void testGetFreeExitRandomised() throws Exception
+    @Test
+    public void testGetFreeExitRandomised() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test public void testGetFirstOfType() throws Exception
+    @Test
+    public void testGetFirstOfType() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test public void testBasics() throws Exception
+    @Test
+    public void testBasics() throws Exception
     {
         // test get, set, contains, isObstacle
         throw new RuntimeException("not yet implemented");
     }
 
-    @Test public void testGetVisibleCells() throws Exception
+    @Test
+    public void testGetVisibleCells() throws Exception
     {
         final LongSet set = map.getVisibleCells(100, 100, 10);
 
@@ -44,9 +50,9 @@ public class MapTest
         {
             coords = Coords.unpackCoords(key);
             System.out.println(
-                    "(" + coords[0] + ", " + coords[1] + ") --> " + Coords.distanceBlock(100, 100, coords[0], coords[1])
-                            + ", " + Coords.distanceChebyshev(100, 100, coords[0], coords[1]) + ", " + Coords
-                            .distancePseudoEuclidean(100, 100, coords[0], coords[1]));
+                "(" + coords[0] + ", " + coords[1] + ") --> " + Coords.distanceBlock(100, 100, coords[0], coords[1]) +
+                ", " + Coords.distanceChebyshev(100, 100, coords[0], coords[1]) + ", " +
+                Coords.distancePseudoEuclidean(100, 100, coords[0], coords[1]));
         }
 
         int count = 0;
@@ -63,7 +69,8 @@ public class MapTest
         System.out.println("coords: tot=" + set.size() + ", >10=" + count);
     }
 
-    @Test public void testGetLineOfSight() throws Exception
+    @Test
+    public void testGetLineOfSight() throws Exception
     {
         throw new RuntimeException("not yet implemented");
     }

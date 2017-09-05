@@ -41,14 +41,17 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Sight>    mSight;
 
-    @Wire Map        map;
-    @Wire EntityGrid grid;
+    @Wire
+    Map        map;
+    @Wire
+    EntityGrid grid;
 
     PlayerManager pManager;
 
     Aspect aspect;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Player.class).build(world);
     }

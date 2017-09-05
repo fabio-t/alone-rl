@@ -36,12 +36,14 @@ public class Position extends Component
         this.y = y;
     }
 
-    @Override public String toString()
+    @Override
+    public String toString()
     {
         return String.format("x: %d, y: %d", x, y);
     }
 
-    @Override public boolean equals(final Object o)
+    @Override
+    public boolean equals(final Object o)
     {
         if (this == o)
             return true;
@@ -55,7 +57,8 @@ public class Position extends Component
         return y == position.y;
     }
 
-    @Override public int hashCode()
+    @Override
+    public int hashCode()
     {
         int result = x;
         result = 31 * result + y;

@@ -21,17 +21,17 @@ import java.util.Random;
 
 public class Roguelite extends JFrame implements KeyListener
 {
-    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
-    public static boolean keepRunning = true;
-    private final int   fps          = 25;
-    private final long  deltaNanos   = Math.round(1000000000.0d / (double) fps);
-    private final float deltaSeconds = 1.0f / (float) fps;
+    static final  Logger  log          = LoggerFactory.getLogger(Roguelite.class);
+    public static boolean keepRunning  = true;
+    private final int     fps          = 25;
+    private final long    deltaNanos   = Math.round(1000000000.0d / (double) fps);
+    private final float   deltaSeconds = 1.0f / (float) fps;
     private final AsciiPanel        terminal;
     private final World             world;
     private final PlayerInputSystem input;
     private final RenderSystem      render;
     // currently pressed keys
-    private final BitVector pressed;
+    private final BitVector         pressed;
 
     public Roguelite()
     {
@@ -149,25 +149,29 @@ public class Roguelite extends JFrame implements KeyListener
         }
     }
 
-    @Override public void repaint()
+    @Override
+    public void repaint()
     {
         terminal.clear();
         render.display(terminal);
         super.repaint();
     }
 
-    @Override public void keyPressed(final KeyEvent e)
+    @Override
+    public void keyPressed(final KeyEvent e)
     {
         pressed.set(e.getKeyCode());
     }
 
-    @Override public void keyReleased(final KeyEvent e)
+    @Override
+    public void keyReleased(final KeyEvent e)
     {
         // we don't check the capacity because we know the key must have been pressed before
         pressed.unsafeClear(e.getKeyCode());
     }
 
-    @Override public void keyTyped(final KeyEvent e)
+    @Override
+    public void keyTyped(final KeyEvent e)
     {
     }
 }

@@ -34,8 +34,10 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
 
-    @Wire Map        map;
-    @Wire EntityGrid grid;
+    @Wire
+    Map        map;
+    @Wire
+    EntityGrid grid;
 
     public MovementSystem()
     {
@@ -47,7 +49,8 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
      */
-    @Override protected float getRemainingDelay(final int entityId)
+    @Override
+    protected float getRemainingDelay(final int entityId)
     {
         return mMove.get(entityId).cooldown;
     }
@@ -57,7 +60,8 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
      */
-    @Override protected void processDelta(final int entityId, final float accumulatedDelta)
+    @Override
+    protected void processDelta(final int entityId, final float accumulatedDelta)
     {
         mMove.get(entityId).cooldown -= accumulatedDelta;
     }
@@ -67,7 +71,8 @@ public class MovementSystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
      */
-    @Override protected void processExpired(final int entityId)
+    @Override
+    protected void processExpired(final int entityId)
     {
         final Position   p = mPosition.get(entityId);
         final MoveAction m = mMove.get(entityId);

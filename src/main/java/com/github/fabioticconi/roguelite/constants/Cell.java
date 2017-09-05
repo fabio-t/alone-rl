@@ -25,11 +25,18 @@ import com.googlecode.lanterna.TextColor.RGB;
  */
 public enum Cell
 {
-    EMPTY, GROUND('.'), WALL('#'), OPEN_DOOR('/'), CLOSED_DOOR('+'), DEEP_WATER('=', ANSI.BLUE), WATER('=', ANSI.BLUE,
-                                                                                                       SGR.BOLD), SAND(
-        ',', ANSI.YELLOW, SGR.BOLD), GRASS(',', ANSI.GREEN, SGR.CROSSED_OUT), HILL('^', ANSI.GREEN), MOUNTAIN('^',
-                                                                                                              ANSI.YELLOW), HIGH_MOUNTAIN(
-        '^', SGR.BOLD);
+    EMPTY,
+    GROUND('.'),
+    WALL('#'),
+    OPEN_DOOR('/'),
+    CLOSED_DOOR('+'),
+    DEEP_WATER('=', ANSI.BLUE),
+    WATER('=', ANSI.BLUE, SGR.BOLD),
+    SAND(',', ANSI.YELLOW, SGR.BOLD),
+    GRASS(',', ANSI.GREEN, SGR.CROSSED_OUT),
+    HILL('^', ANSI.GREEN),
+    MOUNTAIN('^', ANSI.YELLOW),
+    HIGH_MOUNTAIN('^', SGR.BOLD);
 
     public final TextCharacter c;
 

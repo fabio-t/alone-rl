@@ -227,7 +227,8 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#contains(int, int)
      */
-    @Override public boolean contains(final int x, final int y)
+    @Override
+    public boolean contains(final int x, final int y)
     {
         return x >= 0 && x < Options.MAP_SIZE_X && y >= 0 && y < Options.MAP_SIZE_Y;
     }
@@ -237,10 +238,11 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#isObstacle(int, int)
      */
-    @Override public boolean isObstacle(final int x, final int y)
+    @Override
+    public boolean isObstacle(final int x, final int y)
     {
-        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL
-                || map[x][y] == Cell.CLOSED_DOOR;
+        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL ||
+               map[x][y] == Cell.CLOSED_DOOR;
     }
 
     public boolean isObstacle(final int x, final int y, final Side direction)
@@ -253,7 +255,8 @@ public class Map implements ILosBoard
      *
      * @see rlforj.los.ILosBoard#visit(int, int)
      */
-    @Override public void visit(final int x, final int y)
+    @Override
+    public void visit(final int x, final int y)
     {
         lastVisited.add(Coords.packCoords(x, y));
     }

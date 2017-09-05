@@ -44,15 +44,18 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
-    MovementSystem sMovement;
-    HungerSystem   sHunger;
-    @Wire EntityGrid grid;
-    @Wire Map        map;
+    MovementSystem             sMovement;
+    HungerSystem               sHunger;
+    @Wire
+    EntityGrid grid;
+    @Wire
+    Map        map;
     Position curPos;
     Position chasePos;
     int      chaseId;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
     }
@@ -62,7 +65,8 @@ public class ChaseBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate(int)
      */
-    @Override public float evaluate(final int entityId)
+    @Override
+    public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
@@ -112,7 +116,8 @@ public class ChaseBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override public float update()
+    @Override
+    public float update()
     {
         final Position pos   = mPosition.get(entityId);
         final float    speed = mSpeed.get(entityId).value;

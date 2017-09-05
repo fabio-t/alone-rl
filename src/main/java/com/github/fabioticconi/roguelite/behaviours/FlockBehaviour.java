@@ -27,20 +27,24 @@ public class FlockBehaviour extends AbstractBehaviour
     MovementSystem sMovement;
     GroupSystem    sGroup;
 
-    @Wire EntityGrid grid;
-    @Wire Map        map;
+    @Wire
+    EntityGrid grid;
+    @Wire
+    Map        map;
 
     Position curPos;
     Position centerOfGroup;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Group.class).build(world);
 
         centerOfGroup = new Position(0, 0);
     }
 
-    @Override public float evaluate(final int entityId)
+    @Override
+    public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
@@ -99,7 +103,8 @@ public class FlockBehaviour extends AbstractBehaviour
         return (float) dist / sight;
     }
 
-    @Override public float update()
+    @Override
+    public float update()
     {
         // let's move toward the center of the group
 

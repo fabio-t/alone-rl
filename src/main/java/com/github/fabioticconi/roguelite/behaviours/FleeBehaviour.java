@@ -43,13 +43,16 @@ public class FleeBehaviour extends AbstractBehaviour
 
     MovementSystem sMovement;
 
-    @Wire EntityGrid grid;
-    @Wire Map        map;
+    @Wire
+    EntityGrid grid;
+    @Wire
+    Map        map;
 
     Position curPos;
     Position fleeFrom;
 
-    @Override protected void initialize()
+    @Override
+    protected void initialize()
     {
         aspect = Aspect.all(Position.class, Speed.class, Sight.class).build(world);
 
@@ -61,7 +64,8 @@ public class FleeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate()
      */
-    @Override public float evaluate(final int entityId)
+    @Override
+    public float evaluate(final int entityId)
     {
         this.entityId = entityId;
 
@@ -115,7 +119,8 @@ public class FleeBehaviour extends AbstractBehaviour
      *
      * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
      */
-    @Override public float update()
+    @Override
+    public float update()
     {
         Side direction;
 

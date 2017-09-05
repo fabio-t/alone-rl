@@ -40,7 +40,8 @@ public class HungerSystem extends IntervalIteratingSystem
      *
      * @see com.artemis.systems.IntervalIteratingSystem#process(int)
      */
-    @Override protected void process(final int entityId)
+    @Override
+    protected void process(final int entityId)
     {
         final Hunger h = mHunger.get(entityId);
 

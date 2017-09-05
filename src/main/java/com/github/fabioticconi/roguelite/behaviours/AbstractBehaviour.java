@@ -31,7 +31,8 @@ public abstract class AbstractBehaviour extends PassiveSystem implements Behavio
      *
      * @see com.artemis.BaseSystem#initialize()
      */
-    @Override abstract protected void initialize();
+    @Override
+    abstract protected void initialize();
 
     public boolean interested(final int entityId)
     {

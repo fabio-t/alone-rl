@@ -34,7 +34,8 @@ public class AISystem extends DelayedIteratingSystem
     // be updated here
     public static final float BASE_TICKTIME = 3.0f;
 
-    @Wire Random r;
+    @Wire
+    Random r;
 
     ComponentMapper<AI>        mAI;
     ComponentMapper<Alertness> mAlert;
@@ -53,7 +54,8 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
      */
-    @Override protected float getRemainingDelay(final int entityId)
+    @Override
+    protected float getRemainingDelay(final int entityId)
     {
         return mAI.get(entityId).cooldown;
     }
@@ -63,7 +65,8 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
      */
-    @Override protected void processDelta(final int entityId, final float accumulatedDelta)
+    @Override
+    protected void processDelta(final int entityId, final float accumulatedDelta)
     {
         mAI.get(entityId).cooldown -= accumulatedDelta;
     }
@@ -73,7 +76,8 @@ public class AISystem extends DelayedIteratingSystem
      *
      * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
      */
-    @Override protected void processExpired(final int entityId)
+    @Override
+    protected void processExpired(final int entityId)
     {
         // System.out.println("eId: " + entityId);
 

@@ -20,7 +20,8 @@ package com.github.fabioticconi.roguelite.utils;
  *
  * @author Fabio Ticconi
  */
-@FunctionalInterface public interface BiIntFunction<R>
+@FunctionalInterface
+public interface BiIntFunction<R>
 {
 
     /**

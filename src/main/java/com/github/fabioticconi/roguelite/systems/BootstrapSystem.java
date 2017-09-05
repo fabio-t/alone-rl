@@ -36,9 +36,12 @@ import java.util.Random;
  */
 public class BootstrapSystem extends BaseSystem
 {
-    @Wire Map        map;
-    @Wire EntityGrid grid;
-    @Wire Random     r;
+    @Wire
+    Map        map;
+    @Wire
+    EntityGrid grid;
+    @Wire
+    Random     r;
 
     GroupSystem sGroup;
 
@@ -49,7 +52,8 @@ public class BootstrapSystem extends BaseSystem
      *
      * @see com.artemis.BaseSystem#processSystem()
      */
-    @Override protected void processSystem()
+    @Override
+    protected void processSystem()
     {
         // this must be only run once
         setEnabled(false);

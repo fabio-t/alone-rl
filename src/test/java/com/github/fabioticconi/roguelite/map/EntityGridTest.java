@@ -27,7 +27,8 @@ import static org.junit.Assert.*;
  */
 public class EntityGridTest
 {
-    @Test public final void testGetAndMoveEntities()
+    @Test
+    public final void testGetAndMoveEntities()
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -66,7 +67,8 @@ public class EntityGridTest
         assertEquals(e4.size(), 1);
     }
 
-    @Test public void testGetClosestEntities() throws Exception
+    @Test
+    public void testGetClosestEntities() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -104,7 +106,8 @@ public class EntityGridTest
         assertEquals(entities.size(), 8);
     }
 
-    @Test public void testGetEntitiesAtRadius() throws Exception
+    @Test
+    public void testGetEntitiesAtRadius() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 
@@ -146,7 +149,8 @@ public class EntityGridTest
         assertEquals(entities.size(), 24);
     }
 
-    @Test public void testGetEntitiesWithinRadius() throws Exception
+    @Test
+    public void testGetEntitiesWithinRadius() throws Exception
     {
         final EntityGrid grid = new EntityGrid();
 
