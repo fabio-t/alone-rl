@@ -4,7 +4,9 @@ import asciiPanel.AsciiFont;
 import asciiPanel.AsciiPanel;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
+import com.artemis.io.JsonArtemisSerializer;
 import com.artemis.managers.PlayerManager;
+import com.artemis.managers.WorldSerializationManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.roguelite.behaviours.*;
 import com.github.fabioticconi.roguelite.constants.Options;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.Random;
 
 public class Roguelite extends JFrame implements KeyListener
@@ -33,7 +36,7 @@ public class Roguelite extends JFrame implements KeyListener
     // currently pressed keys
     private final BitVector         pressed;
 
-    public Roguelite()
+    public Roguelite() throws IOException
     {
         super();
         terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.CP437_16x16);
@@ -60,6 +63,7 @@ public class Roguelite extends JFrame implements KeyListener
         config.setSystem(BootstrapSystem.class); // once
         config.setSystem(PlayerManager.class);
         config.setSystem(GroupSystem.class);
+        config.setSystem(WorldSerializationManager.class);
         config.setSystem(input);
         config.setSystem(render);
         // actual game logic
@@ -78,7 +82,7 @@ public class Roguelite extends JFrame implements KeyListener
         addKeyListener(this);
     }
 
-    public static void main(final String[] args)
+    public static void main(final String[] args) throws IOException
     {
         final Roguelite app = new Roguelite();
         app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

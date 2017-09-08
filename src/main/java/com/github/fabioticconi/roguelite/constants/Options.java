@@ -22,8 +22,8 @@ import java.awt.*;
  */
 public class Options
 {
-    public static final int MAP_SIZE_X = 1000;
-    public static final int MAP_SIZE_Y = 1000;
+    public static int MAP_SIZE_X = 1000;
+    public static int MAP_SIZE_Y = 1000;
 
     public static final int TERMINAL_SIZE_X = 100;
     public static final int TERMINAL_SIZE_Y = 40;

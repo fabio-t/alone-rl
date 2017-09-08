@@ -19,8 +19,6 @@ import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.utils.Coords;
-import com.github.fabioticconi.terrain_generator.ImageWriter;
-import com.github.fabioticconi.terrain_generator.SimplexNoise;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -28,6 +26,13 @@ import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
 import rlforj.math.Point2I;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -37,25 +42,22 @@ import java.util.List;
 public class Map implements ILosBoard
 {
     final Cell  map[][];
-    final float heightMap[][];
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
     PrecisePermissive view;
 
-    // TODO: when the terrain-generator is done, we'd have not only
-    // the height map but also the humidity map and the temperature map,
-    // as well as, of course, the "biome map" containing the actual color
-    // codes.
-
-    public Map()
+    public Map() throws IOException
     {
         lastVisited = new LongOpenHashSet();
         view = new PrecisePermissive();
 
-        heightMap = SimplexNoise.generateOctavedSimplexNoise(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, 6, 0.4f, 0.003f);
-        final ImageWriter img = new ImageWriter(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, false);
-        img.savePng("map.png", heightMap);
+        final BufferedImage img = ImageIO.read(new File("map.png"));
+
+        final byte [] elevation = Files.readAllBytes(Paths.get("elevation.data"));
+
+        Options.MAP_SIZE_X = img.getWidth();
+        Options.MAP_SIZE_Y = img.getHeight();
 
         map = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
@@ -65,10 +67,13 @@ public class Map implements ILosBoard
         {
             for (int y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                // value = heightMap[x][y];
-                value = 0.5f * (1 + heightMap[x][y]);
+                final byte h = elevation[x * Options.MAP_SIZE_X + y];
+                value = (float)(h+128) / 255f;
 
-                // System.out.println(value);
+                if ((x == 0 && y == 0) || (x == 780 && y == 900) || (x == 1137 && y == 633) || (x == 759 && y == 663) || (x == 435 && y == 838) || (x == 708 && y == 681))
+                {
+                    System.out.format("(%d,%d) -> %04x %d %f\n", x, y, h, h, value);
+                }
 
                 final float water = 0.3f;
 

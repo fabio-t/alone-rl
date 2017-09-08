@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.fabioticconi.roguelite.components;
+package com.github.fabioticconi.roguelite.components.attributes;
 
 import com.artemis.Component;
 
@@ -23,11 +23,6 @@ import com.artemis.Component;
 public class Sight extends Component
 {
     public int value;
-
-    public Sight()
-    {
-
-    }
 
     public Sight(final int value)
     {

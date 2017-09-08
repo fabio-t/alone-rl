@@ -19,7 +19,11 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelite.Roguelite;
-import com.github.fabioticconi.roguelite.components.*;
+import com.github.fabioticconi.roguelite.components.Herbivore;
+import com.github.fabioticconi.roguelite.components.Hunger;
+import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
@@ -46,10 +50,12 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Herbivore> mHerbivore;
     MovementSystem             sMovement;
     HungerSystem               sHunger;
+
     @Wire
     EntityGrid grid;
     @Wire
     Map        map;
+
     Position curPos;
     Position chasePos;
     int      chaseId;

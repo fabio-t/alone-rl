@@ -22,7 +22,7 @@ import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.github.fabioticconi.roguelite.components.Player;
 import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Sight;
+import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.components.Sprite;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.EntityGrid;

@@ -36,6 +36,12 @@ public class Position extends Component
         this.y = y;
     }
 
+    public void set(final int x, final int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public String toString()
     {
