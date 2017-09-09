@@ -31,10 +31,10 @@ Creatures don't "pop", they don't appear when needed, but the simulation keeps g
 
 Different creatures have different set of behaviours. Here we see four animal species:
 
-- small, independent **r**abbits are fleeing from predators
-- relatively small **w**olves chase them with pack behaviour
-- relatively large **P**umas attack their prey independently, they are not a pack
-- large **B**isons, pacifically grazing and staying close to the herd, are attacked by wolves and pumas
+- small, independent **r**abbits are fleeing from a puma
+- large **B**isons, pacifically grazing and staying close to the herd, are attacked by wolves
+- relatively small **w**olves chase rabbits with pack behaviour
+- relatively large **P**umas attack their prey (here, rabbits) independently, they are not a pack
 
 The Size of animals determines whether the letter is uppercase or lowercase. This should prove useful to quickly gauge whether to go fight or flight.
 
@@ -42,3 +42,10 @@ Many of the attributes for the animals are currently configurable in a yaml file
 Eventually any creature, flora, item or terrain feature will be completely specifiable via those yaml files.
 
 Trees are present but don't do anything yet.
+
+NOTE: the specific animals are just chosen for now to cover the four different most important combinations:
+
+- Herbivore/Carnivore
+- Solitary/Group
+
+The actual "name" may change, I may add more, not sure. But they make for good testing.
