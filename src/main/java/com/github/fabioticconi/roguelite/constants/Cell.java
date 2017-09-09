@@ -15,6 +15,8 @@
  */
 package com.github.fabioticconi.roguelite.constants;
 
+import com.github.fabioticconi.roguelite.utils.Util;
+
 import java.awt.*;
 
 /**
@@ -23,16 +25,17 @@ import java.awt.*;
 public enum Cell
 {
     EMPTY(' '),
-    GROUND('.'),
     WALL('#'),
     OPEN_DOOR('/'),
     CLOSED_DOOR('+'),
-    DEEP_WATER('=', Color.BLUE.darker()),
-    WATER('=', Color.BLUE),
-    SAND(',', Color.ORANGE),
-    GRASS(',', Color.GREEN),
-    HILL('^', Color.GREEN.darker()),
-    MOUNTAIN('^', Color.ORANGE.darker()),
+    DEEP_WATER('=', Color.BLUE.darker().darker()),
+    WATER('~', Color.BLUE.brighter().brighter()),
+    SAND('.', Color.ORANGE.brighter()),
+    GROUND('.', Color.ORANGE.darker()),
+    GRASS(',', Color.GREEN.darker().darker()),
+    HILL_GRASS('^', Color.GREEN.darker().darker()),
+    HILL('^', Util.BROWN),
+    MOUNTAIN('^', Util.BROWN.brighter()),
     HIGH_MOUNTAIN('^', Color.GRAY.brighter());
 
     public final char  c;

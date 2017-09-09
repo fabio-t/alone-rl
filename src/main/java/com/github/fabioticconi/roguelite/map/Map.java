@@ -74,13 +74,17 @@ public class Map implements ILosBoard
                 {
                     map[x][y] = Cell.DEEP_WATER;
                 }
-                else if (value < 0.2f)
+                else if (value < 0.005f)
                 {
                     map[x][y] = Cell.WATER;
                 }
-                else if (value < 0.3f)
+                else if (value < 0.03f)
                 {
                     map[x][y] = Cell.SAND;
+                }
+                else if (value < 0.04f)
+                {
+                    map[x][y] = Cell.GROUND;
                 }
                 else if (value < 0.7f)
                 {
@@ -88,9 +92,13 @@ public class Map implements ILosBoard
                 }
                 else if (value < 0.8f)
                 {
-                    map[x][y] = Cell.HILL;
+                    map[x][y] = Cell.HILL_GRASS;
                 }
                 else if (value < 0.9f)
+                {
+                    map[x][y] = Cell.HILL;
+                }
+                else if (value < 0.99f)
                 {
                     map[x][y] = Cell.MOUNTAIN;
                 }

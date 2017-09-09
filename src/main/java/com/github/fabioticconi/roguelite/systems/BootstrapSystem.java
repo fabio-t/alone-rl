@@ -24,6 +24,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.fabioticconi.roguelite.behaviours.*;
 import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.attributes.*;
+import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
@@ -40,8 +41,6 @@ import java.util.Random;
  */
 public class BootstrapSystem extends BaseSystem
 {
-    public static Color BROWN = new Color(102, 51, 0);
-
     @Wire
     Map        map;
     @Wire
@@ -75,7 +74,7 @@ public class BootstrapSystem extends BaseSystem
         try
         {
             loadBody("data/creatures/player.yaml", edit);
-        } catch (IOException e)
+        } catch (final IOException e)
         {
             e.printStackTrace();
             System.exit(1);
@@ -102,7 +101,7 @@ public class BootstrapSystem extends BaseSystem
             try
             {
                 loadBody("data/creatures/buffalo.yaml", edit);
-            } catch (IOException e)
+            } catch (final IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -120,7 +119,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('b', BROWN);
+            edit.create(Sprite.class).set('b', Util.BROWN);
 
             grid.putEntity(id, x, y);
         }
@@ -134,7 +133,7 @@ public class BootstrapSystem extends BaseSystem
             try
             {
                 loadBody("data/creatures/rabbit.yaml", edit);
-            } catch (IOException e)
+            } catch (final IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -149,7 +148,7 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('h', Color.LIGHT_GRAY);
+            edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
 
             grid.putEntity(id, x, y);
         }
@@ -165,7 +164,7 @@ public class BootstrapSystem extends BaseSystem
             try
             {
                 loadBody("data/creatures/wolf.yaml", edit);
-            } catch (IOException e)
+            } catch (final IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -182,7 +181,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('c', Color.DARK_GRAY);
+            edit.create(Sprite.class).set('w', Color.DARK_GRAY);
 
             grid.putEntity(id, x, y);
         }
@@ -196,7 +195,7 @@ public class BootstrapSystem extends BaseSystem
             try
             {
                 loadBody("data/creatures/puma.yaml", edit);
-            } catch (IOException e)
+            } catch (final IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -210,9 +209,31 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('p', BROWN.darker());
+            edit.create(Sprite.class).set('p', Util.BROWN.darker());
 
             grid.putEntity(id, x, y);
+        }
+
+        // add random trees?
+        for (x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final Cell cell = map.get(x, y);
+
+                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
+                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
+                {
+                    id = world.create();
+                    edit = world.edit(id);
+
+                    edit.create(Position.class).set(x, y);
+                    edit.create(Sprite.class).set('T', Color.GREEN.brighter());
+
+                    grid.putEntity(id, x, y);
+                }
+            }
         }
 
         System.out.println("Bootstrap done");

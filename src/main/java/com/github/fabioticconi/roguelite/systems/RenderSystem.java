@@ -113,7 +113,7 @@ public class RenderSystem extends PassiveSystem
 
                         if (sprite != null)
                         {
-                            final char c = size.value > 1 ? Character.toUpperCase(sprite.c) : sprite.c;
+                            final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
 
                             terminal.write(c, x, y, sprite.col);
 

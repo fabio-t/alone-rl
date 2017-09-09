@@ -18,7 +18,7 @@ public class PlayerInputSystem extends PassiveSystem
 
     PlayerManager pManager;
 
-    public void handleKeys(final BitVector keys)
+    public float handleKeys(final BitVector keys)
     {
         // FIXME: hackish, very crappy but it should work
         final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
@@ -30,17 +30,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // northwest
-                movement.moveTo(pID, speed, Side.NW);
+                return movement.moveTo(pID, speed, Side.NW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // northeast
-                movement.moveTo(pID, speed, Side.NE);
+                return movement.moveTo(pID, speed, Side.NE);
             }
             else
             {
                 // north
-                movement.moveTo(pID, speed, Side.N);
+                return movement.moveTo(pID, speed, Side.N);
             }
         }
         else if (keys.get(KeyEvent.VK_DOWN))
@@ -48,32 +48,34 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
-                movement.moveTo(pID, speed, Side.SW);
+                return movement.moveTo(pID, speed, Side.SW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // southeast
-                movement.moveTo(pID, speed, Side.SE);
+                return movement.moveTo(pID, speed, Side.SE);
             }
             else
             {
                 // south
-                movement.moveTo(pID, speed, Side.S);
+                return movement.moveTo(pID, speed, Side.S);
             }
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
         {
             // northeast
-            movement.moveTo(pID, speed, Side.E);
+            return movement.moveTo(pID, speed, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
             // northwest
-            movement.moveTo(pID, speed, Side.W);
+            return movement.moveTo(pID, speed, Side.W);
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
             Roguelite.keepRunning = false;
         }
+
+        return 0f;
     }
 }

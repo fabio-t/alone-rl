@@ -23,4 +23,22 @@ Creatures and player alike have, thus, only a limited view of the world and can 
 
 ## Persistence
 
-Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking. The world evolves around you.
+Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking.
+
+## Small-scale ecology
+
+![alt tag](screenshots/grassy_hills.png)
+
+Different creatures have different set of behaviours. Here we see four animal species:
+
+- small, independent **r**abbits are fleeing from predators
+- relatively small **w**olves chase them with pack behaviour
+- relatively large **P**umas attack their prey independently, they are not a pack
+- large **B**isons, pacifically grazing and staying close to the herd, are attacked by wolves and pumas
+
+The Size of animals determines whether the letter is uppercase or lowercase. This should prove useful to quickly gauge whether to go fight or flight.
+
+Many of the attributes for the animals are currently configurable in a yaml file, but it's still not enough.
+Eventually any creature, flora, item or terrain feature will be completely specifiable via those yaml files.
+
+Trees are present but don't do anything yet.

@@ -38,7 +38,7 @@ public class Roguelite extends JFrame implements KeyListener
     public Roguelite() throws IOException
     {
         super();
-        terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.CP437_16x16);
+        terminal = new AsciiPanel(Options.OUTPUT_SIZE_X, Options.OUTPUT_SIZE_Y, AsciiFont.TALRYTH_15_15);
         add(terminal);
         pack();
 
