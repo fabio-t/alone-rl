@@ -10,6 +10,11 @@ public class Size extends Component
 {
     public int value;
 
+    public Size()
+    {
+
+    }
+
     public Size(final int size)
     {
         this.value = size;

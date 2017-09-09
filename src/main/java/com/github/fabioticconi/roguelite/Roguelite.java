@@ -4,7 +4,6 @@ import asciiPanel.AsciiFont;
 import asciiPanel.AsciiPanel;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
-import com.artemis.io.JsonArtemisSerializer;
 import com.artemis.managers.PlayerManager;
 import com.artemis.managers.WorldSerializationManager;
 import com.artemis.utils.BitVector;

@@ -10,6 +10,11 @@ public class Strength extends Component
 {
     public int value;
 
+    public Strength()
+    {
+
+    }
+
     public Strength(final int strength)
     {
         this.value = strength;

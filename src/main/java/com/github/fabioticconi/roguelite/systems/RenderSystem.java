@@ -16,14 +16,13 @@
 package com.github.fabioticconi.roguelite.systems;
 
 import asciiPanel.AsciiPanel;
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
-import com.github.fabioticconi.roguelite.components.Player;
 import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.components.Sprite;
+import com.github.fabioticconi.roguelite.components.attributes.Sight;
+import com.github.fabioticconi.roguelite.components.attributes.Size;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
@@ -40,6 +39,7 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Position> mPosition;
     ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Sight>    mSight;
+    ComponentMapper<Size>     mSize;
 
     @Wire
     Map        map;
@@ -47,14 +47,6 @@ public class RenderSystem extends PassiveSystem
     EntityGrid grid;
 
     PlayerManager pManager;
-
-    Aspect aspect;
-
-    @Override
-    protected void initialize()
-    {
-        aspect = Aspect.all(Position.class, Player.class).build(world);
-    }
 
     public void display(final AsciiPanel terminal)
     {
@@ -77,6 +69,7 @@ public class RenderSystem extends PassiveSystem
         int pos_y;
 
         Sprite sprite;
+        Size   size;
 
         Set<Integer> entities;
 
@@ -103,7 +96,7 @@ public class RenderSystem extends PassiveSystem
                     // render terrain
                     final Cell cell = map.get(pos_x, pos_y);
 
-                    terminal.write(cell.c.getCharacter(), x, y, cell.c.getForegroundColor().toColor());
+                    terminal.write(cell.c, x, y, cell.col);
 
                     entities = grid.getEntities(pos_x, pos_y);
 
@@ -116,10 +109,13 @@ public class RenderSystem extends PassiveSystem
                     for (final int eID : entities)
                     {
                         sprite = mSprite.get(eID);
+                        size = mSize.get(eID);
 
                         if (sprite != null)
                         {
-                            terminal.write(sprite.c.getCharacter(), x, y, sprite.c.getForegroundColor().toColor());
+                            final char c = size.value > 1 ? Character.toUpperCase(sprite.c) : sprite.c;
+
+                            terminal.write(c, x, y, sprite.col);
 
                             // only show the first showable entity on each cell
                             break;
@@ -128,7 +124,7 @@ public class RenderSystem extends PassiveSystem
                 }
                 else
                 {
-                    terminal.write(' ', x, y, Color.darkGray);
+                    terminal.write(' ', x, y, Color.DARK_GRAY);
                 }
             }
         }

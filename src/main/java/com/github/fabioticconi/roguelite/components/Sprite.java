@@ -16,22 +16,38 @@
 package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
-import com.googlecode.lanterna.TextCharacter;
+
+import java.awt.*;
 
 /**
  * @author Fabio Ticconi
  */
 public class Sprite extends Component
 {
-    public TextCharacter c;
+    public char  c;
+    public Color col;
 
     public Sprite()
     {
-
+        this.c = '?';
+        this.col = Color.WHITE;
     }
 
-    public Sprite(final TextCharacter c)
+    public Sprite(final char c)
     {
         this.c = c;
+        this.col = Color.WHITE;
+    }
+
+    public Sprite(final char c, final Color col)
+    {
+        this.c = c;
+        this.col = col;
+    }
+
+    public void set(final char c, final Color col)
+    {
+        this.c = c;
+        this.col = col;
     }
 }

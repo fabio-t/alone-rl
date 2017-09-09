@@ -10,6 +10,11 @@ public class Constitution extends Component
 {
     public int value;
 
+    public Constitution()
+    {
+
+    }
+
     public Constitution(final int constitution)
     {
         this.value = constitution;

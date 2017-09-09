@@ -31,7 +31,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
@@ -41,7 +40,7 @@ import java.util.List;
  */
 public class Map implements ILosBoard
 {
-    final Cell  map[][];
+    final Cell map[][];
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
@@ -52,9 +51,9 @@ public class Map implements ILosBoard
         lastVisited = new LongOpenHashSet();
         view = new PrecisePermissive();
 
-        final BufferedImage img = ImageIO.read(new File("map.png"));
+        final BufferedImage img = ImageIO.read(new File("data/map/map.png"));
 
-        final byte [] elevation = Files.readAllBytes(Paths.get("elevation.data"));
+        final byte[] elevation = Files.readAllBytes(Paths.get("data/map/elevation.data"));
 
         Options.MAP_SIZE_X = img.getWidth();
         Options.MAP_SIZE_Y = img.getHeight();
@@ -67,56 +66,37 @@ public class Map implements ILosBoard
         {
             for (int y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final byte h = elevation[x * Options.MAP_SIZE_X + y];
-                value = (float)(h+128) / 255f;
+                final byte h     = elevation[x * Options.MAP_SIZE_X + y];
+                final int  uns_h = Byte.toUnsignedInt(h);
+                value = (float) (uns_h) / 255f;
 
-                if ((x == 0 && y == 0) || (x == 780 && y == 900) || (x == 1137 && y == 633) || (x == 759 && y == 663) || (x == 435 && y == 838) || (x == 708 && y == 681))
+                if (value == 0f)
                 {
-                    System.out.format("(%d,%d) -> %04x %d %f\n", x, y, h, h, value);
+                    map[x][y] = Cell.DEEP_WATER;
                 }
-
-                final float water = 0.3f;
-
-                if (value < water)
+                else if (value < 0.2f)
                 {
-                    if (value < water * 0.7f)
-                    {
-                        map[x][y] = Cell.DEEP_WATER;
-                    }
-                    else
-                    {
-                        map[x][y] = Cell.WATER;
-                    }
+                    map[x][y] = Cell.WATER;
+                }
+                else if (value < 0.3f)
+                {
+                    map[x][y] = Cell.SAND;
+                }
+                else if (value < 0.7f)
+                {
+                    map[x][y] = Cell.GRASS;
+                }
+                else if (value < 0.8f)
+                {
+                    map[x][y] = Cell.HILL;
+                }
+                else if (value < 0.9f)
+                {
+                    map[x][y] = Cell.MOUNTAIN;
                 }
                 else
                 {
-                    // final float val = t;
-                    // normalize val so 0 is at water level
-                    final float val = (value - water) / (1.0f - water);
-
-                    // set color based on above the see level
-                    // beach, plain, forest, mountains etc
-
-                    if (val < 0.1f)
-                    {
-                        map[x][y] = Cell.SAND;
-                    }
-                    else if (val < 0.3f)
-                    {
-                        map[x][y] = Cell.GRASS;
-                    }
-                    else if (val < 0.55f)
-                    {
-                        map[x][y] = Cell.HILL;
-                    }
-                    else if (val < 0.7f)
-                    {
-                        map[x][y] = Cell.MOUNTAIN;
-                    }
-                    else
-                    {
-                        map[x][y] = Cell.HIGH_MOUNTAIN;
-                    }
+                    map[x][y] = Cell.HIGH_MOUNTAIN;
                 }
             }
         }

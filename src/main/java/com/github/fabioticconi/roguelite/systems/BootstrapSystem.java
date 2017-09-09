@@ -28,14 +28,11 @@ import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.EntityGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 import com.github.fabioticconi.roguelite.utils.Util;
-import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Random;
 
 /**
@@ -43,6 +40,8 @@ import java.util.Random;
  */
 public class BootstrapSystem extends BaseSystem
 {
+    public static Color BROWN = new Color(102, 51, 0);
+
     @Wire
     Map        map;
     @Wire
@@ -75,7 +74,7 @@ public class BootstrapSystem extends BaseSystem
         // load the player's data
         try
         {
-            loadBody("player.yaml", edit);
+            loadBody("data/creatures/player.yaml", edit);
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -86,11 +85,11 @@ public class BootstrapSystem extends BaseSystem
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).c = new TextCharacter('@').withForegroundColor(TextColor.ANSI.GREEN)
-                                                            .withModifier(SGR.BOLD);
+        edit.create(Sprite.class).set('@', Color.WHITE);
         grid.putEntity(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
+        edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
@@ -102,7 +101,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("buffalo.yaml", edit);
+                loadBody("data/creatures/buffalo.yaml", edit);
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -121,21 +120,20 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).c = new TextCharacter('H').withForegroundColor(TextColor.ANSI.MAGENTA)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).set('b', BROWN);
 
             grid.putEntity(id, x, y);
         }
 
         // add small, independent rabbits/hares
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 3; i++)
         {
             id = world.create();
             edit = world.edit(id);
 
             try
             {
-                loadBody("rabbit.yaml", edit);
+                loadBody("data/creatures/rabbit.yaml", edit);
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -151,8 +149,7 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).c = new TextCharacter('h').withForegroundColor(TextColor.ANSI.BLUE)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).set('h', Color.LIGHT_GRAY);
 
             grid.putEntity(id, x, y);
         }
@@ -160,14 +157,14 @@ public class BootstrapSystem extends BaseSystem
         // add a pack of wolves
         groupId = sGroup.createGroup();
         group = sGroup.getGroup(groupId);
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 5; i++)
         {
             id = world.create();
             edit = world.edit(id);
 
             try
             {
-                loadBody("wolf.yaml", edit);
+                loadBody("data/creatures/wolf.yaml", edit);
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -185,8 +182,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).c = new TextCharacter('c').withForegroundColor(TextColor.ANSI.RED)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).set('c', Color.DARK_GRAY);
 
             grid.putEntity(id, x, y);
         }
@@ -199,7 +195,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("puma.yaml", edit);
+                loadBody("data/creatures/puma.yaml", edit);
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -214,8 +210,7 @@ public class BootstrapSystem extends BaseSystem
             y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).c = new TextCharacter('C').withForegroundColor(TextColor.ANSI.RED)
-                                                                .withModifier(SGR.BOLD);
+            edit.create(Sprite.class).set('p', BROWN.darker());
 
             grid.putEntity(id, x, y);
         }
@@ -228,12 +223,21 @@ public class BootstrapSystem extends BaseSystem
         final YAMLFactory factory = new YAMLFactory();
         final JsonParser  parser  = factory.createParser(new File(filename));
 
-        int str = 0, agi = 0, con = 0, skin = 0, sight = 0;
+        int     str       = 0, agi = 0, con = 0, skin = 0, sight = 0;
         boolean herbivore = false, carnivore = false;
+
+        parser.nextToken(); // START_OBJECT
 
         while (parser.nextToken() != null)
         {
             final String name = parser.getCurrentName();
+
+            if (name == null)
+                break;
+
+            parser.nextToken(); // get in value
+
+            System.out.println(name);
 
             if (name.equals("strength"))
             {

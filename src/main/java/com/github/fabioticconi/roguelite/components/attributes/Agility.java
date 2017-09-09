@@ -10,6 +10,11 @@ public class Agility extends Component
 {
     public int value;
 
+    public Agility()
+    {
+
+    }
+
     public Agility(final int agility)
     {
         this.value = agility;

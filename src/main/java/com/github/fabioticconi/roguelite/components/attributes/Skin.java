@@ -10,6 +10,11 @@ public class Skin extends Component
 {
     public int value;
 
+    public Skin()
+    {
+
+    }
+
     public Skin(final int skin)
     {
         this.value = skin;

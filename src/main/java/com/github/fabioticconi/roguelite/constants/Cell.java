@@ -15,63 +15,44 @@
  */
 package com.github.fabioticconi.roguelite.constants;
 
-import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor.ANSI;
-import com.googlecode.lanterna.TextColor.RGB;
+import java.awt.*;
 
 /**
  * @author Fabio Ticconi
  */
 public enum Cell
 {
-    EMPTY,
+    EMPTY(' '),
     GROUND('.'),
     WALL('#'),
     OPEN_DOOR('/'),
     CLOSED_DOOR('+'),
-    DEEP_WATER('=', ANSI.BLUE),
-    WATER('=', ANSI.BLUE, SGR.BOLD),
-    SAND(',', ANSI.YELLOW, SGR.BOLD),
-    GRASS(',', ANSI.GREEN, SGR.CROSSED_OUT),
-    HILL('^', ANSI.GREEN),
-    MOUNTAIN('^', ANSI.YELLOW),
-    HIGH_MOUNTAIN('^', SGR.BOLD);
+    DEEP_WATER('=', Color.BLUE.darker()),
+    WATER('=', Color.BLUE),
+    SAND(',', Color.ORANGE),
+    GRASS(',', Color.GREEN),
+    HILL('^', Color.GREEN.darker()),
+    MOUNTAIN('^', Color.ORANGE.darker()),
+    HIGH_MOUNTAIN('^', Color.GRAY.brighter());
 
-    public final TextCharacter c;
+    public final char  c;
+    public final Color col;
 
     Cell()
     {
-        c = new TextCharacter(' ');
+        c = ' ';
+        col = Color.BLACK;
     }
 
     Cell(final char c)
     {
-        this.c = new TextCharacter(c);
+        this.c = c;
+        col = Color.BLACK;
     }
 
-    Cell(final char c, final RGB color)
+    Cell(final char c, final Color color)
     {
-        this.c = new TextCharacter(c).withForegroundColor(color);
-    }
-
-    Cell(final char c, final ANSI color)
-    {
-        this.c = new TextCharacter(c).withForegroundColor(color);
-    }
-
-    Cell(final char c, final SGR modifier)
-    {
-        this.c = new TextCharacter(c).withModifier(modifier);
-    }
-
-    Cell(final char c, final RGB color, final SGR modifier)
-    {
-        this.c = new TextCharacter(c).withForegroundColor(color).withModifier(modifier);
-    }
-
-    Cell(final char c, final ANSI color, final SGR modifier)
-    {
-        this.c = new TextCharacter(c).withForegroundColor(color).withModifier(modifier);
+        this.c = c;
+        this.col = color;
     }
 }

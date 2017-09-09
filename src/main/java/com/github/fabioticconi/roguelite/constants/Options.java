@@ -22,17 +22,13 @@ import java.awt.*;
  */
 public class Options
 {
-    public static int MAP_SIZE_X = 1000;
-    public static int MAP_SIZE_Y = 1000;
-
     public static final int TERMINAL_SIZE_X = 100;
     public static final int TERMINAL_SIZE_Y = 40;
-
     public static final int INPUT_SIZE_Y = 1;
-
     public static final int OUTPUT_SIZE_X = 40;
     public static final int OUTPUT_SIZE_Y = 40;
-
     public static final int  FONT_SIZE = 12;
     public static final Font FONT      = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
+    public static int MAP_SIZE_X = 1000;
+    public static int MAP_SIZE_Y = 1000;
 }

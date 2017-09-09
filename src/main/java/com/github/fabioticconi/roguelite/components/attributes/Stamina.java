@@ -10,6 +10,11 @@ public class Stamina extends Component
 {
     public int value;
 
+    public Stamina()
+    {
+
+    }
+
     public Stamina(final int stamina)
     {
         this.value = stamina;

@@ -24,6 +24,11 @@ public class Sight extends Component
 {
     public int value;
 
+    public Sight()
+    {
+
+    }
+
     public Sight(final int value)
     {
         this.value = value;
