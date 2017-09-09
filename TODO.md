@@ -13,4 +13,5 @@
 
 - carnivores should eat
 
-
+- transform it into a "turn"-based game by tweaking the game loop so that logic waits for player input, then
+  it runs as long as the player action lasts. This may or may not prove a hassle..

@@ -21,6 +21,8 @@ Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise per
 
 Creatures and player alike have, thus, only a limited view of the world and can hide from indiscreet eyes.
 
+NB: picture is old, must replace.
+
 ## Persistence
 
 Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking.
