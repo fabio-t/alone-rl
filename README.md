@@ -32,8 +32,8 @@ Creatures don't "pop", they don't appear when needed, but the simulation keeps g
 Different creatures have different set of behaviours. Here we see four animal species:
 
 - small, independent **r**abbits are fleeing from a puma
-- large **B**isons, pacifically grazing and staying close to the herd, are attacked by wolves
-- relatively small **w**olves chase rabbits with pack behaviour
+- large **B**isons, pacifically grazing and staying close to the herd, are attacked (and divided! that's unintentional, btw) by wolves
+- relatively small **w**olves chase bisons with pack behaviour
 - relatively large **P**umas attack their prey (here, rabbits) independently, they are not a pack
 
 The Size of animals determines whether the letter is uppercase or lowercase. This should prove useful to quickly gauge whether to go fight or flight.
