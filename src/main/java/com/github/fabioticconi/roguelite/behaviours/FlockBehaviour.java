@@ -122,8 +122,6 @@ public class FlockBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        // let's move toward the center of the group
-
         Side direction;
 
         direction = Side.getSideAt(centerOfGroup.x - curPos.x, centerOfGroup.y - curPos.y);

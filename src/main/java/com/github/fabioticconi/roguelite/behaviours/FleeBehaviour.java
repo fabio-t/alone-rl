@@ -60,11 +60,6 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom = new Position(0, 0);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate()
-     */
     @Override
     public float evaluate(final int entityId)
     {
@@ -105,49 +100,27 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom.x = Math.floorDiv(fleeFrom.x, count);
         fleeFrom.y = Math.floorDiv(fleeFrom.y, count);
 
-        // System.out.println(curPos
-        // + " | "
-        // + fleeFrom
-        // + " --> "
-        // + Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x,
-        // fleeFrom.y));
-
         return 1f - (float) Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
-     */
     @Override
     public float update()
     {
         Side direction;
 
-        // if the predators' center is HERE, flee randomly out
-        if (fleeFrom.x == curPos.x && fleeFrom.y == curPos.y)
+        direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
+
+        if (map.isObstacle(curPos.x, curPos.y, direction))
         {
+            // FIXME is that even possible, since we are looking at visible
+            // cells and moving diagonally?
+            // if so, we should try the closest exits to the target one
+
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
-        }
-        else
-        {
-            direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
-
-            if (map.isObstacle(curPos.x, curPos.y, direction))
-            {
-                // FIXME is that even possible, since we are looking at visible
-                // cells and moving diagonally?
-                // if so, we should try the closest exits to the target one
-
-                direction = map.getFreeExitRandomised(curPos.x, curPos.y);
-            }
         }
 
         if (direction == Side.HERE)
             return 0f;
-
-        // System.out.println(direction);
 
         final float speed = mSpeed.get(entityId).value;
 

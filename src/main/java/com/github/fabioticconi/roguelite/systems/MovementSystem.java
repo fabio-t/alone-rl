@@ -89,31 +89,30 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + m.direction.x;
         final int newY = p.y + m.direction.y;
 
-        if (!map.isObstacle(newX, newY))
+        if (map.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
+        {
+            // TODO what should we do? is this a bump action, even if the movement is essentially ended?
+            // This can happen if another creatures moves where we are going before the timer expires.
+            // For now, just log this and fail the movement
+            log.info(String.format("%d tried to move to (%d,%d) but it's not empty", entityId, newX, newY));
+        }
+        else
         {
             final int id = grid.move(p.x, p.y, newX, newY);
-
-            if (id >= 0)
-            {
-                log.error(String.format("entity %d was at position %s", id, p));
-            }
-
-            p.x = newX;
-            p.y = newY;
 
             if (mObstacle.has(entityId))
             {
                 map.unsetObstacle(p.x, p.y);
                 map.setObstacle(newX, newY);
             }
-        }
-        else
-        {
-            // moving towards a closed door opens it, instead of actually moving
-            //            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
-            //            {
-            //                map.set(newX, newY, Cell.OPEN_DOOR);
-            //            }
+
+            p.x = newX;
+            p.y = newY;
+
+            if (id >= 0)
+            {
+                log.error(String.format("entity %d was at the new position %s", id, p));
+            }
         }
     }
 
@@ -121,17 +120,31 @@ public class MovementSystem extends DelayedIteratingSystem
 
     public float moveTo(final int entityId, final float speed, final Side direction)
     {
+        final Position p = mPosition.get(entityId);
+
+        final int newX = p.x + direction.x;
+        final int newY = p.y + direction.y;
+
+        if (map.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
+        {
+            // TODO: handle "bump action": this might be an attack if there's a creature there.
+            // This should be handled nicely.
+
+            // clear movement completely, even if we were going in another direction
+            mMove.remove(entityId);
+
+            return 0f;
+        }
+
+        // now we can actually move (or update the movement)
+
         final MoveAction m = mMove.create(entityId);
 
-        // TODO: check here if direction is obstacle, and if so raise a "collision"
-        // so that the appropriate action can be taken
-        // (doing it here, instead of in the player/AI specific code, might be a bit ugly but
-        // it should allow the same code to work for player and mobs)
-
+        // if going in the same direction, don't increase speed
         if (m.direction == direction)
             return m.cooldown;
 
-        m.cooldown = speed;
+        m.cooldown = speed; // TODO: add terrain-specific speed penalty, plus check water etc
         m.direction = direction;
 
         offerDelay(m.cooldown);
