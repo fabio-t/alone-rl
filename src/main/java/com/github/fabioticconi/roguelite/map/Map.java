@@ -1,17 +1,19 @@
-/**
- * Copyright 2015 Fabio Ticconi
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+ * Copyright (C) 2017 Fabio Ticconi
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package com.github.fabioticconi.roguelite.map;
 
@@ -19,6 +21,7 @@ import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.utils.Coords;
+import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -40,7 +43,8 @@ import java.util.List;
  */
 public class Map implements ILosBoard
 {
-    final Cell map[][];
+    final Cell    terrain[][];
+    final boolean obstacles[][];
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
@@ -58,7 +62,8 @@ public class Map implements ILosBoard
         Options.MAP_SIZE_X = img.getWidth();
         Options.MAP_SIZE_Y = img.getHeight();
 
-        map = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        obstacles = new boolean[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
         float value;
 
@@ -72,39 +77,39 @@ public class Map implements ILosBoard
 
                 if (value == 0f)
                 {
-                    map[x][y] = Cell.DEEP_WATER;
+                    terrain[x][y] = Cell.DEEP_WATER;
                 }
                 else if (value < 0.005f)
                 {
-                    map[x][y] = Cell.WATER;
+                    terrain[x][y] = Cell.WATER;
                 }
                 else if (value < 0.03f)
                 {
-                    map[x][y] = Cell.SAND;
+                    terrain[x][y] = Cell.SAND;
                 }
                 else if (value < 0.04f)
                 {
-                    map[x][y] = Cell.GROUND;
+                    terrain[x][y] = Cell.GROUND;
                 }
                 else if (value < 0.7f)
                 {
-                    map[x][y] = Cell.GRASS;
+                    terrain[x][y] = Cell.GRASS;
                 }
                 else if (value < 0.8f)
                 {
-                    map[x][y] = Cell.HILL_GRASS;
+                    terrain[x][y] = Cell.HILL_GRASS;
                 }
                 else if (value < 0.9f)
                 {
-                    map[x][y] = Cell.HILL;
+                    terrain[x][y] = Cell.HILL;
                 }
                 else if (value < 0.99f)
                 {
-                    map[x][y] = Cell.MOUNTAIN;
+                    terrain[x][y] = Cell.MOUNTAIN;
                 }
                 else
                 {
-                    map[x][y] = Cell.HIGH_MOUNTAIN;
+                    terrain[x][y] = Cell.HIGH_MOUNTAIN;
                 }
             }
         }
@@ -178,7 +183,7 @@ public class Map implements ILosBoard
      */
     public int[] getFirstOfType(final int x, final int y, final int r, final EnumSet<Cell> set)
     {
-        if (set.contains(map[x][y]))
+        if (set.contains(terrain[x][y]))
             return new int[] { x, y };
 
         lastVisited.clear();
@@ -190,7 +195,7 @@ public class Map implements ILosBoard
         for (final long key : lastVisited)
         {
             coords = Coords.unpackCoords(key);
-            cell = map[coords[0]][coords[1]];
+            cell = terrain[coords[0]][coords[1]];
 
             if (set.contains(cell))
                 return coords;
@@ -202,7 +207,7 @@ public class Map implements ILosBoard
     public Cell get(final int x, final int y)
     {
         if (contains(x, y))
-            return map[x][y];
+            return terrain[x][y];
 
         return Cell.EMPTY;
     }
@@ -211,7 +216,7 @@ public class Map implements ILosBoard
     {
         if (contains(x, y))
         {
-            map[x][y] = type;
+            terrain[x][y] = type;
         }
     }
 
@@ -234,8 +239,7 @@ public class Map implements ILosBoard
     @Override
     public boolean isObstacle(final int x, final int y)
     {
-        return x >= Options.MAP_SIZE_X || x < 0 || y >= Options.MAP_SIZE_Y || y < 0 || map[x][y] == Cell.WALL ||
-               map[x][y] == Cell.CLOSED_DOOR;
+        return Util.outRange(x, 0, Options.MAP_SIZE_X) || Util.outRange(y, 0, Options.MAP_SIZE_Y) || obstacles[x][y];
     }
 
     public boolean isObstacle(final int x, final int y, final Side direction)

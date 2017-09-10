@@ -16,25 +16,13 @@
  *
  */
 
-package com.github.fabioticconi.roguelite.components.attributes;
-
-import com.artemis.Component;
+package com.github.fabioticconi.roguelite.map;
 
 /**
  * Author: Fabio Ticconi
- * Date: 08/09/17
+ * Date: 10/09/17
  */
-public class Agility extends Component
+public class CreatureGrid
 {
-    public int value;
 
-    public Agility()
-    {
-
-    }
-
-    public Agility(final int agility)
-    {
-        this.value = agility;
-    }
 }

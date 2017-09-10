@@ -1,17 +1,19 @@
-/**
- * Copyright 2015 Fabio Ticconi
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+ * Copyright (C) 2017 Fabio Ticconi
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package com.github.fabioticconi.roguelite.systems;
 
@@ -23,7 +25,7 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.EntityGrid;
+import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
 
 /**
@@ -35,9 +37,9 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
 
     @Wire
-    Map        map;
+    Map      map;
     @Wire
-    EntityGrid grid;
+    ItemGrid grid;
 
     public MovementSystem()
     {
@@ -92,10 +94,10 @@ public class MovementSystem extends DelayedIteratingSystem
         else
         {
             // moving towards a closed door opens it, instead of actually moving
-            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
-            {
-                map.set(newX, newY, Cell.OPEN_DOOR);
-            }
+//            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
+//            {
+//                map.set(newX, newY, Cell.OPEN_DOOR);
+//            }
         }
     }
 
@@ -104,6 +106,11 @@ public class MovementSystem extends DelayedIteratingSystem
     public float moveTo(final int entityId, final float speed, final Side direction)
     {
         final MoveAction m = mMove.create(entityId);
+
+        // TODO: check here if direction is obstacle, and if so raise a "collision"
+        // so that the appropriate action can be taken
+        // (doing it here, instead of in the player/AI specific code, might be a bit ugly but
+        // it should allow the same code to work for player and mobs)
 
         if (m.direction == direction)
             return m.cooldown;
