@@ -17,8 +17,6 @@
  */
 package com.github.fabioticconi.roguelite.constants;
 
-import java.awt.*;
-
 /**
  * @author Fabio Ticconi
  */
@@ -26,6 +24,6 @@ public class Options
 {
     public static final int OUTPUT_SIZE_X = 50;
     public static final int OUTPUT_SIZE_Y = 50;
-    public static int MAP_SIZE_X = 1000;
-    public static int MAP_SIZE_Y = 1000;
+    public static       int MAP_SIZE_X    = 1000;
+    public static       int MAP_SIZE_Y    = 1000;
 }

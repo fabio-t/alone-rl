@@ -26,14 +26,12 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.GroupSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
-
-import java.util.Set;
 
 public class FlockBehaviour extends AbstractBehaviour
 {
@@ -46,9 +44,9 @@ public class FlockBehaviour extends AbstractBehaviour
     GroupSystem    sGroup;
 
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
     @Wire
-    Map      map;
+    Map        map;
 
     Position curPos;
     Position centerOfGroup;
@@ -82,7 +80,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
         curPos = mPosition.get(entityId);
 
-        final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;
@@ -93,7 +91,7 @@ public class FlockBehaviour extends AbstractBehaviour
         {
             if (creatures.contains(memberId) && memberId != entityId)
             {
-                temp = mPosition.getSafe(memberId, null);
+                temp = mPosition.get(memberId);
 
                 if (temp == null)
                 {

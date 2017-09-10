@@ -220,6 +220,16 @@ public class Map implements ILosBoard
         }
     }
 
+    public void setObstacle(final int x, final int y)
+    {
+        obstacles[x][y] = true;
+    }
+
+    public void unsetObstacle(final int x, final int y)
+    {
+        obstacles[x][y] = false;
+    }
+
     /*
      * (non-Javadoc)
      *

@@ -101,4 +101,10 @@ public class Coords
 
         return coords;
     }
+
+    public static void unpackCoords(final long key, final int[] coords)
+    {
+        coords[0] = (int) key;
+        coords[1] = (int) (key >> 32);
+    }
 }

@@ -27,17 +27,17 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point2I;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Fabio Ticconi
@@ -54,9 +54,9 @@ public class ChaseBehaviour extends AbstractBehaviour
     HungerSystem               sHunger;
 
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
     @Wire
-    Map      map;
+    Map        map;
 
     Position curPos;
     Position chasePos;
@@ -86,7 +86,7 @@ public class ChaseBehaviour extends AbstractBehaviour
         final float hunger = mHunger.get(entityId).value;
 
         // all creatures in the visible area for this predator
-        final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
         float minDistance = Float.MAX_VALUE;
 

@@ -25,12 +25,11 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
-
-import java.util.Set;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * @author Fabio Ticconi
@@ -46,9 +45,9 @@ public class FleeBehaviour extends AbstractBehaviour
     MovementSystem sMovement;
 
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
     @Wire
-    Map      map;
+    Map        map;
 
     Position curPos;
     Position fleeFrom;
@@ -77,7 +76,7 @@ public class FleeBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final Set<Integer> creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
 
         if (creatures.isEmpty())
             return 0f;

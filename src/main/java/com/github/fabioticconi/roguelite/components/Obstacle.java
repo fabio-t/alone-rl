@@ -16,13 +16,14 @@
  *
  */
 
-package com.github.fabioticconi.roguelite.map;
+package com.github.fabioticconi.roguelite.components;
+
+import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
  * Date: 10/09/17
  */
-public class CreatureGrid
+public class Obstacle extends Component
 {
-
 }

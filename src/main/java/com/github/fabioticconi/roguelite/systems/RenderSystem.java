@@ -26,12 +26,12 @@ import com.github.fabioticconi.roguelite.components.Sprite;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.components.attributes.Size;
 import com.github.fabioticconi.roguelite.constants.Cell;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.awt.*;
-import java.util.Set;
 
 /**
  * @author Fabio Ticconi
@@ -44,16 +44,16 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Size>     mSize;
 
     @Wire
-    Map      map;
+    Map        map;
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
 
     PlayerManager pManager;
 
     public void display(final AsciiPanel terminal)
     {
         // FIXME: hackish, very crappy but it should work
-        int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
+        final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Position p     = mPosition.get(pID);
         final int      sight = mSight.get(pID).value;
@@ -73,9 +73,7 @@ public class RenderSystem extends PassiveSystem
         Sprite sprite;
         Size   size;
 
-        Set<Integer> entities;
-
-        final Set<Long> cells = map.getVisibleCells(p.x, p.y, sight);
+        final LongSet cells = map.getVisibleCells(p.x, p.y, sight);
 
         // FIXME we should just fill all as default,
         // and then just set the visible ones (a single for, not
@@ -100,27 +98,20 @@ public class RenderSystem extends PassiveSystem
 
                     terminal.write(cell.c, x, y, cell.col);
 
-                    entities = grid.getEntities(pos_x, pos_y);
+                    final int entityId = grid.get(pos_x, pos_y);
 
-                    if (entities == null)
+                    if (entityId >= 0)
                     {
-                        continue;
-                    }
-
-                    // render other visible entities
-                    for (final int eID : entities)
-                    {
-                        sprite = mSprite.get(eID);
-                        size = mSize.get(eID);
+                        sprite = mSprite.get(entityId);
+                        size = mSize.get(entityId);
 
                         if (sprite != null)
                         {
-                            final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
+                            final char c = (size != null && size.value > 0) ?
+                                               Character.toUpperCase(sprite.c) :
+                                               sprite.c;
 
                             terminal.write(c, x, y, sprite.col);
-
-                            // only show the first showable entity on each cell
-                            break;
                         }
                     }
                 }

@@ -21,25 +21,30 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
+import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
-import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Ticconi
  */
 public class MovementSystem extends DelayedIteratingSystem
 {
+    static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
+
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
+    ComponentMapper<Obstacle>   mObstacle;
 
     @Wire
-    Map      map;
+    Map        map;
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
 
     public MovementSystem()
     {
@@ -86,18 +91,29 @@ public class MovementSystem extends DelayedIteratingSystem
 
         if (!map.isObstacle(newX, newY))
         {
-            grid.moveEntity(entityId, p.x, p.y, newX, newY);
+            final int id = grid.move(p.x, p.y, newX, newY);
+
+            if (id >= 0)
+            {
+                log.error(String.format("entity %d was at position %s", id, p));
+            }
 
             p.x = newX;
             p.y = newY;
+
+            if (mObstacle.has(entityId))
+            {
+                map.unsetObstacle(p.x, p.y);
+                map.setObstacle(newX, newY);
+            }
         }
         else
         {
             // moving towards a closed door opens it, instead of actually moving
-//            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
-//            {
-//                map.set(newX, newY, Cell.OPEN_DOOR);
-//            }
+            //            if (map.get(newX, newY) == Cell.CLOSED_DOOR)
+            //            {
+            //                map.set(newX, newY, Cell.OPEN_DOOR);
+            //            }
         }
     }
 

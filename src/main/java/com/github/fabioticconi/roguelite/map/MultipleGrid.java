@@ -24,19 +24,25 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-
-import java.util.Set;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
 /**
+ * Supports storage and retrieval of entities placed on a 2D grid, where each cell can contain multiple
+ * entities.
+ * <p>
+ * Has plenty of support methods for accumulating entities in specific topologies (eg, by
+ * moving outward/spiralling from a central point, up to a specified radius).
+ *
  * @author Fabio Ticconi
  */
-public class ItemGrid
+public class MultipleGrid
 {
     Long2ObjectMap<IntSet> grid;
 
-    public ItemGrid()
+    public MultipleGrid()
     {
         grid = new Long2ObjectOpenHashMap<>();
+        grid.defaultReturnValue(IntSets.EMPTY_SET);
     }
 
     /**
@@ -49,11 +55,11 @@ public class ItemGrid
      * @param y
      * @return
      */
-    public Set<Integer> getEntities(final int x, final int y)
+    public IntSet getEntities(final int x, final int y)
     {
         final long pos = x | ((long) y << 32);
 
-        final IntSet entities = grid.getOrDefault(pos, IntSets.EMPTY_SET);
+        final IntSet entities = grid.get(pos);
 
         return IntSets.unmodifiable(entities);
     }
@@ -67,9 +73,9 @@ public class ItemGrid
      * @param pos packed coordinates
      * @return
      */
-    public Set<Integer> getEntities(final long pos)
+    public IntSet getEntities(final long pos)
     {
-        final IntSet entities = grid.getOrDefault(pos, IntSets.EMPTY_SET);
+        final IntSet entities = grid.get(pos);
 
         return IntSets.unmodifiable(entities);
     }
@@ -83,13 +89,13 @@ public class ItemGrid
      * @param cells set of packed coordinates of entities
      * @return
      */
-    public Set<Integer> getEntities(final Set<Long> cells)
+    public IntSet getEntities(final LongSet cells)
     {
         final IntSet entities = new IntOpenHashSet();
 
         for (final long pos : cells)
         {
-            entities.addAll(grid.getOrDefault(pos, IntSets.EMPTY_SET));
+            entities.addAll(grid.get(pos));
         }
 
         return entities;
@@ -107,14 +113,14 @@ public class ItemGrid
      * @param maxRadius
      * @return
      */
-    public Set<Integer> getClosestEntities(final int x, final int y, int maxRadius)
+    public IntSet getClosestEntities(final int x, final int y, int maxRadius)
     {
-        Set<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+        IntSet curEntities = grid.get(x | ((long) y << 32));
 
-        if (curEntities != null)
+        if (!curEntities.isEmpty())
             return curEntities;
 
-        final Set<Integer> entities = new IntOpenHashSet();
+        final IntSet entities = new IntOpenHashSet();
 
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
@@ -142,13 +148,10 @@ public class ItemGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
             }
 
             // continue south, through the east column
@@ -159,13 +162,10 @@ public class ItemGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
             }
 
             // continue west, through the south row
@@ -177,13 +177,10 @@ public class ItemGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
             }
 
             // continue north, through the west column of this circle
@@ -194,13 +191,10 @@ public class ItemGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                // accumulate entities within this circle
+                entities.addAll(curEntities);
             }
 
             // if at this round we have found entities, we must stop
@@ -227,14 +221,15 @@ public class ItemGrid
      * @param r
      * @return
      */
-    public Set<Integer> getEntitiesAtRadius(final int x, final int y, final int r)
+    public IntSet getEntitiesAtRadius(final int x, final int y, final int r)
     {
         final IntSet entities = new IntOpenHashSet();
 
+        // only want the items in the specific cell
         if (r <= 0)
-            return grid.getOrDefault(x | ((long) y << 32), entities);
+            return grid.get(x | ((long) y << 32));
 
-        Set<Integer> curEntities;
+        IntSet curEntities;
 
         // we put the cursor where it would have been if we were in one
         // iteration
@@ -334,11 +329,11 @@ public class ItemGrid
      * @param r
      * @return
      */
-    public Set<Integer> getEntitiesWithinRadius(final int x, final int y, final int r)
+    public IntSet getEntitiesWithinRadius(final int x, final int y, final int r)
     {
-        final Set<Integer> entities = new IntLinkedOpenHashSet();
+        final IntSet entities = new IntLinkedOpenHashSet();
 
-        Set<Integer> curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+        IntSet curEntities = grid.getOrDefault(x | ((long) y << 32), null);
 
         if (curEntities != null)
         {
@@ -369,11 +364,6 @@ public class ItemGrid
                 }
 
                 curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
-
-                if (curEntities == entities)
-                {
-                    System.exit(0);
-                }
 
                 if (curEntities != null)
                 {

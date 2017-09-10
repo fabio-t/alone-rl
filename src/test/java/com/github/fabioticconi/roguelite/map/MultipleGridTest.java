@@ -27,12 +27,12 @@ import static org.junit.Assert.*;
 /**
  * @author Fabio Ticconi
  */
-public class ItemGridTest
+public class MultipleGridTest
 {
     @Test
     public final void testGetAndMoveEntities()
     {
-        final ItemGrid grid = new ItemGrid();
+        final MultipleGrid grid = new MultipleGrid();
 
         grid.putEntity(1, 5, 10);
         grid.putEntity(2, 10, 5);
@@ -72,7 +72,7 @@ public class ItemGridTest
     @Test
     public void testGetClosestEntities() throws Exception
     {
-        final ItemGrid grid = new ItemGrid();
+        final MultipleGrid grid = new MultipleGrid();
 
         for (int x = 10, i = 1; x < 17; x++)
         {
@@ -111,7 +111,7 @@ public class ItemGridTest
     @Test
     public void testGetEntitiesAtRadius() throws Exception
     {
-        final ItemGrid grid = new ItemGrid();
+        final MultipleGrid grid = new MultipleGrid();
 
         for (int x = 10, i = 1; x < 17; x++)
         {
@@ -154,7 +154,7 @@ public class ItemGridTest
     @Test
     public void testGetEntitiesWithinRadius() throws Exception
     {
-        final ItemGrid grid = new ItemGrid();
+        final MultipleGrid grid = new MultipleGrid();
 
         int i = 1;
         for (int x = 10; x < 17; x++)

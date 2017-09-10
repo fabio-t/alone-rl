@@ -63,7 +63,7 @@ public class WanderBehaviour extends AbstractBehaviour
         final Sight    sight = mSight.getSafe(entityId, null);
         final float    speed = mSpeed.get(entityId).value;
 
-        Side direction;
+        final Side direction;
 
         if (sight == null || sight.value == 0)
         {

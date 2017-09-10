@@ -28,8 +28,8 @@ import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.attributes.*;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
-import com.github.fabioticconi.roguelite.map.ItemGrid;
 import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -44,11 +44,11 @@ import java.util.Random;
 public class BootstrapSystem extends BaseSystem
 {
     @Wire
-    Map      map;
+    Map        map;
     @Wire
-    ItemGrid grid;
+    SingleGrid grid;
     @Wire
-    Random   r;
+    Random     r;
 
     GroupSystem sGroup;
 
@@ -87,7 +87,7 @@ public class BootstrapSystem extends BaseSystem
         y = Options.MAP_SIZE_Y / 2;
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('@', Color.WHITE);
-        grid.putEntity(id, x, y);
+        grid.set(x, y, id);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
         edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
@@ -123,7 +123,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN);
 
-            grid.putEntity(id, x, y);
+            grid.set(x, y, id);
         }
 
         // add small, independent rabbits/hares
@@ -152,7 +152,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
 
-            grid.putEntity(id, x, y);
+            grid.set(x, y, id);
         }
 
         // add a pack of wolves
@@ -185,7 +185,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
 
-            grid.putEntity(id, x, y);
+            grid.set(x, y, id);
         }
 
         // add solitary pumas
@@ -213,7 +213,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker());
 
-            grid.putEntity(id, x, y);
+            grid.set(x, y, id);
         }
 
         // add random trees?
@@ -232,8 +232,14 @@ public class BootstrapSystem extends BaseSystem
 
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('T', Color.GREEN.brighter());
+                    edit.create(Obstacle.class);
 
-                    grid.putEntity(id, x, y);
+                    // FIXME: we should only need one or the other to determine if obstacle.
+                    // ie, the map should be able to get the Obstacle component from the SingleGrid
+                    // to determine if the cell is obstructed or not.
+
+                    grid.set(x, y, id);
+                    map.setObstacle(x, y);
                 }
             }
         }
