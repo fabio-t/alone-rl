@@ -24,6 +24,7 @@ import com.artemis.Component;
  */
 public class Hunger extends Component
 {
+    public float maxValue;
     public float value;
 
     public Hunger()
@@ -33,6 +34,7 @@ public class Hunger extends Component
 
     public Hunger(final float value)
     {
+        this.maxValue = value;
         this.value = value;
     }
 }

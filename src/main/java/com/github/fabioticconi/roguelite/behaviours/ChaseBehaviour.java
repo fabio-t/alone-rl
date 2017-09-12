@@ -68,11 +68,6 @@ public class ChaseBehaviour extends AbstractBehaviour
         aspect = Aspect.all(Position.class, Speed.class, Sight.class, Hunger.class).build(world);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#evaluate(int)
-     */
     @Override
     public float evaluate(final int entityId)
     {
@@ -119,11 +114,6 @@ public class ChaseBehaviour extends AbstractBehaviour
         return v;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.github.fabioticconi.roguelite.behaviours.Behaviour#update()
-     */
     @Override
     public float update()
     {

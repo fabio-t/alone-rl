@@ -53,7 +53,8 @@ public class WanderBehaviour extends AbstractBehaviour
         if (!interested(entityId))
             return 0f;
 
-        return 0.2f;
+        // must simply be the "default" if no other behaviour kicks in, or if their values are really too small
+        return 0.01f;
     }
 
     @Override

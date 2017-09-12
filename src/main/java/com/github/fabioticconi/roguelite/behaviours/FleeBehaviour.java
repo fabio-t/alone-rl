@@ -30,12 +30,16 @@ import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Ticconi
  */
 public class FleeBehaviour extends AbstractBehaviour
 {
+    static final Logger log = LoggerFactory.getLogger(FleeBehaviour.class);
+
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
@@ -115,8 +119,10 @@ public class FleeBehaviour extends AbstractBehaviour
             // FIXME is that even possible, since we are looking at visible
             // cells and moving diagonally?
             // if so, we should try the closest exits to the target one
-
+//
             direction = map.getFreeExitRandomised(curPos.x, curPos.y);
+
+            log.error("we were fleeing toward a visible cell but now it's a obstacle");
         }
 
         if (direction == Side.HERE)

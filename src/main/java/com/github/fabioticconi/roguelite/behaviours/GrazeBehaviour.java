@@ -70,7 +70,7 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         final float value = hunger.value;
 
-        if (value < 0.4f)
+        if (value < 0.4f*hunger.maxValue)
             return 0f;
 
         // 2^x - 1

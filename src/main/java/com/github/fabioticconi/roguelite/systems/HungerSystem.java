@@ -49,7 +49,7 @@ public class HungerSystem extends IntervalIteratingSystem
 
         h.value *= 1.01f;
 
-        h.value = Math.min(h.value, 1.0f);
+        h.value = Math.min(h.value, h.maxValue);
 
         // TODO: we need a Feeding component, triggered by a player action
         // or by the AI, that tells us if we have food available - in which

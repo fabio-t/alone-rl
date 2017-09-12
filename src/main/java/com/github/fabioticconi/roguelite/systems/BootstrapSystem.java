@@ -97,6 +97,13 @@ public class BootstrapSystem extends BaseSystem
         IntSet group   = sGroup.getGroup(groupId);
         for (int i = 0; i < 5; i++)
         {
+            // before doing anything, we must ensure the position is free!
+            do
+            {
+                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
+            } while (!grid.isEmpty(x, y));
+
             id = world.create();
             edit = world.edit(id);
 
@@ -115,8 +122,6 @@ public class BootstrapSystem extends BaseSystem
             ai.behaviours.add(world.getSystem(FlockBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
-            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
-            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Group.class).groupId = groupId;
             group.add(id);
@@ -127,8 +132,15 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add small, independent rabbits/hares
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 0; i++)
         {
+            // before doing anything, we must ensure the position is free!
+            do
+            {
+                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
+            } while (!grid.isEmpty(x, y));
+
             id = world.create();
             edit = world.edit(id);
 
@@ -146,8 +158,6 @@ public class BootstrapSystem extends BaseSystem
             ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
-            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
-            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
@@ -160,6 +170,13 @@ public class BootstrapSystem extends BaseSystem
         group = sGroup.getGroup(groupId);
         for (int i = 0; i < 5; i++)
         {
+            // before doing anything, we must ensure the position is free!
+            do
+            {
+                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
+            } while (!grid.isEmpty(x, y));
+
             id = world.create();
             edit = world.edit(id);
 
@@ -177,8 +194,6 @@ public class BootstrapSystem extends BaseSystem
             ai.behaviours.add(world.getSystem(FlockBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
-            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
-            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Group.class).groupId = groupId;
             group.add(id);
@@ -189,8 +204,15 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add solitary pumas
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 0; i++)
         {
+            // before doing anything, we must ensure the position is free!
+            do
+            {
+                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
+            } while (!grid.isEmpty(x, y));
+
             id = world.create();
             edit = world.edit(id);
 
@@ -207,8 +229,6 @@ public class BootstrapSystem extends BaseSystem
             ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
-            x = (Options.MAP_SIZE_X / 2) + r.nextInt(10) - 5;
-            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(10) - 5;
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker());
@@ -227,6 +247,9 @@ public class BootstrapSystem extends BaseSystem
                     (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
                     (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
                 {
+                    if (!grid.isEmpty(x, y))
+                        continue;
+
                     id = world.create();
                     edit = world.edit(id);
 
@@ -265,8 +288,6 @@ public class BootstrapSystem extends BaseSystem
                 break;
 
             parser.nextToken(); // get in value
-
-            System.out.println(name);
 
             if (name.equals("strength"))
             {

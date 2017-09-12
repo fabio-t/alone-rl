@@ -86,7 +86,7 @@ public class Roguelite extends JFrame implements KeyListener
         config.setSystem(input);
         config.setSystem(render);
         // actual game logic
-        config.setSystem(new HungerSystem(5f));
+        config.setSystem(new HungerSystem(1f));
         config.setSystem(AISystem.class);
         config.setSystem(MovementSystem.class);
         // ai behaviours (passive)

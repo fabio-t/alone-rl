@@ -51,33 +51,18 @@ public class MovementSystem extends DelayedIteratingSystem
         super(Aspect.all(Position.class, MoveAction.class));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.systems.DelayedIteratingSystem#getRemainingDelay(int)
-     */
     @Override
     protected float getRemainingDelay(final int entityId)
     {
         return mMove.get(entityId).cooldown;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.systems.DelayedIteratingSystem#processDelta(int, float)
-     */
     @Override
     protected void processDelta(final int entityId, final float accumulatedDelta)
     {
         mMove.get(entityId).cooldown -= accumulatedDelta;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.systems.DelayedIteratingSystem#processExpired(int)
-     */
     @Override
     protected void processExpired(final int entityId)
     {
@@ -91,15 +76,16 @@ public class MovementSystem extends DelayedIteratingSystem
 
         if (map.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
         {
-            // TODO what should we do? is this a bump action, even if the movement is essentially ended?
-            // This can happen if another creatures moves where we are going before the timer expires.
-            // For now, just log this and fail the movement
+            // this is weird, and should not be a bump action because it's not a planned action (we were just moving
+            // and someone stepped in).
+            // Simply, the move fails
             log.info(String.format("%d tried to move to (%d,%d) but it's not empty", entityId, newX, newY));
         }
         else
         {
             final int id = grid.move(p.x, p.y, newX, newY);
 
+            // if this entity is, itself, a obstacle (for FOV purposes), the map must be changed
             if (mObstacle.has(entityId))
             {
                 map.unsetObstacle(p.x, p.y);
