@@ -28,14 +28,6 @@ public abstract class AbstractBehaviour extends PassiveSystem implements Behavio
     protected int    entityId;
     protected Aspect aspect;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.BaseSystem#initialize()
-     */
-    @Override
-    abstract protected void initialize();
-
     public boolean interested(final int entityId)
     {
         return aspect.isInterested(world.getEntity(entityId));

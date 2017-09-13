@@ -28,7 +28,7 @@ import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.attributes.*;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -44,7 +44,7 @@ import java.util.Random;
 public class BootstrapSystem extends BaseSystem
 {
     @Wire
-    Map        map;
+    MapSystem  sMap;
     @Wire
     SingleGrid grid;
     @Wire
@@ -241,7 +241,7 @@ public class BootstrapSystem extends BaseSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = map.get(x, y);
+                final Cell cell = sMap.get(x, y);
 
                 if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
                     (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
@@ -258,11 +258,10 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Obstacle.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.
-                    // ie, the map should be able to get the Obstacle component from the SingleGrid
+                    // ie, the sMap should be able to get the Obstacle component from the SingleGrid
                     // to determine if the cell is obstructed or not.
 
                     grid.set(x, y, id);
-                    map.setObstacle(x, y);
                 }
             }
         }

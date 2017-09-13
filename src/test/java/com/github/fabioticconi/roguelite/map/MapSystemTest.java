@@ -25,14 +25,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class MapTest
+public class MapSystemTest
 {
-    Map map;
+    MapSystem sMap;
 
     @Before
     public void setup() throws IOException
     {
-        map = new Map();
+        sMap = new MapSystem();
     }
 
     @Test
@@ -63,7 +63,7 @@ public class MapTest
     @Test
     public void testGetVisibleCells() throws Exception
     {
-        final LongSet set = map.getVisibleCells(100, 100, 10);
+        final LongSet set = sMap.getVisibleCells(100, 100, 10);
 
         int[] coords;
         for (final long key : set)

@@ -20,14 +20,13 @@ package com.github.fabioticconi.roguelite.behaviours;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.Herbivore;
 import com.github.fabioticconi.roguelite.components.Hunger;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
@@ -44,7 +43,8 @@ import java.util.List;
  */
 public class ChaseBehaviour extends AbstractBehaviour
 {
-    static final Logger log = LoggerFactory.getLogger(Roguelite.class);
+    static final Logger log = LoggerFactory.getLogger(ChaseBehaviour.class);
+
     ComponentMapper<Hunger>    mHunger;
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
@@ -52,15 +52,14 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Herbivore> mHerbivore;
     MovementSystem             sMovement;
     HungerSystem               sHunger;
+    MapSystem  sMap;
 
     @Wire
     SingleGrid grid;
-    @Wire
-    Map        map;
 
-    Position curPos;
-    Position chasePos;
-    int      chaseId;
+    private Position curPos;
+    private Position chasePos;
+    private int      chaseId;
 
     @Override
     protected void initialize()
@@ -81,7 +80,7 @@ public class ChaseBehaviour extends AbstractBehaviour
         final float hunger = mHunger.get(entityId).value;
 
         // all creatures in the visible area for this predator
-        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         float minDistance = Float.MAX_VALUE;
 
@@ -109,9 +108,7 @@ public class ChaseBehaviour extends AbstractBehaviour
             return 0f;
 
         // average between our hunger and the prey's closeness
-        float v = 0.5f * (hunger + 1f - minDistance);
-
-        return v;
+        return 0.5f * (hunger + 1f - minDistance);
     }
 
     @Override
@@ -130,7 +127,7 @@ public class ChaseBehaviour extends AbstractBehaviour
             return 0f;
         }
 
-        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, chasePos.x, chasePos.y);
+        final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, chasePos.x, chasePos.y);
 
         // if the path is empty, it's not clear what's going on (we know the
         // prey is visible, from before..)

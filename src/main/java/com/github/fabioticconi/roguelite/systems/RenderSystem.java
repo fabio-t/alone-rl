@@ -26,7 +26,7 @@ import com.github.fabioticconi.roguelite.components.Sprite;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.components.attributes.Size;
 import com.github.fabioticconi.roguelite.constants.Cell;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -44,7 +44,7 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Size>     mSize;
 
     @Wire
-    Map        map;
+    MapSystem  sMap;
     @Wire
     SingleGrid grid;
 
@@ -73,7 +73,7 @@ public class RenderSystem extends PassiveSystem
         Sprite sprite;
         Size   size;
 
-        final LongSet cells = map.getVisibleCells(p.x, p.y, sight);
+        final LongSet cells = sMap.getVisibleCells(p.x, p.y, sight);
 
         // FIXME we should just fill all as default,
         // and then just set the visible ones (a single for, not
@@ -94,7 +94,7 @@ public class RenderSystem extends PassiveSystem
                 if (cells.contains(key))
                 {
                     // render terrain
-                    final Cell cell = map.get(pos_x, pos_y);
+                    final Cell cell = sMap.get(pos_x, pos_y);
 
                     terminal.write(cell.c, x, y, cell.col);
 

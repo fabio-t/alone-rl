@@ -26,15 +26,19 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.GroupSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlockBehaviour extends AbstractBehaviour
 {
+    static final Logger log = LoggerFactory.getLogger(FlockBehaviour.class);
+
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
     ComponentMapper<Speed>    mSpeed;
@@ -42,14 +46,13 @@ public class FlockBehaviour extends AbstractBehaviour
 
     MovementSystem sMovement;
     GroupSystem    sGroup;
+    MapSystem      sMap;
 
     @Wire
     SingleGrid grid;
-    @Wire
-    Map        map;
 
-    Position curPos;
-    Position centerOfGroup;
+    private Position curPos;
+    private Position centerOfGroup;
 
     @Override
     protected void initialize()
@@ -80,7 +83,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
         curPos = mPosition.get(entityId);
 
-        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;
@@ -122,17 +125,15 @@ public class FlockBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        Side direction;
+        final Side direction;
 
         direction = Side.getSideAt(centerOfGroup.x - curPos.x, centerOfGroup.y - curPos.y);
 
-        if (map.isObstacle(curPos.x, curPos.y, direction))
+        if (sMap.isObstacle(curPos.x, curPos.y, direction))
         {
-            // FIXME is that even possible, since we are looking at visible
-            // cells and moving diagonally?
-            // if so, we should try the closest exits to the target one
+            log.error("we were fleeing toward a visible cell but now it's a obstacle");
 
-            direction = map.getFreeExitRandomised(curPos.x, curPos.y);
+            return 0f;
         }
 
         if (direction == Side.HERE)

@@ -17,6 +17,9 @@
  */
 package com.github.fabioticconi.roguelite.map;
 
+import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
+import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
@@ -25,6 +28,10 @@ import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
 import rlforj.math.Point2I;
@@ -37,20 +44,27 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Fabio Ticconi
  */
-public class Map implements ILosBoard
+public class MapSystem extends PassiveSystem implements ILosBoard
 {
+    static final Logger log = LoggerFactory.getLogger(MapSystem.class);
+
+    ComponentMapper<Obstacle> mObstacle;
+
+    @Wire
+    SingleGrid obstacles;
+
     final Cell    terrain[][];
-    final boolean obstacles[][];
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
     PrecisePermissive view;
 
-    public Map() throws IOException
+    public MapSystem() throws IOException
     {
         lastVisited = new LongOpenHashSet();
         view = new PrecisePermissive();
@@ -63,7 +77,6 @@ public class Map implements ILosBoard
         Options.MAP_SIZE_Y = img.getHeight();
 
         terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
-        obstacles = new boolean[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
         float value;
 
@@ -116,63 +129,57 @@ public class Map implements ILosBoard
     }
 
     /**
-     * Take a position and returns the first free exit (if any), starting from
-     * North and going clockwise.
+     * Take a position and return all free exits in the surrounding "circle".
      *
      * @param x
      * @param y
-     * @return An exit, or HERE if none is available
+     * @return A set of free exits, or HERE if none is available
      */
-    public Side getFirstFreeExit(final int x, final int y)
+    public Set<Side> getFreeExits(final int x, final int y)
     {
-        int side_x = Side.N.x + x;
-        int side_y = Side.N.y + y;
+        int xn, yn;
 
-        if (!isObstacle(side_x, side_y))
-            return Side.N;
+        final Set<Side> exits = new ObjectArraySet<>(8);
 
-        side_x = Side.E.x + x;
-        side_y = Side.E.y + y;
+        for (final Side side : Side.values())
+        {
+            if (side.equals(Side.HERE))
+                continue;
 
-        if (!isObstacle(side_x, side_y))
-            return Side.E;
+            xn = x+side.x;
+            yn = y+side.y;
 
-        side_x = Side.S.x + x;
-        side_y = Side.S.y + y;
+            if (contains(xn, yn) && obstacles.get(xn, yn) < 0)
+                exits.add(side);
+        }
 
-        if (!isObstacle(side_x, side_y))
-            return Side.S;
-
-        side_x = Side.W.x + x;
-        side_y = Side.W.y + y;
-
-        if (!isObstacle(side_x, side_y))
-            return Side.W;
-
-        return Side.HERE;
+        return exits;
     }
 
     /**
-     * Takes a position and returns a free exit (if available), with some
-     * randomisation (not guaranteed).
+     * Take a position and returns the first free exit (if any).
      *
      * @param x
      * @param y
-     * @return An exit, or HERE if none is available
+     * @return A free exit, or HERE if none is available
      */
-    public Side getFreeExitRandomised(final int x, final int y)
+    public Side getFirstFreeExit(final int x, final int y)
     {
-        final Side firstFree = getFirstFreeExit(x, y);
+        int xn, yn;
 
-        if (firstFree == Side.HERE)
-            return firstFree;
+        for (final Side side : Side.values())
+        {
+            if (side.equals(Side.HERE))
+                continue;
 
-        final Side random = Side.getRandom();
+            xn = x+side.x;
+            yn = y+side.y;
 
-        if (isObstacle(x, y, random))
-            return firstFree;
-        else
-            return random;
+            if (contains(xn, yn) && obstacles.get(xn, yn) < 0)
+                return side;
+        }
+
+        return Side.HERE;
     }
 
     /**
@@ -220,36 +227,23 @@ public class Map implements ILosBoard
         }
     }
 
-    public void setObstacle(final int x, final int y)
-    {
-        obstacles[x][y] = true;
-    }
-
-    public void unsetObstacle(final int x, final int y)
-    {
-        obstacles[x][y] = false;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see rlforj.los.ILosBoard#contains(int, int)
-     */
     @Override
     public boolean contains(final int x, final int y)
     {
-        return x >= 0 && x < Options.MAP_SIZE_X && y >= 0 && y < Options.MAP_SIZE_Y;
+        return Util.inRange(x, 0, Options.MAP_SIZE_X) || Util.inRange(y, 0, Options.MAP_SIZE_Y);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rlforj.los.ILosBoard#isObstacle(int, int)
-     */
     @Override
     public boolean isObstacle(final int x, final int y)
     {
-        return Util.outRange(x, 0, Options.MAP_SIZE_X) || Util.outRange(y, 0, Options.MAP_SIZE_Y) || obstacles[x][y];
+        // outside boundaries is "obstacle"
+        if (!contains(x, y))
+            return true;
+
+        final int entityId = obstacles.get(x, y);
+
+        // must check for -1
+        return entityId >= 0 && mObstacle.has(entityId);
     }
 
     public boolean isObstacle(final int x, final int y, final Side direction)
@@ -257,11 +251,6 @@ public class Map implements ILosBoard
         return isObstacle(x + direction.x, y + direction.y);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rlforj.los.ILosBoard#visit(int, int)
-     */
     @Override
     public void visit(final int x, final int y)
     {

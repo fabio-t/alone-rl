@@ -23,21 +23,27 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
-import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Random;
+import java.util.Set;
 
 public class WanderBehaviour extends AbstractBehaviour
 {
+    static final Logger log = LoggerFactory.getLogger(WanderBehaviour.class);
+
     ComponentMapper<Position> mPosition;
     ComponentMapper<Speed>    mSpeed;
-    ComponentMapper<Sight>    mSight;
 
     MovementSystem sMovement;
+    MapSystem sMap;
 
     @Wire
-    Map map;
+    Random r;
 
     @Override
     protected void initialize()
@@ -61,26 +67,27 @@ public class WanderBehaviour extends AbstractBehaviour
     public float update()
     {
         final Position pos   = mPosition.get(entityId);
-        final Sight    sight = mSight.getSafe(entityId, null);
         final float    speed = mSpeed.get(entityId).value;
 
-        final Side direction;
+        final Set<Side> exits = sMap.getFreeExits(pos.x, pos.y);
 
-        if (sight == null || sight.value == 0)
-        {
-            direction = Side.getRandom();
-        }
-        else
-        {
-            direction = map.getFreeExitRandomised(pos.x, pos.y);
-        }
-
-        if (direction == Side.HERE)
+        if (exits.isEmpty())
             return 0f;
 
-        // FIXME this should be normalised in a way that the return cooldown is always dependent on
-        // some specific property (ie, "alertness") which can change for various reasons - but outside the behaviours.
-        // this would mean that this update function wouldn't return anything.
-        return sMovement.moveTo(entityId, speed, direction);
+        // get one of the elements
+        final int choice = r.nextInt(exits.size());
+
+        int i = 0;
+        for (final Side exit : exits)
+        {
+            if (i == choice)
+                return sMovement.moveTo(entityId, speed, exit);
+
+            i++;
+        }
+
+        log.warn("size was %d and choice was %d but was never selected", exits.size(), choice);
+
+        return 0f;
     }
 }

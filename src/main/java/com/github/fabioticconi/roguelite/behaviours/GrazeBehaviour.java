@@ -26,9 +26,11 @@ import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rlforj.math.Point2I;
 
 import java.util.EnumSet;
@@ -39,6 +41,8 @@ import java.util.List;
  */
 public class GrazeBehaviour extends AbstractBehaviour
 {
+    static final Logger log = LoggerFactory.getLogger(GrazeBehaviour.class);
+
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
@@ -47,10 +51,10 @@ public class GrazeBehaviour extends AbstractBehaviour
     HungerSystem   sHunger;
     MovementSystem sMovement;
 
-    @Wire
-    Map map;
+    MapSystem sMap;
 
-    Hunger hunger;
+    // FIXME: this should be in a Context of sort
+    private Hunger hunger;
 
     @Override
     protected void initialize()
@@ -89,7 +93,7 @@ public class GrazeBehaviour extends AbstractBehaviour
         // FIXME: should differentiate on the "feeding capability"
         // and also, possibly, on the creature's preference (ie, the EnumSet
         // should be within a EatingPreference component of some kind)
-        final int[] coords = map.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
+        final int[] coords = sMap.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
 
         // TODO: the behaviour actually FAILED here, couldn't do anything:
         // should we somehow relay this information to the AISystem, so that
@@ -102,7 +106,7 @@ public class GrazeBehaviour extends AbstractBehaviour
         if (coords[0] == pos.x && coords[1] == pos.y)
             return sHunger.feed(entityId);
 
-        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, coords[0], coords[1]);
+        final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, coords[0], coords[1]);
 
         // TODO same as above
         if (path.size() < 2)

@@ -25,7 +25,7 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
@@ -44,14 +44,13 @@ public class FleeBehaviour extends AbstractBehaviour
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom
-    // taking a component type
 
     MovementSystem sMovement;
 
+    MapSystem sMap;
+
     @Wire
     SingleGrid grid;
-    @Wire
-    Map        map;
 
     Position curPos;
     Position fleeFrom;
@@ -75,7 +74,7 @@ public class FleeBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        final IntSet creatures = grid.getEntities(map.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         if (creatures.isEmpty())
             return 0f;
@@ -110,19 +109,15 @@ public class FleeBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        Side direction;
+        final Side direction;
 
         direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
 
-        if (map.isObstacle(curPos.x, curPos.y, direction))
+        if (sMap.isObstacle(curPos.x, curPos.y, direction))
         {
-            // FIXME is that even possible, since we are looking at visible
-            // cells and moving diagonally?
-            // if so, we should try the closest exits to the target one
-//
-            direction = map.getFreeExitRandomised(curPos.x, curPos.y);
-
             log.error("we were fleeing toward a visible cell but now it's a obstacle");
+
+            return 0f;
         }
 
         if (direction == Side.HERE)

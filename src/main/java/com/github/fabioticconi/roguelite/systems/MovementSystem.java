@@ -25,7 +25,7 @@ import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,8 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Obstacle>   mObstacle;
 
-    @Wire
-    Map        map;
+    MapSystem  sMap;
+
     @Wire
     SingleGrid grid;
 
@@ -74,7 +74,7 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + m.direction.x;
         final int newY = p.y + m.direction.y;
 
-        if (map.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
+        if (sMap.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
         {
             // this is weird, and should not be a bump action because it's not a planned action (we were just moving
             // and someone stepped in).
@@ -84,13 +84,6 @@ public class MovementSystem extends DelayedIteratingSystem
         else
         {
             final int id = grid.move(p.x, p.y, newX, newY);
-
-            // if this entity is, itself, a obstacle (for FOV purposes), the map must be changed
-            if (mObstacle.has(entityId))
-            {
-                map.unsetObstacle(p.x, p.y);
-                map.setObstacle(newX, newY);
-            }
 
             p.x = newX;
             p.y = newY;
@@ -111,7 +104,7 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + direction.x;
         final int newY = p.y + direction.y;
 
-        if (map.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
+        if (sMap.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
         {
             // TODO: handle "bump action": this might be an attack if there's a creature there.
             // This should be handled nicely.

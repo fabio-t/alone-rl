@@ -27,7 +27,7 @@ import com.artemis.managers.WorldSerializationManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.roguelite.behaviours.*;
 import com.github.fabioticconi.roguelite.constants.Options;
-import com.github.fabioticconi.roguelite.map.Map;
+import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.*;
@@ -73,8 +73,9 @@ public class Roguelite extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
+        // first thing ever to be loaded?
+        config.setSystem(MapSystem.class);
         // POJOs
-        config.register(new Map());
         config.register(new SingleGrid());
         config.register(new MultipleGrid());
         config.register(new Random());

@@ -47,6 +47,18 @@ public class SingleGrid
         clear();
     }
 
+    /**
+     * Just a boundary check, does not check the content of the cell.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean has(final int x, final int y)
+    {
+        return x >= 0 && x < Options.MAP_SIZE_X && y >= 0 && y < Options.MAP_SIZE_Y;
+    }
+
     public int get(final int x, final int y)
     {
         return grid[x][y];
@@ -61,9 +73,7 @@ public class SingleGrid
 
     public int del(final int x, final int y)
     {
-        final int old = grid[x][y];
-        grid[x][y] = -1;
-        return old;
+        return set(x, y, -1);
     }
 
     public int move(final int oldX, final int oldY, final int x, final int y)
