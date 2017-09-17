@@ -19,7 +19,6 @@ package com.github.fabioticconi.roguelite.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.roguelite.components.Hunger;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
@@ -74,13 +73,12 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         final float value = hunger.value;
 
-        if (value < 0.4f*hunger.maxValue)
+        if (value < 0.4f * hunger.maxValue)
             return 0f;
 
-        // 2^x - 1
-        // this exponential function gives more importance to high
-        // hunger values than to low hunger values
-        return (float) (Math.pow(2d, value)) - 1f;
+        // FIXME: smoothing function?
+
+        return hunger.value;
     }
 
     @Override

@@ -17,19 +17,15 @@ Not all the following is completely implemented, but you can see as a "core feat
 
 Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
 
-![alt tag](screenshots/fov.png)
+![alt tag](screenshots/fov_and_creatures.png)
 
 Creatures and player alike have, thus, only a limited view of the world and can hide from indiscreet eyes.
-
-NB: picture is old, must replace.
 
 ## Persistence
 
 Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking.
 
 ## Small-scale ecology
-
-![alt tag](screenshots/grassy_hills.png)
 
 Different creatures have different set of behaviours. Here we see four animal species:
 

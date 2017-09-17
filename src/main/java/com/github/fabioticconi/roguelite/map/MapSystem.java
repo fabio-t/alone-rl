@@ -52,16 +52,12 @@ import java.util.Set;
 public class MapSystem extends PassiveSystem implements ILosBoard
 {
     static final Logger log = LoggerFactory.getLogger(MapSystem.class);
-
-    ComponentMapper<Obstacle> mObstacle;
-
-    @Wire
-    SingleGrid obstacles;
-
-    final Cell    terrain[][];
-
+    final Cell terrain[][];
     /* FOV/LOS stuff */
     final LongSet lastVisited;
+    ComponentMapper<Obstacle> mObstacle;
+    @Wire
+    SingleGrid obstacles;
     PrecisePermissive view;
 
     public MapSystem() throws IOException
@@ -146,8 +142,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
             if (side.equals(Side.HERE))
                 continue;
 
-            xn = x+side.x;
-            yn = y+side.y;
+            xn = x + side.x;
+            yn = y + side.y;
 
             if (contains(xn, yn) && obstacles.get(xn, yn) < 0)
                 exits.add(side);
@@ -172,8 +168,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
             if (side.equals(Side.HERE))
                 continue;
 
-            xn = x+side.x;
-            yn = y+side.y;
+            xn = x + side.x;
+            yn = y + side.y;
 
             if (contains(xn, yn) && obstacles.get(xn, yn) < 0)
                 return side;
@@ -225,6 +221,24 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         {
             terrain[x][y] = type;
         }
+    }
+
+    /**
+     * It is NOT equivalent to !isObstacle(x,y). This function only returns true if the cell is within bounds
+     * and does not contain any creature, regardless of visibility status.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isFree(final int x, final int y)
+    {
+        return contains(x, y) && obstacles.get(x, y) < 0;
+    }
+
+    public boolean isFree(final int x, final int y, Side direction)
+    {
+        return isFree(x + direction.x, y + direction.y);
     }
 
     @Override

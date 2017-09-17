@@ -40,7 +40,7 @@ public class WanderBehaviour extends AbstractBehaviour
     ComponentMapper<Speed>    mSpeed;
 
     MovementSystem sMovement;
-    MapSystem sMap;
+    MapSystem      sMap;
 
     @Wire
     Random r;

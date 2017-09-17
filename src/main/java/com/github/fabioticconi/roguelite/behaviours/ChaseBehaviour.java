@@ -52,7 +52,7 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Herbivore> mHerbivore;
     MovementSystem             sMovement;
     HungerSystem               sHunger;
-    MapSystem  sMap;
+    MapSystem                  sMap;
 
     @Wire
     SingleGrid grid;

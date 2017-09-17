@@ -41,7 +41,7 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Obstacle>   mObstacle;
 
-    MapSystem  sMap;
+    MapSystem sMap;
 
     @Wire
     SingleGrid grid;
@@ -74,24 +74,19 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + m.direction.x;
         final int newY = p.y + m.direction.y;
 
-        if (sMap.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
-        {
-            // this is weird, and should not be a bump action because it's not a planned action (we were just moving
-            // and someone stepped in).
-            // Simply, the move fails
-            log.info(String.format("%d tried to move to (%d,%d) but it's not empty", entityId, newX, newY));
-        }
-        else
+        if (sMap.isFree(newX, newY))
         {
             final int id = grid.move(p.x, p.y, newX, newY);
-
-            p.x = newX;
-            p.y = newY;
 
             if (id >= 0)
             {
                 log.error(String.format("entity %d was at the new position %s", id, p));
+
+                return;
             }
+
+            p.x = newX;
+            p.y = newY;
         }
     }
 
@@ -104,7 +99,7 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + direction.x;
         final int newY = p.y + direction.y;
 
-        if (sMap.isObstacle(newX, newY) || !grid.isEmpty(newX, newY))
+        if (!sMap.isFree(newX, newY))
         {
             // TODO: handle "bump action": this might be an attack if there's a creature there.
             // This should be handled nicely.

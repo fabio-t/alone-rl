@@ -95,7 +95,7 @@ public class BootstrapSystem extends BaseSystem
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
         IntSet group   = sGroup.getGroup(groupId);
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 4; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -132,7 +132,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add small, independent rabbits/hares
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 8; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -204,7 +204,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add solitary pumas
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 3; i++)
         {
             // before doing anything, we must ensure the position is free!
             do

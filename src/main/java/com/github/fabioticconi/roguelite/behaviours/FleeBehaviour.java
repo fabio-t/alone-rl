@@ -113,9 +113,13 @@ public class FleeBehaviour extends AbstractBehaviour
 
         direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
 
-        if (sMap.isObstacle(curPos.x, curPos.y, direction))
+        if (!sMap.isFree(curPos.x, curPos.y, direction))
         {
-            log.error("we were fleeing toward a visible cell but now it's a obstacle");
+            // FIXME: the problem is that we are trying to flee from some creatures, but other non-threatening
+            // creatures might be on the way. Might be complicated to fix this.
+            // The solution is to select a free, far away path and implement Path-based movement.
+
+            // log.error("entity {} was going to {}, {} but now it's an obstacle", entityId, direction, curPos);
 
             return 0f;
         }
