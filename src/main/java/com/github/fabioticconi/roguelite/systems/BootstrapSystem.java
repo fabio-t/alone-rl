@@ -341,6 +341,7 @@ public class BootstrapSystem extends BaseSystem
         edit.create(Size.class).value = size;
         edit.create(Stamina.class).value = 5 + str + con;
         edit.create(Speed.class).value = (con - str - agi + 6) / 12f;
+        edit.create(Health.class).value = (con + 3) * 10;
 
         // Tertiary Attributes
         edit.create(Hunger.class).value = (size / 2f) + 2f;

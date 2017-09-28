@@ -20,6 +20,7 @@ package com.github.fabioticconi.roguelite.map;
 
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.utils.Coords;
+import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -56,7 +57,7 @@ public class SingleGrid
      */
     public boolean has(final int x, final int y)
     {
-        return x >= 0 && x < Options.MAP_SIZE_X && y >= 0 && y < Options.MAP_SIZE_Y;
+        return Util.inRange(x, 0, Options.MAP_SIZE_X) && Util.inRange(y, 0, Options.MAP_SIZE_Y);
     }
 
     public int get(final int x, final int y)

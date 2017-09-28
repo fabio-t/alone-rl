@@ -24,6 +24,7 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
+import com.github.fabioticconi.roguelite.components.attributes.Health;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
@@ -43,8 +44,10 @@ public class MovementSystem extends DelayedIteratingSystem
 
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
+    ComponentMapper<Health>     mHealth;
 
     MapSystem sMap;
+    AttackSystem sAttack;
 
     @Wire
     SingleGrid grid;
@@ -127,11 +130,13 @@ public class MovementSystem extends DelayedIteratingSystem
 
         if (!sMap.isFree(newX, newY))
         {
-            // TODO: handle "bump action": this might be an attack if there's a creature there.
-            // This should be handled nicely.
-
             // clear movement completely, even if we were going in another direction
             mMove.remove(entityId);
+
+            final int obstacleId = grid.get(newX, newY);
+
+            if (obstacleId >= 0 && mHealth.has(obstacleId))
+                return sAttack.attack(entityId, obstacleId);
 
             return 0f;
         }

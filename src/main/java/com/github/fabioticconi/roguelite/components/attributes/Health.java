@@ -22,19 +22,19 @@ import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 08/09/17
+ * Date: 28/09/17
  */
-public class Stamina extends Component
+public class Health extends Component
 {
     public float maxValue;
     public float value;
 
-    public Stamina()
+    public Health()
     {
 
     }
 
-    public Stamina(final float value)
+    public Health(final float value)
     {
         this.maxValue = value;
         this.value = value;
