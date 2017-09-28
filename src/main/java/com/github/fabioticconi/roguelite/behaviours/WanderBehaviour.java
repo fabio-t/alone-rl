@@ -69,6 +69,8 @@ public class WanderBehaviour extends AbstractBehaviour
         final Position pos   = mPosition.get(entityId);
         final float    speed = mSpeed.get(entityId).value;
 
+        // System.out.println(entityId + " " + pos);
+
         final Set<Side> exits = sMap.getFreeExits(pos.x, pos.y);
 
         if (exits.isEmpty())

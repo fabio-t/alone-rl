@@ -91,6 +91,7 @@ public class BootstrapSystem extends BaseSystem
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
         edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
+        edit.create(Obstacle.class);
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
@@ -127,6 +128,7 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN);
+            edit.create(Obstacle.class);
 
             grid.set(x, y, id);
         }
@@ -161,6 +163,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
+            edit.create(Obstacle.class);
 
             grid.set(x, y, id);
         }
@@ -199,6 +202,7 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
+            edit.create(Obstacle.class);
 
             grid.set(x, y, id);
         }
@@ -232,6 +236,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker());
+            edit.create(Obstacle.class);
 
             grid.set(x, y, id);
         }

@@ -44,6 +44,11 @@ public class Position extends Component
         this.y = y;
     }
 
+    public void set(final Position p)
+    {
+        set(p.x, p.y);
+    }
+
     @Override
     public String toString()
     {

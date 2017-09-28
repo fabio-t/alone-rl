@@ -20,10 +20,7 @@ package com.github.fabioticconi.roguelite.behaviours;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelite.components.Herbivore;
-import com.github.fabioticconi.roguelite.components.Hunger;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
@@ -50,8 +47,8 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Position>  mPosition;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
+
     MovementSystem             sMovement;
-    HungerSystem               sHunger;
     MapSystem                  sMap;
 
     @Wire
@@ -79,10 +76,13 @@ public class ChaseBehaviour extends AbstractBehaviour
         final int   sight  = mSight.get(entityId).value;
         final float hunger = mHunger.get(entityId).value;
 
+        // System.out.println(entityId + " " + curPos);
+
         // all creatures in the visible area for this predator
         final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         float minDistance = Float.MAX_VALUE;
+        chaseId = -1;
 
         Position temp;
         for (final int creatureId : creatures)
@@ -104,7 +104,7 @@ public class ChaseBehaviour extends AbstractBehaviour
         }
 
         // might be there's no prey
-        if (chaseId == 0)
+        if (chaseId < 0)
             return 0f;
 
         // average between our hunger and the prey's closeness
@@ -114,37 +114,8 @@ public class ChaseBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final Position pos   = mPosition.get(entityId);
-        final float    speed = mSpeed.get(entityId).value;
+        final float speed = mSpeed.get(entityId).value;
 
-        if (pos.equals(chasePos))
-        {
-            // prey is right here! Let's eat!
-            sHunger.feed(entityId);
-
-            world.delete(chaseId);
-
-            return 0f;
-        }
-
-        final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, chasePos.x, chasePos.y);
-
-        // if the path is empty, it's not clear what's going on (we know the
-        // prey is visible, from before..)
-        // but if there's only one element, then the prey is right here and we
-        // don't do anything (for now)
-        if (path.isEmpty())
-        {
-            log.warn("path shouldn't be empty");
-            return 0f;
-        }
-
-        // position 0 is "HERE"
-        final Point2I closest = path.get(1);
-
-        // System.out.println("chasing: " + closest.x + ", " + closest.y);
-
-        // move one step towards the prey
-        return sMovement.moveTo(entityId, speed, Side.getSideAt(closest.x - pos.x, closest.y - pos.y));
+        return sMovement.moveTo(entityId, speed, chasePos);
     }
 }

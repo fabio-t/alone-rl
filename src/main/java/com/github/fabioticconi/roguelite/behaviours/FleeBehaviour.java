@@ -74,6 +74,8 @@ public class FleeBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
+        // System.out.println(entityId + " " + curPos);
+
         final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         if (creatures.isEmpty())

@@ -24,11 +24,15 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
+import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point2I;
+
+import java.util.List;
 
 /**
  * @author Fabio Ticconi
@@ -39,7 +43,6 @@ public class MovementSystem extends DelayedIteratingSystem
 
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
-    ComponentMapper<Obstacle>   mObstacle;
 
     MapSystem sMap;
 
@@ -80,7 +83,7 @@ public class MovementSystem extends DelayedIteratingSystem
 
             if (id >= 0)
             {
-                log.error(String.format("entity %d was at the new position %s", id, p));
+                log.error("entity {} was at the new position {}", id, p);
 
                 return;
             }
@@ -92,8 +95,31 @@ public class MovementSystem extends DelayedIteratingSystem
 
     // Public API
 
+    public float moveTo(final int entityId, final float speed, final Position target)
+    {
+        final Position pos = mPosition.get(entityId);
+
+        final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, target.x, target.y);
+
+        if (path == null || path.size() < 2)
+        {
+            // the target position is the same as the entity's position,
+            // or the target is not visible. Either way, we don't move.
+
+            return 0f;
+        }
+
+        // position 0 is "HERE"
+        final Point2I p = path.get(1);
+
+        return moveTo(entityId, speed, Side.getSideAt(p.x - pos.x, p.y - pos.y));
+    }
+
     public float moveTo(final int entityId, final float speed, final Side direction)
     {
+        if (direction.equals(Side.HERE))
+            return 0f;
+
         final Position p = mPosition.get(entityId);
 
         final int newX = p.x + direction.x;
@@ -118,7 +144,32 @@ public class MovementSystem extends DelayedIteratingSystem
         if (m.direction == direction)
             return m.cooldown;
 
-        m.cooldown = speed; // TODO: add terrain-specific speed penalty, plus check water etc
+        final Cell cell = sMap.get(newX, newY);
+
+        switch (cell)
+        {
+            case HILL:
+            case HILL_GRASS:
+                m.cooldown = speed * 1.25f;
+                break;
+
+            case MOUNTAIN:
+                m.cooldown = speed * 1.5f;
+                break;
+
+            case HIGH_MOUNTAIN:
+            case WATER:
+                m.cooldown = speed * 2f;
+                break;
+
+            case DEEP_WATER:
+                m.cooldown = speed * 3f;
+                break;
+
+            default:
+                m.cooldown = speed;
+        }
+
         m.direction = direction;
 
         offerDelay(m.cooldown);

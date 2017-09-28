@@ -25,6 +25,7 @@ import com.github.fabioticconi.roguelite.components.Group;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
+import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
@@ -32,8 +33,11 @@ import com.github.fabioticconi.roguelite.systems.GroupSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point2I;
+import rlforj.pathfinding.AStar;
 
 public class FlockBehaviour extends AbstractBehaviour
 {
@@ -53,6 +57,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
     private Position curPos;
     private Position centerOfGroup;
+    private Position closest;
 
     @Override
     protected void initialize()
@@ -83,10 +88,14 @@ public class FlockBehaviour extends AbstractBehaviour
 
         curPos = mPosition.get(entityId);
 
-        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
+        final LongSet visibleCells = sMap.getVisibleCells(curPos.x, curPos.y, sight);
+
+        final IntSet creatures = grid.getEntities(visibleCells);
 
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;
+
+        int minDistance = Integer.MAX_VALUE;
 
         int      count = 0;
         Position temp;
@@ -104,6 +113,16 @@ public class FlockBehaviour extends AbstractBehaviour
                 centerOfGroup.x += temp.x;
                 centerOfGroup.y += temp.y;
 
+                // we keep track of the closest visible group member, in case the "center of group" approach
+                // fails
+                final int tempDistance = Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y);
+
+                if (tempDistance < minDistance)
+                {
+                    minDistance = tempDistance;
+                    closest = temp;
+                }
+
                 count++;
             }
         }
@@ -113,6 +132,18 @@ public class FlockBehaviour extends AbstractBehaviour
 
         centerOfGroup.x = Math.floorDiv(centerOfGroup.x, count);
         centerOfGroup.y = Math.floorDiv(centerOfGroup.y, count);
+
+        // if we are at the centre already, this behaviour should not be selected
+        if (centerOfGroup.x == curPos.x && centerOfGroup.y == curPos.y)
+            return 0f;
+
+        final long coord = Coords.packCoords(centerOfGroup.x, centerOfGroup.y);
+
+        // if the center is not currently visible, there's no point
+        if (!visibleCells.contains(coord))
+        {
+            centerOfGroup.set(closest);
+        }
 
         final int dist = Coords.distanceChebyshev(curPos.x, curPos.y, centerOfGroup.x, centerOfGroup.y);
 
@@ -125,26 +156,8 @@ public class FlockBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final Side direction;
-
-        direction = Side.getSideAt(centerOfGroup.x - curPos.x, centerOfGroup.y - curPos.y);
-
-        if (!sMap.isFree(curPos.x, curPos.y, direction))
-        {
-            // FIXME: the problem is that we are trying to flee from some creatures, but other non-threatening
-            // creatures might be on the way. Might be complicated to fix this.
-            // The solution is to select a free, far away path and implement Path-based movement.
-
-            // log.error("entity {} was going to {}, {} but now it's an obstacle", entityId, direction, curPos);
-
-            return 0f;
-        }
-
-        if (direction == Side.HERE)
-            return 0f;
-
         final float speed = mSpeed.get(entityId).value;
 
-        return sMovement.moveTo(entityId, speed, direction);
+        return sMovement.moveTo(entityId, speed, centerOfGroup);
     }
 }

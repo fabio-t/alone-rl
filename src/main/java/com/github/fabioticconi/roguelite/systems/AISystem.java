@@ -98,8 +98,7 @@ public class AISystem extends DelayedIteratingSystem
         {
             final float temp = behaviour.evaluate(entityId);
 
-            // System.out.println(entityId + ": " +
-            // behaviour.getClass().getSimpleName() + " (" + temp + ")");
+            // System.out.println(entityId + ": " + behaviour.getClass().getSimpleName() + " (" + temp + ")");
 
             if (temp > maxScore)
             {
