@@ -18,52 +18,108 @@
 
 package com.github.fabioticconi.roguelite.systems;
 
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
+import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.actions.AttackAction;
 import com.github.fabioticconi.roguelite.components.attributes.Health;
 import com.github.fabioticconi.roguelite.components.attributes.Strength;
-import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Fabio Ticconi
  * Date: 28/09/17
  */
-public class AttackSystem extends PassiveSystem
+public class AttackSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Strength> mStrength;
-    ComponentMapper<Health>   mHealth;
-    ComponentMapper<Speed>    mSpeed;
-    ComponentMapper<Dead>     mDead;
+    static final Logger log = LoggerFactory.getLogger(AttackSystem.class);
 
-    public float attack(final int entityId, final int targetId)
+    ComponentMapper<AttackAction> mAttack;
+    ComponentMapper<Strength>     mStrength;
+    ComponentMapper<Health>       mHealth;
+    ComponentMapper<Speed>        mSpeed;
+    ComponentMapper<Dead>         mDead;
+
+    public AttackSystem()
     {
-        final Speed    cSpeed    = mSpeed.get(entityId);
-        final Strength cStrength = mStrength.get(entityId);
-        final Health   cHealth   = mHealth.get(targetId);
+        super(Aspect.all(Position.class, AttackAction.class).exclude(Dead.class));
+    }
 
-        if (cSpeed == null || cStrength == null || cHealth == null)
+    @Override
+    protected float getRemainingDelay(final int entityId)
+    {
+        return mAttack.get(entityId).cooldown;
+    }
+
+    @Override
+    protected void processDelta(final int entityId, final float accumulatedDelta)
+    {
+        mAttack.get(entityId).cooldown -= accumulatedDelta;
+    }
+
+    @Override
+    protected void processExpired(final int entityId)
+    {
+        final AttackAction cAttack   = mAttack.get(entityId);
+        final Strength     cStrength = mStrength.get(entityId);
+
+        // whatever the outcome, this action must be removed
+        mAttack.remove(entityId);
+
+        final int targetId = cAttack.targetId;
+
+        if (targetId < 0)
         {
-            // TODO log a warning or error
+            log.info("target does not exist");
+            return;
+        }
 
-            return 0f;
+        final Health cHealth = mHealth.get(targetId);
+
+        if (cStrength == null || cHealth == null)
+        {
+            log.error("wrong entity composition");
+
+            return;
         }
 
         final int   strength = cStrength.value;
         final float health   = cHealth.value;
 
-        // TODO implement dodge, plus we need to account for the player weapons eventually
+        cHealth.value = health - strength*2;
 
-        cHealth.value = health - strength;
+        log.info("E:{} T:{} H:{}", entityId, targetId, cHealth.value);
 
         if (cHealth.value <= 0)
         {
-            // TODO log info?
-            mDead.create(targetId);
+            log.info("entity {} is killed by {}", targetId, entityId);
 
-            // FIXME maybe it's better to simply remove the entity here, and create a corpse item instead.
+            mDead.create(entityId);
+        }
+    }
+
+    public float attack(final int entityId, final int targetId)
+    {
+        final Speed cSpeed = mSpeed.get(entityId);
+        final float speed  = cSpeed.value;
+
+        final AttackAction cAttack = mAttack.create(entityId);
+
+        if (cAttack.targetId == targetId)
+        {
+            // if already attacking same target, don't reset the timer
+            return cAttack.cooldown;
         }
 
-        return cSpeed.value;
+        cAttack.targetId = targetId;
+        cAttack.cooldown = speed;
+
+        offerDelay(cAttack.cooldown);
+
+        return speed;
     }
 }

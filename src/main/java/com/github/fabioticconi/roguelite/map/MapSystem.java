@@ -52,12 +52,16 @@ import java.util.Set;
 public class MapSystem extends PassiveSystem implements ILosBoard
 {
     static final Logger log = LoggerFactory.getLogger(MapSystem.class);
+
     final Cell terrain[][];
+
     /* FOV/LOS stuff */
     final LongSet lastVisited;
     ComponentMapper<Obstacle> mObstacle;
+
     @Wire
     SingleGrid obstacles;
+
     PrecisePermissive view;
 
     public MapSystem() throws IOException

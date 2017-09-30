@@ -24,6 +24,7 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.behaviours.Behaviour;
 import com.github.fabioticconi.roguelite.components.AI;
 import com.github.fabioticconi.roguelite.components.Alertness;
+import com.github.fabioticconi.roguelite.components.Dead;
 
 import java.util.Random;
 
@@ -48,7 +49,7 @@ public class AISystem extends DelayedIteratingSystem
      */
     public AISystem()
     {
-        super(Aspect.all(AI.class, Alertness.class));
+        super(Aspect.all(AI.class, Alertness.class).exclude(Dead.class));
     }
 
     /*

@@ -21,6 +21,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
+import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Obstacle;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
@@ -54,7 +55,7 @@ public class MovementSystem extends DelayedIteratingSystem
 
     public MovementSystem()
     {
-        super(Aspect.all(Position.class, MoveAction.class));
+        super(Aspect.all(Position.class, MoveAction.class).exclude(Dead.class));
     }
 
     @Override

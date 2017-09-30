@@ -36,7 +36,7 @@ public class GroupSystem extends PassiveSystem
 
     public GroupSystem()
     {
-        groups = new Bag<IntSet>();
+        groups = new Bag<>();
 
         recycling = new IntDeque();
     }
@@ -50,7 +50,7 @@ public class GroupSystem extends PassiveSystem
     {
         final IntSet newGroup = new IntArraySet();
 
-        int newId;
+        final int newId;
         if (recycling.isEmpty())
         {
             newId = groups.size();

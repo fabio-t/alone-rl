@@ -20,6 +20,7 @@ package com.github.fabioticconi.roguelite.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
+import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Hunger;
 
 /**
@@ -34,7 +35,7 @@ public class HungerSystem extends IntervalIteratingSystem
      */
     public HungerSystem(final float interval)
     {
-        super(Aspect.all(Hunger.class), interval);
+        super(Aspect.all(Hunger.class).exclude(Dead.class), interval);
     }
 
     /*
