@@ -34,7 +34,17 @@ public class Hunger extends Component
 
     public Hunger(final float value)
     {
-        this.maxValue = value;
-        this.value = value;
+        set(value);
+    }
+
+    public void set(final float hunger, final float maxHunger)
+    {
+        this.maxValue = maxHunger;
+        this.value = hunger;
+    }
+
+    public void set(final float value)
+    {
+        set(value, value);
     }
 }

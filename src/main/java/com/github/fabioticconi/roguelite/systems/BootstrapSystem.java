@@ -210,7 +210,7 @@ public class BootstrapSystem extends BaseSystem
         }
 
         // add solitary pumas
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -345,9 +345,9 @@ public class BootstrapSystem extends BaseSystem
         edit.create(Size.class).value = size;
         edit.create(Stamina.class).value = 5 + str + con;
         edit.create(Speed.class).value = (con - str - agi + 6) / 12f;
-        edit.create(Health.class).value = (con + 3) * 10;
+        edit.create(Health.class).set((con + 3) * 10);
 
         // Tertiary Attributes
-        edit.create(Hunger.class).value = (size / 2f) + 2f;
+        edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
     }
 }

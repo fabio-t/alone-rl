@@ -57,8 +57,8 @@ public class HungerSystem extends IntervalIteratingSystem
     {
         final Hunger h = mHunger.get(entityId);
 
-        // increase hunger by 0.1 per second
-        h.value = h.value + getIntervalDelta() * 0.1f;
+        // increase hunger a little bit every tick
+        h.value = h.value + getIntervalDelta() * 0.01f;
 
         h.value = Math.min(h.value, h.maxValue);
     }
@@ -100,9 +100,14 @@ public class HungerSystem extends IntervalIteratingSystem
         h.value -= food;
         health.value -= food;
 
+        System.out.println(entityId + " eats " + food + " (hunger: " + h.value + ")");
+
         if (health.value <= 0f)
         {
-            // destroy food item
+            // destroy food item, but also recover the wrongly-reduced hunger
+
+            h.value -= health.value;
+
             final Position p = mPosition.get(foodId);
             items.del(foodId, p.x, p.y);
             world.delete(foodId);

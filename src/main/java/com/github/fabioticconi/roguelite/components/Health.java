@@ -36,12 +36,17 @@ public class Health extends Component
 
     public Health(final float value)
     {
-        set(value, value);
+        set(value);
     }
 
-    public void set(final float maxHealth, final float health)
+    public void set(final float health, final float maxHealth)
     {
         this.maxValue = maxHealth;
         this.value = health;
+    }
+
+    public void set(final float value)
+    {
+        set(value, value);
     }
 }
