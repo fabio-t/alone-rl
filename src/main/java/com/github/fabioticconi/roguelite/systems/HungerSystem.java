@@ -100,8 +100,6 @@ public class HungerSystem extends IntervalIteratingSystem
         h.value -= food;
         health.value -= food;
 
-        System.out.println(entityId + " eats " + food + " (hunger: " + h.value + ")");
-
         if (health.value <= 0f)
         {
             // destroy food item, but also recover the wrongly-reduced hunger

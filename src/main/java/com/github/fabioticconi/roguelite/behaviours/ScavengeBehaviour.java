@@ -30,6 +30,7 @@ import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +106,8 @@ public class ScavengeBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        if (pos.equals(corpsePos))
+        // just eat if the corpse is anywhere near us
+        if (Coords.distanceChebyshev(pos.x, pos.y, corpsePos.x, corpsePos.y) < 2)
         {
             return sHunger.devour(entityId, corpseId);
         }
