@@ -2,9 +2,7 @@
 - complete transition to data-driven entity factory (not a single entity component should be hard-coded in bootstrap..
   ideally)
 
-- add items and inventory management for player
-
-- add fight system
+- inventory management (for player). Simple get and drop commands, and Inventory component
 
 - carnivores should eat carcasses (must implement combat, death and carcass items first)
 

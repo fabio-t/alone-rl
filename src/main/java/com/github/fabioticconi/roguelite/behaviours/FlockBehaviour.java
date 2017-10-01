@@ -25,8 +25,6 @@ import com.github.fabioticconi.roguelite.components.Group;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
-import com.github.fabioticconi.roguelite.constants.Options;
-import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.systems.GroupSystem;
@@ -36,8 +34,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point2I;
-import rlforj.pathfinding.AStar;
 
 public class FlockBehaviour extends AbstractBehaviour
 {

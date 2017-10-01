@@ -34,14 +34,14 @@ public class MultipleGridTest
     {
         final MultipleGrid grid = new MultipleGrid();
 
-        grid.putEntity(1, 5, 10);
-        grid.putEntity(2, 10, 5);
-        grid.putEntity(3, 100, 500);
+        grid.add(1, 5, 10);
+        grid.add(2, 10, 5);
+        grid.add(3, 100, 500);
 
-        Set<Integer> e1 = grid.getEntities(5, 10);
-        Set<Integer> e2 = grid.getEntities(10, 5);
-        Set<Integer> e3 = grid.getEntities(100, 500);
-        Set<Integer> e4 = grid.getEntities(1, 1);
+        Set<Integer> e1 = grid.get(5, 10);
+        Set<Integer> e2 = grid.get(10, 5);
+        Set<Integer> e3 = grid.get(100, 500);
+        Set<Integer> e4 = grid.get(1, 1);
 
         assertNotNull(e1);
         assertNotNull(e2);
@@ -50,13 +50,13 @@ public class MultipleGridTest
 
         assertEquals(e4, IntSets.EMPTY_SET);
 
-        assertTrue(grid.moveEntity(1, 5, 10, 10, 5));
-        assertTrue(grid.moveEntity(3, 100, 500, 1, 1));
+        assertTrue(grid.move(1, 5, 10, 10, 5));
+        assertTrue(grid.move(3, 100, 500, 1, 1));
 
-        e1 = grid.getEntities(5, 10);
-        e2 = grid.getEntities(10, 5);
-        e3 = grid.getEntities(100, 500);
-        e4 = grid.getEntities(1, 1);
+        e1 = grid.get(5, 10);
+        e2 = grid.get(10, 5);
+        e3 = grid.get(100, 500);
+        e4 = grid.get(1, 1);
 
         assertNotNull(e1);
         assertNotNull(e2);
@@ -83,26 +83,26 @@ public class MultipleGridTest
                     continue;
                 }
 
-                grid.putEntity(i, x, y);
+                grid.add(i, x, y);
             }
         }
 
-        Set<Integer> entities = grid.getClosestEntities(13, 13, 0);
+        Set<Integer> entities = grid.getClosest(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());
 
-        entities = grid.getClosestEntities(13, 13, 1);
+        entities = grid.getClosest(13, 13, 1);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 8);
 
-        entities = grid.getClosestEntities(13, 13, 2);
+        entities = grid.getClosest(13, 13, 2);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 8);
 
-        entities = grid.getClosestEntities(13, 13, 3);
+        entities = grid.getClosest(13, 13, 3);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 8);
@@ -122,30 +122,30 @@ public class MultipleGridTest
                     continue;
                 }
 
-                grid.putEntity(i, x, y);
+                grid.add(i, x, y);
             }
         }
 
-        Set<Integer> entities = grid.getEntitiesAtRadius(13, 13, 0);
+        Set<Integer> entities = grid.getAtRadius(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());
 
-        entities = grid.getEntitiesAtRadius(13, 13, 1);
+        entities = grid.getAtRadius(13, 13, 1);
 
         System.out.println();
 
         assertNotNull(entities);
         assertEquals(entities.size(), 8);
 
-        entities = grid.getEntitiesAtRadius(13, 13, 2);
+        entities = grid.getAtRadius(13, 13, 2);
 
         System.out.println();
 
         assertNotNull(entities);
         assertEquals(entities.size(), 16);
 
-        entities = grid.getEntitiesAtRadius(13, 13, 3);
+        entities = grid.getAtRadius(13, 13, 3);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 24);
@@ -166,30 +166,30 @@ public class MultipleGridTest
                     continue;
                 }
 
-                grid.putEntity(i, x, y);
+                grid.add(i, x, y);
             }
         }
 
-        Set<Integer> entities = grid.getEntitiesWithinRadius(13, 13, 0);
+        Set<Integer> entities = grid.getWithinRadius(13, 13, 0);
 
         assertNotNull(entities);
         assertTrue(entities.isEmpty());
 
-        entities = grid.getEntitiesWithinRadius(13, 13, 1);
+        entities = grid.getWithinRadius(13, 13, 1);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 8);
 
-        entities = grid.getEntitiesWithinRadius(13, 13, 2);
+        entities = grid.getWithinRadius(13, 13, 2);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 24);
 
-        entities = grid.getEntitiesWithinRadius(13, 13, 3);
+        entities = grid.getWithinRadius(13, 13, 3);
 
         assertNotNull(entities);
         assertEquals(entities.size(), 48);
 
-        entities = grid.getEntitiesWithinRadius(13, 13, 3);
+        entities = grid.getWithinRadius(13, 13, 3);
     }
 }

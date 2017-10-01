@@ -20,15 +20,21 @@ package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
+import com.github.fabioticconi.roguelite.components.Health;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.actions.AttackAction;
-import com.github.fabioticconi.roguelite.components.attributes.Health;
+import com.github.fabioticconi.roguelite.components.attributes.Agility;
+import com.github.fabioticconi.roguelite.components.attributes.Skin;
 import com.github.fabioticconi.roguelite.components.attributes.Strength;
+import com.github.fabioticconi.roguelite.utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Random;
 
 /**
  * Author: Fabio Ticconi
@@ -40,9 +46,14 @@ public class AttackSystem extends DelayedIteratingSystem
 
     ComponentMapper<AttackAction> mAttack;
     ComponentMapper<Strength>     mStrength;
+    ComponentMapper<Agility>      mAgility;
     ComponentMapper<Health>       mHealth;
+    ComponentMapper<Skin>         mSkin;
     ComponentMapper<Speed>        mSpeed;
     ComponentMapper<Dead>         mDead;
+
+    @Wire
+    Random r;
 
     public AttackSystem()
     {
@@ -64,8 +75,7 @@ public class AttackSystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        final AttackAction cAttack   = mAttack.get(entityId);
-        final Strength     cStrength = mStrength.get(entityId);
+        final AttackAction cAttack = mAttack.get(entityId);
 
         // whatever the outcome, this action must be removed
         mAttack.remove(entityId);
@@ -78,27 +88,29 @@ public class AttackSystem extends DelayedIteratingSystem
             return;
         }
 
-        final Health cHealth = mHealth.get(targetId);
+        final Strength cStrength = mStrength.get(entityId);
+        final Agility  cAgility  = mAgility.get(entityId);
 
-        if (cStrength == null || cHealth == null)
+        final Agility tAgility = mAgility.get(targetId);
+        final Health  tHealth  = mHealth.get(targetId);
+        final Skin    tSkin    = mSkin.get(targetId);
+
+        final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
+
+        if (r.nextInt() < toHit)
         {
-            log.error("wrong entity composition");
+            final float damage = Math.max((cStrength.value + 2) - tSkin.value, 0) * 2f;
 
-            return;
-        }
+            tHealth.value -= damage;
 
-        final int   strength = cStrength.value;
-        final float health   = cHealth.value;
+            log.info("{} hits {} for D={} (H={})", entityId, targetId, damage, tHealth.value);
 
-        cHealth.value = health - strength*2;
+            if (tHealth.value <= 0)
+            {
+                log.info("{} is killed by {}", targetId, entityId);
 
-        log.info("E:{} T:{} H:{}", entityId, targetId, cHealth.value);
-
-        if (cHealth.value <= 0)
-        {
-            log.info("entity {} is killed by {}", targetId, entityId);
-
-            mDead.create(entityId);
+                mDead.create(targetId);
+            }
         }
     }
 

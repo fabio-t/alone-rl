@@ -20,11 +20,14 @@ package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
-import com.github.fabioticconi.roguelite.components.Dead;
-import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.*;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
+
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
@@ -33,9 +36,13 @@ import com.github.fabioticconi.roguelite.map.SingleGrid;
 public class DeadSystem extends IteratingSystem
 {
     ComponentMapper<Position> mPos;
+    ComponentMapper<Size>     mSize;
 
     @Wire
-    SingleGrid grid;
+    SingleGrid creatures;
+
+    @Wire
+    MultipleGrid items;
 
     public DeadSystem()
     {
@@ -45,19 +52,22 @@ public class DeadSystem extends IteratingSystem
     @Override
     protected void process(final int entityId)
     {
-        // TODO: either create a new entity (corpse item) or change it
-        // the latter has the problem that the Ids might have been stored somewhere (eg, AttackAction
-        // for example stores the target id - what if somebody killed it before us?) and by not removing the entity
-        // we may have an inconsistent state.
+        final Position p    = mPos.get(entityId);
+        final Size     size = mSize.get(entityId);
 
-        // if we delete the entity, then artemis-odb should "notify" interested systems, most importantly
-        // the link manager. That one changes dead entities to -1, so that elsewhere in the code I just have to check
-        // that
-
-        final Position p = mPos.get(entityId);
-
-        grid.del(p.x, p.y);
-
+        // remove dead creature from the world
+        creatures.del(p.x, p.y);
         world.delete(entityId);
+
+        // add corpse item
+        final int        corpseId = world.create();
+        final EntityEdit edit     = world.edit(corpseId);
+
+        edit.create(Position.class).set(p.x, p.y);
+        edit.create(Sprite.class).set('$', Color.RED.darker().darker());
+        edit.create(Corpse.class);
+        edit.create(Health.class).set(size.value, size.value);
+
+        items.add(corpseId, p.x, p.y);
     }
 }

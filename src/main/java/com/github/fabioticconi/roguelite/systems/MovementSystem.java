@@ -22,14 +22,14 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
-import com.github.fabioticconi.roguelite.components.Obstacle;
+import com.github.fabioticconi.roguelite.components.Health;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
-import com.github.fabioticconi.roguelite.components.attributes.Health;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
+import com.github.fabioticconi.roguelite.utils.Coords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point2I;
@@ -47,7 +47,7 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Health>     mHealth;
 
-    MapSystem sMap;
+    MapSystem    sMap;
     AttackSystem sAttack;
 
     @Wire
@@ -102,6 +102,12 @@ public class MovementSystem extends DelayedIteratingSystem
     public float moveTo(final int entityId, final float speed, final Position target)
     {
         final Position pos = mPosition.get(entityId);
+
+        if (Coords.distanceChebyshev(pos.x, pos.y, target.x, target.y) == 1)
+        {
+            // it's only one step away, no point calculating line of sight
+            return moveTo(entityId, speed, Side.getSideAt(target.x - pos.x, target.y - pos.y));
+        }
 
         final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, target.x, target.y);
 

@@ -19,12 +19,13 @@ package com.github.fabioticconi.roguelite.map;
 
 import com.github.fabioticconi.roguelite.constants.Options;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Supports storage and retrieval of entities placed on a 2D grid, where each cell can contain multiple
@@ -37,6 +38,8 @@ import it.unimi.dsi.fastutil.longs.LongSet;
  */
 public class MultipleGrid
 {
+    static final Logger log = LoggerFactory.getLogger(MultipleGrid.class);
+
     Long2ObjectMap<IntSet> grid;
 
     public MultipleGrid()
@@ -51,14 +54,11 @@ public class MultipleGrid
      * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
      * for each call.
      *
-     * @param x
-     * @param y
+     * @param pos packed coordinates
      * @return
      */
-    public IntSet getEntities(final int x, final int y)
+    public IntSet get(final long pos)
     {
-        final long pos = x | ((long) y << 32);
-
         final IntSet entities = grid.get(pos);
 
         return IntSets.unmodifiable(entities);
@@ -70,28 +70,28 @@ public class MultipleGrid
      * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
      * for each call.
      *
-     * @param pos packed coordinates
+     * @param x
+     * @param y
      * @return
      */
-    public IntSet getEntities(final long pos)
+    public IntSet get(final int x, final int y)
     {
-        final IntSet entities = grid.get(pos);
+        final long pos = x | ((long) y << 32);
 
-        return IntSets.unmodifiable(entities);
+        return get(pos);
     }
 
     /**
      * Returns all entities in the specified cells.
      * <p>
-     * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
-     * for each call.
+     * NB: the returned set it's newly allocated and thus safe to modify.
      *
      * @param cells set of packed coordinates of entities
      * @return
      */
-    public IntSet getEntities(final LongSet cells)
+    public IntSet get(final LongSet cells)
     {
-        final IntSet entities = new IntOpenHashSet();
+        final IntSet entities = new IntLinkedOpenHashSet();
 
         for (final long pos : cells)
         {
@@ -113,14 +113,14 @@ public class MultipleGrid
      * @param maxRadius
      * @return
      */
-    public IntSet getClosestEntities(final int x, final int y, int maxRadius)
+    public IntSet getClosest(final int x, final int y, int maxRadius)
     {
         IntSet curEntities = grid.get(x | ((long) y << 32));
 
         if (!curEntities.isEmpty())
             return curEntities;
 
-        final IntSet entities = new IntOpenHashSet();
+        final IntSet entities = new IntLinkedOpenHashSet();
 
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
@@ -221,9 +221,9 @@ public class MultipleGrid
      * @param r
      * @return
      */
-    public IntSet getEntitiesAtRadius(final int x, final int y, final int r)
+    public IntSet getAtRadius(final int x, final int y, final int r)
     {
-        final IntSet entities = new IntOpenHashSet();
+        final IntSet entities = new IntLinkedOpenHashSet();
 
         // only want the items in the specific cell
         if (r <= 0)
@@ -233,7 +233,7 @@ public class MultipleGrid
 
         // we put the cursor where it would have been if we were in one
         // iteration
-        // of "getClosestEntities"
+        // of "getClosest"
         int cur_y = y - r;
         int cur_x = x - r + 1;
 
@@ -255,13 +255,9 @@ public class MultipleGrid
                 continue;
             }
 
-            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+            curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-            if (curEntities != null)
-            {
-                // accumulate entities within this circle
-                entities.addAll(curEntities);
-            }
+            entities.addAll(curEntities);
         }
 
         // continue south, through the east column
@@ -272,13 +268,9 @@ public class MultipleGrid
                 continue;
             }
 
-            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+            curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-            if (curEntities != null)
-            {
-                // accumulate entities within this circle
-                entities.addAll(curEntities);
-            }
+            entities.addAll(curEntities);
         }
 
         // continue west, through the south row
@@ -290,13 +282,9 @@ public class MultipleGrid
                 continue;
             }
 
-            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+            curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-            if (curEntities != null)
-            {
-                // accumulate entities within this circle
-                entities.addAll(curEntities);
-            }
+            entities.addAll(curEntities);
         }
 
         // continue north, through the west column of this circle
@@ -307,13 +295,9 @@ public class MultipleGrid
                 continue;
             }
 
-            curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+            curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-            if (curEntities != null)
-            {
-                // accumulate entities within this circle
-                entities.addAll(curEntities);
-            }
+            entities.addAll(curEntities);
         }
 
         return entities;
@@ -329,16 +313,13 @@ public class MultipleGrid
      * @param r
      * @return
      */
-    public IntSet getEntitiesWithinRadius(final int x, final int y, final int r)
+    public IntSet getWithinRadius(final int x, final int y, final int r)
     {
         final IntSet entities = new IntLinkedOpenHashSet();
 
-        IntSet curEntities = grid.getOrDefault(x | ((long) y << 32), null);
+        IntSet curEntities = grid.get(x | ((long) y << 32));
 
-        if (curEntities != null)
-        {
-            entities.addAll(curEntities);
-        }
+        entities.addAll(curEntities);
 
         int cur_y = y - 1;
         int cur_x = x;
@@ -363,13 +344,9 @@ public class MultipleGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                entities.addAll(curEntities);
             }
 
             // continue south, through the east column
@@ -380,13 +357,9 @@ public class MultipleGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                entities.addAll(curEntities);
             }
 
             // continue west, through the south row
@@ -398,13 +371,9 @@ public class MultipleGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                entities.addAll(curEntities);
             }
 
             // continue north, through the west column of this circle
@@ -415,17 +384,13 @@ public class MultipleGrid
                     continue;
                 }
 
-                curEntities = grid.getOrDefault(cur_x | ((long) cur_y << 32), null);
+                curEntities = grid.get(cur_x | ((long) cur_y << 32));
 
-                if (curEntities != null)
-                {
-                    // accumulate entities within this circle
-                    entities.addAll(curEntities);
-                }
+                entities.addAll(curEntities);
             }
 
             // at this point we are positioned WITHIN the north row of the next
-            // cicle
+            // circle
         }
 
         return entities;
@@ -439,7 +404,7 @@ public class MultipleGrid
      * @param x
      * @param y
      */
-    public void putEntity(final int id, final int x, final int y)
+    public void add(final int id, final int x, final int y)
     {
         final long pos = x | ((long) y << 32);
 
@@ -447,18 +412,39 @@ public class MultipleGrid
 
         if (entities == null)
         {
-            entities = new IntOpenHashSet();
+            entities = new IntLinkedOpenHashSet();
 
             entities.add(id);
 
             grid.put(pos, entities);
         }
-        else if (!entities.rem(id))
+        else if (!entities.contains(id))
         {
-            // TODO: log if it was already present at this position?
+            // add it only if it wasn't already present
 
             entities.add(id);
         }
+        else
+        {
+            log.warn("item {} is already at ({},{})", id, x, y);
+        }
+    }
+
+    public boolean del(final int id, final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        final IntSet entities = grid.get(pos);
+
+        // TODO: just put the object at position "end"? (should we check there, too?)
+        if (entities.isEmpty())
+        {
+            log.warn("item {} was NOT at position ({},{})", id, x, y);
+
+            return false;
+        }
+
+        return entities.remove(id);
     }
 
     /**
@@ -467,33 +453,47 @@ public class MultipleGrid
      * there isn't any change if the entity is already in the end cell.
      *
      * @param id
-     * @param start_x
-     * @param start_y
-     * @param end_x
-     * @param end_y
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
      * @return
      */
-    public boolean moveEntity(final int id, final int start_x, final int start_y, final int end_x, final int end_y)
+    public boolean move(final int id, final int startX, final int startY, final int endX, final int endY)
     {
-        final long pos = start_x | ((long) start_y << 32);
+        final long pos = startX | ((long) startY << 32);
 
-        final IntSet entities = grid.getOrDefault(pos, null);
+        final IntSet entities = grid.get(pos);
 
-        // TODO: just put the object at position "end"? (should we check there,
-        // too?)
-        if (entities == null || entities.isEmpty())
+        // TODO: just put the object at position "end"? (should we check there, too?)
+        if (entities.isEmpty())
+        {
+            log.warn("item {} was NOT at position ({},{})", id, startX, startY);
+
             return false;
+        }
 
         final boolean found = entities.remove(id);
 
         if (found)
         {
-            putEntity(id, end_x, end_y);
+            add(id, endX, endY);
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Returns the number of entities present at the specified position.
+     *
+     * @param pos
+     * @return
+     */
+    public int count(final long pos)
+    {
+        return grid.get(pos).size();
     }
 
     /**
@@ -507,27 +507,6 @@ public class MultipleGrid
     {
         final long pos = x | ((long) y << 32);
 
-        final IntSet entities = grid.getOrDefault(pos, null);
-
-        if (entities == null)
-            return 0;
-
-        return entities.size();
-    }
-
-    /**
-     * Returns the number of entities present at the specified position.
-     *
-     * @param pos
-     * @return
-     */
-    public int count(final long pos)
-    {
-        final IntSet entities = grid.getOrDefault(pos, null);
-
-        if (entities == null)
-            return 0;
-
-        return entities.size();
+        return count(pos);
     }
 }

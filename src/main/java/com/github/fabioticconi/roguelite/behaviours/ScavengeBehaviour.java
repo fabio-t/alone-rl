@@ -15,42 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package com.github.fabioticconi.roguelite.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
+import com.github.fabioticconi.roguelite.components.Corpse;
 import com.github.fabioticconi.roguelite.components.Hunger;
 import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
-import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.EnumSet;
-
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 01/10/17
  */
-public class GrazeBehaviour extends AbstractBehaviour
+public class ScavengeBehaviour extends AbstractBehaviour
 {
-    static final Logger log = LoggerFactory.getLogger(GrazeBehaviour.class);
+    static final Logger log = LoggerFactory.getLogger(ScavengeBehaviour.class);
 
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
     ComponentMapper<Speed>    mSpeed;
+    ComponentMapper<Corpse>   mCorpse;
 
     HungerSystem   sHunger;
     MovementSystem sMovement;
+    MapSystem      sMap;
 
-    MapSystem sMap;
+    @Wire
+    MultipleGrid items;
 
-    // FIXME: this should be in a Context of sort
-    private Hunger hunger;
+    private Position pos;
+    private Position corpsePos;
+    private int      corpseId;
 
     @Override
     protected void initialize()
@@ -66,44 +73,45 @@ public class GrazeBehaviour extends AbstractBehaviour
         if (!interested(entityId))
             return 0f;
 
-        hunger = mHunger.get(entityId);
+        pos = mPosition.get(entityId);
 
-        final float value = hunger.value / hunger.maxValue;
+        final int sight = mSight.get(entityId).value;
 
-        if (value < 0.4f)
+        final Hunger cHunger = mHunger.get(entityId);
+        final float  hunger  = cHunger.value / cHunger.maxValue;
+
+        final IntSet visibleItems = items.get(sMap.getVisibleCells(pos.x, pos.y, sight));
+
+        corpsePos = null;
+
+        for (final int itemId : visibleItems)
+        {
+            if (mCorpse.has(itemId))
+            {
+                corpsePos = mPosition.get(itemId);
+                corpseId = itemId;
+
+                break;
+            }
+        }
+
+        if (corpsePos == null)
             return 0f;
 
-        return value;
+        // wherever the corpse is, we go eat it
+        return hunger;
     }
 
     @Override
     public float update()
     {
-        final Position pos   = mPosition.get(entityId);
-        final int      sight = mSight.get(entityId).value;
-        final float    speed = mSpeed.get(entityId).value;
+        if (pos.equals(corpsePos))
+        {
+            return sHunger.devour(entityId, corpseId);
+        }
 
-        // FIXME: does not take visibility into account!
+        final float speed = mSpeed.get(entityId).value;
 
-        // FIXME: should differentiate on the "feeding capability"
-        // and also, possibly, on the creature's preference (ie, the EnumSet
-        // should be within a EatingPreference component of some kind)
-        final int[] coords = sMap.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
-
-        // TODO: the behaviour actually FAILED here, couldn't do anything:
-        // should we somehow relay this information to the AISystem, so that
-        // at the next tick it can try a different thing? Otherwise we are stuck
-        // in a "Graze loop"
-        // FIXME: solution: if no visible grass cells, evaluate this behaviour to 0
-        if (coords == null)
-            return 0f;
-
-        // we are right on a feed-friendly cell, so let's eat
-        if (coords[0] == pos.x && coords[1] == pos.y)
-            return sHunger.feed(entityId);
-
-        final Position destination = new Position(coords[0], coords[1]);
-
-        return sMovement.moveTo(entityId, speed, destination);
+        return sMovement.moveTo(entityId, speed, corpsePos);
     }
 }

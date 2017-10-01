@@ -19,16 +19,25 @@ package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
+import com.github.fabioticconi.roguelite.components.Health;
 import com.github.fabioticconi.roguelite.components.Hunger;
+import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 
 /**
  * @author Fabio Ticconi
  */
 public class HungerSystem extends IntervalIteratingSystem
 {
-    ComponentMapper<Hunger> mHunger;
+    ComponentMapper<Hunger>   mHunger;
+    ComponentMapper<Health>   mHealth;
+    ComponentMapper<Position> mPosition;
+
+    @Wire
+    MultipleGrid items;
 
     /**
      * @param interval
@@ -48,19 +57,15 @@ public class HungerSystem extends IntervalIteratingSystem
     {
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 1.01f;
+        // increase hunger by 0.1 per second
+        h.value = h.value + getIntervalDelta() * 0.1f;
 
         h.value = Math.min(h.value, h.maxValue);
-
-        // TODO: we need a Feeding component, triggered by a player action
-        // or by the AI, that tells us if we have food available - in which
-        // case,
-        // hunger should decrease, not grow
     }
 
     // Public API
 
-    // TODO this should be dependent on "interval" or on some delta as argument
+    // TODO this should be dependent on "interval" or on some value as argument
     public float feed(final int entityId)
     {
         if (!mHunger.has(entityId))
@@ -68,8 +73,41 @@ public class HungerSystem extends IntervalIteratingSystem
 
         final Hunger h = mHunger.get(entityId);
 
-        h.value *= 0.9f;
+        // remove 25% hunger
+        h.value = h.value - h.maxValue * 0.25f;
+
+        h.value = Math.max(h.value, 0f);
 
         return h.value;
+    }
+
+    public float devour(final int entityId, final int foodId)
+    {
+        final Hunger h = mHunger.get(entityId);
+
+        if (h == null)
+            return 0f;
+
+        final Health health = mHealth.get(foodId);
+
+        if (health == null)
+            return 0f;
+
+        // remove 25% hunger (or less) and decrease corpse health accordingly
+
+        final float food = Math.min(h.maxValue * 0.25f, h.value);
+
+        h.value -= food;
+        health.value -= food;
+
+        if (health.value <= 0f)
+        {
+            // destroy food item
+            final Position p = mPosition.get(foodId);
+            items.del(foodId, p.x, p.y);
+            world.delete(foodId);
+        }
+
+        return food;
     }
 }

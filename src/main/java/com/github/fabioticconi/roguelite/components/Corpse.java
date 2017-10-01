@@ -16,27 +16,14 @@
  *
  */
 
-package com.github.fabioticconi.roguelite.components.attributes;
+package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 28/09/17
+ * Date: 01/10/17
  */
-public class Health extends Component
+public class Corpse extends Component
 {
-    public float maxValue;
-    public float value;
-
-    public Health()
-    {
-
-    }
-
-    public Health(final float value)
-    {
-        this.maxValue = value;
-        this.value = value;
-    }
 }

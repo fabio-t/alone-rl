@@ -127,14 +127,15 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('b', Util.BROWN);
+            // edit.create(Sprite.class).set('b', Util.BROWN);
+            edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN);
             edit.create(Obstacle.class);
 
             grid.set(x, y, id);
         }
 
         // add small, independent rabbits/hares
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 0; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -171,7 +172,7 @@ public class BootstrapSystem extends BaseSystem
         // add a pack of wolves
         groupId = sGroup.createGroup();
         group = sGroup.getGroup(groupId);
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 0; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -195,6 +196,7 @@ public class BootstrapSystem extends BaseSystem
             final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
             ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
             ai.behaviours.add(world.getSystem(FlockBehaviour.class));
+            ai.behaviours.add(world.getSystem(ScavengeBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
             edit.create(Position.class).set(x, y);
@@ -231,11 +233,13 @@ public class BootstrapSystem extends BaseSystem
 
             final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
             ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
+            ai.behaviours.add(world.getSystem(ScavengeBehaviour.class));
             ai.behaviours.add(world.getSystem(WanderBehaviour.class));
             edit.add(ai);
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('p', Util.BROWN.darker());
+            // edit.create(Sprite.class).set('p', Util.BROWN.darker());
+            edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
             edit.create(Obstacle.class);
 
             grid.set(x, y, id);
@@ -263,7 +267,7 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Obstacle.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.
-                    // ie, the sMap should be able to get the Obstacle component from the SingleGrid
+                    // ie, the map should be able to get the Obstacle component from the SingleGrid
                     // to determine if the cell is obstructed or not.
 
                     grid.set(x, y, id);

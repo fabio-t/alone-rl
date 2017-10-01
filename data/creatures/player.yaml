@@ -3,5 +3,5 @@ agility: 0
 constitution: 0
 skin: -2
 sight: 18
-herbivore: true
-carnivore: true
+#herbivore: true
+#carnivore: true

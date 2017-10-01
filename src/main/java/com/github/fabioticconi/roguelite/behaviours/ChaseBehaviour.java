@@ -20,20 +20,18 @@ package com.github.fabioticconi.roguelite.behaviours;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.roguelite.components.*;
+import com.github.fabioticconi.roguelite.components.Herbivore;
+import com.github.fabioticconi.roguelite.components.Hunger;
+import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
-import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
-import com.github.fabioticconi.roguelite.systems.HungerSystem;
 import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point2I;
-
-import java.util.List;
 
 /**
  * @author Fabio Ticconi
@@ -48,15 +46,13 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
 
-    MovementSystem             sMovement;
-    MapSystem                  sMap;
+    MovementSystem sMovement;
+    MapSystem      sMap;
 
     @Wire
     SingleGrid grid;
 
-    private Position curPos;
     private Position chasePos;
-    private int      chaseId;
 
     @Override
     protected void initialize()
@@ -72,17 +68,19 @@ public class ChaseBehaviour extends AbstractBehaviour
         if (!interested(entityId))
             return 0f;
 
-        curPos = mPosition.get(entityId);
-        final int   sight  = mSight.get(entityId).value;
-        final float hunger = mHunger.get(entityId).value;
+        final Position pos   = mPosition.get(entityId);
+        final int      sight = mSight.get(entityId).value;
+
+        final Hunger cHunger = mHunger.get(entityId);
+        final float  hunger  = cHunger.value / cHunger.maxValue; // need a value between 0 and 1
 
         // System.out.println(entityId + " " + curPos);
 
         // all creatures in the visible area for this predator
-        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(pos.x, pos.y, sight));
 
         float minDistance = Float.MAX_VALUE;
-        chaseId = -1;
+        chasePos = null;
 
         Position temp;
         for (final int creatureId : creatures)
@@ -91,24 +89,23 @@ public class ChaseBehaviour extends AbstractBehaviour
             {
                 temp = mPosition.get(creatureId);
 
-                final float distance = (float) Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y) / sight;
+                final float distance = (float) Coords.distanceChebyshev(pos.x, pos.y, temp.x, temp.y);
 
                 // we want the closest prey
                 if (distance < minDistance)
                 {
                     minDistance = distance;
                     chasePos = temp;
-                    chaseId = creatureId;
                 }
             }
         }
 
         // might be there's no prey
-        if (chaseId < 0)
+        if (chasePos == null)
             return 0f;
 
         // average between our hunger and the prey's closeness
-        return 0.5f * (hunger + 1f - minDistance);
+        return 0.5f * (hunger + 1f - (minDistance / sight));
     }
 
     @Override

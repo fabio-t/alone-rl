@@ -16,30 +16,32 @@
  *
  */
 
-package com.github.fabioticconi.roguelite.components.actions;
+package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
-import com.artemis.annotations.EntityId;
 
 /**
  * Author: Fabio Ticconi
- * Date: 30/09/17
+ * Date: 28/09/17
  */
-public class AttackAction extends Component
+public class Health extends Component
 {
-    public float cooldown;
-    @EntityId
-    public int   targetId;
+    public float maxValue;
+    public float value;
 
-    public AttackAction()
+    public Health()
     {
-        cooldown = 0f;
-        targetId = -1;
+
     }
 
-    public AttackAction(final float cooldown, final int targetId)
+    public Health(final float value)
     {
-        this.cooldown = cooldown;
-        this.targetId = targetId;
+        set(value, value);
+    }
+
+    public void set(final float maxHealth, final float health)
+    {
+        this.maxValue = maxHealth;
+        this.value = health;
     }
 }

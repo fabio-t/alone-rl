@@ -22,12 +22,14 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.Size;
 import com.github.fabioticconi.roguelite.components.Sprite;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
-import com.github.fabioticconi.roguelite.components.attributes.Size;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
@@ -43,16 +45,18 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Size>     mSize;
 
+    MapSystem map;
+
     @Wire
-    MapSystem  sMap;
+    SingleGrid   grid;
     @Wire
-    SingleGrid grid;
+    MultipleGrid items;
 
     PlayerManager pManager;
 
     public void display(final AsciiPanel terminal)
     {
-        // FIXME: hackish, very crappy but it should work
+        // FIXME: hackish, very crappy
         final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Position p     = mPosition.get(pID);
@@ -61,44 +65,55 @@ public class RenderSystem extends PassiveSystem
         final int xmax = terminal.getWidthInCharacters();
         final int ymax = terminal.getHeightInCharacters();
 
-        //         final int xmax = Options.TERMINAL_SIZE_X;
-        //         final int ymax = Options.TERMINAL_SIZE_Y;
-
         final int halfcols = xmax / 2;
         final int halfrows = ymax / 2;
 
-        int pos_x;
-        int pos_y;
+        int posX;
+        int posY;
 
         Sprite sprite;
         Size   size;
 
-        final LongSet cells = sMap.getVisibleCells(p.x, p.y, sight);
+        final LongSet cells = map.getVisibleCells(p.x, p.y, sight);
 
-        // FIXME we should just fill all as default,
-        // and then just set the visible ones (a single for, not
-        // a double one) by calling grid.getEntities(cells)
-        // and getting the Position of those entities.
-        // not sure if this is more efficient though,
-        // technically the below getEntities doesn't allocate
-        // a new set so it should be fine..
         for (int x = 0; x < xmax; x++)
         {
             for (int y = 0; y < ymax; y++)
             {
-                pos_x = p.x + x - halfcols;
-                pos_y = p.y + y - halfrows;
+                posX = p.x + x - halfcols;
+                posY = p.y + y - halfrows;
 
-                final long key = pos_x | ((long) pos_y << 32);
+                final long key = posX | ((long) posY << 32);
 
                 if (cells.contains(key))
                 {
                     // render terrain
-                    final Cell cell = sMap.get(pos_x, pos_y);
+                    final Cell cell = map.get(posX, posY);
 
                     terminal.write(cell.c, x, y, cell.col);
 
-                    final int entityId = grid.get(pos_x, pos_y);
+                    // then render the items
+                    final IntSet entities = items.get(key);
+
+                    // we actually only render the first (renderable) item
+                    for (final int firstItemId : entities)
+                    {
+                        if (firstItemId < 0)
+                            continue;
+
+                        sprite = mSprite.get(firstItemId);
+
+                        if (sprite == null)
+                            continue;
+
+                        terminal.write(sprite.c, x, y, sprite.col);
+
+                        break;
+                    }
+
+                    // on top, render the creatures/trees/walls etc
+
+                    final int entityId = grid.get(posX, posY);
 
                     if (entityId >= 0)
                     {

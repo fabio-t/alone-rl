@@ -96,6 +96,7 @@ public class Roguelite extends JFrame implements KeyListener
         config.setSystem(GrazeBehaviour.class);
         config.setSystem(ChaseBehaviour.class);
         config.setSystem(FlockBehaviour.class);
+        config.setSystem(ScavengeBehaviour.class);
         config.setSystem(WanderBehaviour.class);
         // last systems
         config.setSystem(DeadSystem.class);

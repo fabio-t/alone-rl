@@ -16,7 +16,7 @@
  *
  */
 
-package com.github.fabioticconi.roguelite.components.attributes;
+package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
 
