@@ -55,6 +55,8 @@ public class AttackSystem extends DelayedIteratingSystem
     @Wire
     Random r;
 
+    StaminaSystem sStamina;
+
     public AttackSystem()
     {
         super(Aspect.all(Position.class, AttackAction.class).exclude(Dead.class));
@@ -95,11 +97,16 @@ public class AttackSystem extends DelayedIteratingSystem
         final Health  tHealth  = mHealth.get(targetId);
         final Skin    tSkin    = mSkin.get(targetId);
 
+        // whether it hits or not, both attacker and defender get a penalty to their stamina
+        // (higher for the attacker)
+        sStamina.consume(entityId, 0.25f);
+        sStamina.consume(entityId, 0.1f);
+
         final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
 
-        if (r.nextInt() < toHit)
+        if (r.nextFloat() < toHit)
         {
-            final float damage = Math.max((cStrength.value + 2) - tSkin.value, 0) * 2f;
+            final float damage = Math.max(((cStrength.value + 2) - tSkin.value), 1f);
 
             tHealth.value -= damage;
 

@@ -24,6 +24,7 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Health;
 import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
@@ -49,6 +50,7 @@ public class MovementSystem extends DelayedIteratingSystem
 
     MapSystem    sMap;
     AttackSystem sAttack;
+    StaminaSystem sStamina;
 
     @Wire
     SingleGrid grid;
@@ -94,6 +96,9 @@ public class MovementSystem extends DelayedIteratingSystem
 
             p.x = newX;
             p.y = newY;
+
+            // consume a fixed amount of stamina
+            sStamina.consume(entityId, 0.25f);
         }
     }
 

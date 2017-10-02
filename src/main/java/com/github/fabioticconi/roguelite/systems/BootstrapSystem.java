@@ -36,6 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 /**
@@ -53,6 +54,8 @@ public class BootstrapSystem extends BaseSystem
     GroupSystem sGroup;
 
     PlayerManager pManager;
+
+    private final ClassLoader loader = getClass().getClassLoader();
 
     /*
      * (non-Javadoc)
@@ -280,8 +283,10 @@ public class BootstrapSystem extends BaseSystem
 
     public void loadBody(final String filename, final EntityEdit edit) throws IOException
     {
+        final InputStream fileStream = loader.getResourceAsStream(filename);
+
         final YAMLFactory factory = new YAMLFactory();
-        final JsonParser  parser  = factory.createParser(new File(filename));
+        final JsonParser  parser  = factory.createParser(fileStream);
 
         int     str       = 0, agi = 0, con = 0, skin = 0, sight = 0;
         boolean herbivore = false, carnivore = false;

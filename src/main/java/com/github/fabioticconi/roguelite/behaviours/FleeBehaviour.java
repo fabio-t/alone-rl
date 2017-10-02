@@ -111,19 +111,15 @@ public class FleeBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final Side direction;
-
-        direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
+        Side direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
 
         if (!sMap.isFree(curPos.x, curPos.y, direction))
         {
-            // FIXME: the problem is that we are trying to flee from some creatures, but other non-threatening
-            // creatures might be on the way. Might be complicated to fix this.
-            // The solution is to select a free, far away path and implement Path-based movement.
+            // go to a random direction, whether free or not!
+            // note how this could result in animals killing members of their own group and such,
+            // which we take as simulating a stampede.
 
-            // log.error("entity {} was going to {}, {} but now it's an obstacle", entityId, direction, curPos);
-
-            return 0f;
+            direction = Side.getRandom();
         }
 
         if (direction == Side.HERE)

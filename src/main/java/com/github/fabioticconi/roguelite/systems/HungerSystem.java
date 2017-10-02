@@ -74,11 +74,11 @@ public class HungerSystem extends IntervalIteratingSystem
         final Hunger h = mHunger.get(entityId);
 
         // remove 25% hunger
-        h.value = h.value - h.maxValue * 0.25f;
+        final float food = Math.min(h.maxValue * 0.25f, h.value);
 
-        h.value = Math.max(h.value, 0f);
+        h.value -= food;
 
-        return h.value;
+        return food;
     }
 
     public float devour(final int entityId, final int foodId)

@@ -25,11 +25,13 @@ import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import com.github.fabioticconi.roguelite.utils.Util;
+import com.googlecode.lanterna.terminal.swing.TerminalScrollController;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
@@ -69,9 +71,11 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         lastVisited = new LongOpenHashSet();
         view = new PrecisePermissive();
 
-        final BufferedImage img = ImageIO.read(new File("data/map/map.png"));
+        final ClassLoader loader = getClass().getClassLoader();
 
-        final byte[] elevation = Files.readAllBytes(Paths.get("data/map/elevation.data"));
+        final BufferedImage img = ImageIO.read(loader.getResourceAsStream("data/map/map.png"));
+
+        final byte[] elevation = IOUtils.toByteArray(loader.getResourceAsStream("data/map/elevation.data"));
 
         Options.MAP_SIZE_X = img.getWidth();
         Options.MAP_SIZE_Y = img.getHeight();
@@ -240,7 +244,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         return contains(x, y) && obstacles.get(x, y) < 0;
     }
 
-    public boolean isFree(final int x, final int y, Side direction)
+    public boolean isFree(final int x, final int y, final Side direction)
     {
         return isFree(x + direction.x, y + direction.y);
     }
