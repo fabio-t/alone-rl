@@ -17,7 +17,7 @@ Not all the following is completely implemented, but you can see as a "core feat
 
 Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
 
-![alt tag](screenshots/fov_and_creatures.png)
+![alt tag](screenshots/screenshot.png)
 
 Creatures and player alike have, thus, only a limited view of the world and can hide from indiscreet eyes.
 

@@ -85,30 +85,43 @@ public class RenderSystem extends PassiveSystem
 
                 final long key = posX | ((long) posY << 32);
 
-                if (cells.contains(key))
+                if (map.contains(posX, posY))
                 {
                     // render terrain
                     final Cell cell = map.get(posX, posY);
+                    Color tileFg;
 
-                    terminal.write(cell.c, x, y, cell.col);
-
-                    // then render the items
-                    final IntSet entities = items.get(key);
-
-                    // we actually only render the first (renderable) item
-                    for (final int firstItemId : entities)
+                    if (cells.contains(key))
                     {
-                        if (firstItemId < 0)
-                            continue;
+                        tileFg = cell.col;
+                    }
+                    else
+                    {
+                        tileFg = cell.col.darker().darker().darker();
+                    }
 
-                        sprite = mSprite.get(firstItemId);
+                    terminal.write(cell.c, x, y, tileFg);
 
-                        if (sprite == null)
-                            continue;
+                    if (cells.contains(key))
+                    {
+                        // then render the items
+                        final IntSet entities = items.get(key);
 
-                        terminal.write(sprite.c, x, y, sprite.col);
+                        // we actually only render the first (renderable) item
+                        for (final int firstItemId : entities)
+                        {
+                            if (firstItemId < 0)
+                                continue;
 
-                        break;
+                            sprite = mSprite.get(firstItemId);
+
+                            if (sprite == null)
+                                continue;
+
+                            terminal.write(sprite.c, x, y, sprite.col);
+
+                            break;
+                        }
                     }
 
                     // on top, render the creatures/trees/walls etc
@@ -118,21 +131,34 @@ public class RenderSystem extends PassiveSystem
                     if (entityId >= 0)
                     {
                         sprite = mSprite.get(entityId);
+
+                        if (sprite == null)
+                            continue;
+
+                        if (!cells.contains(key) && !sprite.shadowView)
+                            continue;
+                        else if (cells.contains(key))
+                        {
+                            tileFg = sprite.col;
+                        }
+                        else
+                        {
+                            tileFg = sprite.col.darker().darker().darker();
+                        }
+
                         size = mSize.get(entityId);
 
-                        if (sprite != null)
-                        {
-                            final char c = (size != null && size.value > 0) ?
-                                               Character.toUpperCase(sprite.c) :
-                                               sprite.c;
+                        final char c = (size != null && size.value > 0) ?
+                                           Character.toUpperCase(sprite.c) :
+                                           sprite.c;
 
-                            terminal.write(c, x, y, sprite.col);
-                        }
+                        terminal.write(c, x, y, tileFg);
                     }
                 }
                 else
                 {
-                    terminal.write(' ', x, y, Color.DARK_GRAY);
+                    // pure black outside boundaries
+                    terminal.write(' ', x, y);
                 }
             }
         }

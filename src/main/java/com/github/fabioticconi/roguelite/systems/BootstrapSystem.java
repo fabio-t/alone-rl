@@ -266,7 +266,7 @@ public class BootstrapSystem extends BaseSystem
                     edit = world.edit(id);
 
                     edit.create(Position.class).set(x, y);
-                    edit.create(Sprite.class).set('T', Color.GREEN.brighter());
+                    edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
                     edit.create(Obstacle.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.

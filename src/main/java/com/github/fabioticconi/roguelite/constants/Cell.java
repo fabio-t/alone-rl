@@ -39,22 +39,26 @@ public enum Cell
 
     public final char  c;
     public final Color col;
+    public final Color bg;
 
     Cell()
     {
-        c = ' ';
-        col = Color.BLACK;
+        this.c = ' ';
+        this.col = Color.BLACK;
+        this.bg = Color.BLACK;
     }
 
     Cell(final char c)
     {
         this.c = c;
-        col = Color.BLACK;
+        this.col = Color.BLACK;
+        this.bg = Color.BLACK;
     }
 
     Cell(final char c, final Color color)
     {
         this.c = c;
         this.col = color;
+        this.bg = Color.BLACK;
     }
 }

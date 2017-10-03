@@ -64,7 +64,7 @@ public class DeadSystem extends IteratingSystem
         final EntityEdit edit     = world.edit(corpseId);
 
         edit.create(Position.class).set(p.x, p.y);
-        edit.create(Sprite.class).set('$', Color.RED.darker().darker());
+        edit.create(Sprite.class).set('$', Color.RED.darker().darker(), false);
         edit.create(Corpse.class);
         edit.create(Health.class).set(size.value + 3);
 
