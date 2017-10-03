@@ -82,16 +82,19 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
         {
-            // northeast
+            // east
             return sMove.moveTo(pID, speed, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
-            // northwest
+            // west
             return sMove.moveTo(pID, speed, Side.W);
         }
         else if (keys.get(KeyEvent.VK_G))
         {
+            // no combined key-presses like for movement, so we make sure to clear it
+            keys.clear(KeyEvent.VK_G);
+
             if (sItems.get(pID) < 0)
                 return 0f;
             else
@@ -99,6 +102,9 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_D))
         {
+            // no combined key-presses like for movement, so we make sure to clear it
+            keys.clear(KeyEvent.VK_D);
+
             if (sItems.drop(pID) < 0)
                 return 0f;
             else

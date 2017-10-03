@@ -31,18 +31,19 @@ public class MoveAction extends Component
      */
     public float cooldown;
     public Side  direction;
+    public float staminaCost;
 
     public MoveAction()
     {
-        cooldown = 0.0f;
-
+        cooldown = 0f;
         direction = Side.HERE;
+        staminaCost = 0f;
     }
 
-    public MoveAction(final float speed, final Side direction)
+    public MoveAction(final float speed, final Side direction, final float staminaCost)
     {
-        cooldown = speed;
-
+        this.cooldown = speed;
         this.direction = direction;
+        this.staminaCost = staminaCost;
     }
 }

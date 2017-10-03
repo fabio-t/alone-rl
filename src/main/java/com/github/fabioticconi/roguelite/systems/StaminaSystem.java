@@ -44,15 +44,20 @@ public class StaminaSystem extends IntervalIteratingSystem
 
         final float delta = getIntervalDelta();
 
+        if (stamina.exhausted)
+            stamina.exhausted = false;
+        else if (stamina.value <= 0f)
+            stamina.exhausted = true;
+
         stamina.value = Math.min(stamina.value + delta, stamina.maxValue);
     }
 
-    public float consume(final int entityId, final float fraction)
+    public float consume(final int entityId, final float amount)
     {
         final Stamina stamina = mStamina.get(entityId);
 
         // reduce stamina by a certain amount
-        final float consumed = Math.min(stamina.maxValue * fraction, stamina.value);
+        final float consumed = Math.min(amount, stamina.value);
 
         stamina.value -= consumed;
 

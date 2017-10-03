@@ -97,7 +97,7 @@ public class MovementSystem extends DelayedIteratingSystem
             p.y = newY;
 
             // consume a fixed amount of stamina
-            sStamina.consume(entityId, 0.25f);
+            sStamina.consume(entityId, m.staminaCost);
         }
     }
 
@@ -167,23 +167,28 @@ public class MovementSystem extends DelayedIteratingSystem
             case HILL:
             case HILL_GRASS:
                 m.cooldown = speed * 1.25f;
+                m.staminaCost = 1.25f;
                 break;
 
             case MOUNTAIN:
                 m.cooldown = speed * 1.5f;
+                m.staminaCost = 1.5f;
                 break;
 
             case HIGH_MOUNTAIN:
             case WATER:
                 m.cooldown = speed * 2f;
+                m.staminaCost = 2f;
                 break;
 
             case DEEP_WATER:
                 m.cooldown = speed * 3f;
+                m.staminaCost = 3f;
                 break;
 
             default:
                 m.cooldown = speed;
+                m.staminaCost = 1f;
         }
 
         m.direction = direction;

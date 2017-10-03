@@ -99,8 +99,8 @@ public class AttackSystem extends DelayedIteratingSystem
 
         // whether it hits or not, both attacker and defender get a penalty to their stamina
         // (higher for the attacker)
-        sStamina.consume(entityId, 0.25f);
-        sStamina.consume(entityId, 0.1f);
+        sStamina.consume(entityId, 2f);
+        sStamina.consume(entityId, 0.5f);
 
         final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
 

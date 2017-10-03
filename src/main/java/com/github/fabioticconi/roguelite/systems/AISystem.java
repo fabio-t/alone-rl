@@ -25,6 +25,7 @@ import com.github.fabioticconi.roguelite.behaviours.Behaviour;
 import com.github.fabioticconi.roguelite.components.AI;
 import com.github.fabioticconi.roguelite.components.Alertness;
 import com.github.fabioticconi.roguelite.components.Dead;
+import com.github.fabioticconi.roguelite.components.Stamina;
 
 import java.util.Random;
 
@@ -42,6 +43,7 @@ public class AISystem extends DelayedIteratingSystem
 
     ComponentMapper<AI>        mAI;
     ComponentMapper<Alertness> mAlert;
+    ComponentMapper<Stamina>   mStamina;
 
     /**
      * General processing of AIs. Evaluates the best current strategy and
@@ -49,7 +51,7 @@ public class AISystem extends DelayedIteratingSystem
      */
     public AISystem()
     {
-        super(Aspect.all(AI.class, Alertness.class).exclude(Dead.class));
+        super(Aspect.all(AI.class, Alertness.class, Stamina.class).exclude(Dead.class));
     }
 
     /*
@@ -92,7 +94,19 @@ public class AISystem extends DelayedIteratingSystem
 
         final AI ai = mAI.get(entityId);
 
-        float     maxScore      = 0f;
+        final Stamina stamina = mStamina.get(entityId);
+
+        // if we are exhausted, we'll skip this turn's AI
+        if (stamina.exhausted)
+        {
+            ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * alertness;
+
+            offerDelay(ai.cooldown);
+
+            return;
+        }
+
+        float     maxScore      = Float.MIN_VALUE;
         Behaviour bestBehaviour = null;
 
         for (final Behaviour behaviour : ai.behaviours)
@@ -117,10 +131,12 @@ public class AISystem extends DelayedIteratingSystem
         }
 
         ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * alertness;
+
         if (ai.cooldown < actionCooldown)
         {
             ai.cooldown = actionCooldown * 1.5f;
         }
+
         offerDelay(ai.cooldown);
     }
 }

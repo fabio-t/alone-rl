@@ -28,6 +28,7 @@ public class Stamina extends Component
 {
     public float maxValue;
     public float value;
+    public boolean exhausted;
 
     public Stamina()
     {
@@ -38,5 +39,6 @@ public class Stamina extends Component
     {
         this.maxValue = value;
         this.value = value;
+        this.exhausted = false;
     }
 }
