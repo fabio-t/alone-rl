@@ -29,12 +29,12 @@ import com.github.fabioticconi.roguelite.components.attributes.*;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
@@ -44,18 +44,16 @@ import java.util.Random;
  */
 public class BootstrapSystem extends BaseSystem
 {
-    @Wire
-    MapSystem  sMap;
+    private final ClassLoader loader = getClass().getClassLoader();
     @Wire
     SingleGrid grid;
     @Wire
-    Random     r;
-
+    MultipleGrid items;
+    @Wire
+    Random r;
     GroupSystem sGroup;
-
+    MapSystem   sMap;
     PlayerManager pManager;
-
-    private final ClassLoader loader = getClass().getClassLoader();
 
     /*
      * (non-Javadoc)
@@ -95,6 +93,7 @@ public class BootstrapSystem extends BaseSystem
         System.out.println("setPlayer");
         edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
         edit.create(Obstacle.class);
+        edit.create(Inventory.class);
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
@@ -248,7 +247,7 @@ public class BootstrapSystem extends BaseSystem
             grid.set(x, y, id);
         }
 
-        // add random trees?
+        // add random trees
         for (x = 0; x < Options.MAP_SIZE_X; x++)
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
@@ -274,6 +273,71 @@ public class BootstrapSystem extends BaseSystem
                     // to determine if the cell is obstructed or not.
 
                     grid.set(x, y, id);
+                }
+            }
+        }
+
+        // add random boulders
+        for (x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final Cell cell = sMap.get(x, y);
+
+                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
+                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
+                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
+                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
+                {
+                    if (!grid.isEmpty(x, y))
+                        continue;
+
+                    id = world.create();
+                    edit = world.edit(id);
+
+                    edit.create(Position.class).set(x, y);
+                    edit.create(Sprite.class).set('#', Color.GRAY.darker(), true);
+                    edit.create(Obstacle.class);
+
+                    // FIXME: we should only need one or the other to determine if obstacle.
+                    // ie, the map should be able to get the Obstacle component from the SingleGrid
+                    // to determine if the cell is obstructed or not.
+
+                    grid.set(x, y, id);
+                }
+            }
+        }
+
+        // add random stones
+        for (x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final Cell cell = sMap.get(x, y);
+
+                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
+                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
+                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
+                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
+                {
+                    if (!grid.isEmpty(x, y))
+                        continue;
+
+                    id = world.create();
+                    edit = world.edit(id);
+
+                    edit.create(Position.class).set(x, y);
+                    edit.create(Sprite.class).set('o', Color.GRAY.darker());
+
+                    // FIXME: we should only need one or the other to determine if obstacle.
+                    // ie, the map should be able to get the Obstacle component from the SingleGrid
+                    // to determine if the cell is obstructed or not.
+
+                    items.add(id, x, y);
                 }
             }
         }

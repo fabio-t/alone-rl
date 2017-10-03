@@ -15,52 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
-
-import java.awt.*;
+import com.artemis.annotations.EntityId;
+import com.artemis.utils.IntBag;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 03/10/17
  */
-public class Sprite extends Component
+public class Inventory extends Component
 {
-    public char    c;
-    public Color   col;
-    public boolean shadowView;
+    @EntityId
+    public IntBag items;
 
-    public Sprite()
+    public Inventory()
     {
-        this('?', Color.WHITE, false);
-    }
-
-    public Sprite(final char c)
-    {
-        this(c, Color.WHITE, false);
-    }
-
-    public Sprite(final char c, final Color col)
-    {
-        this(c, col, false);
-    }
-
-    public Sprite(final char c, final Color col, final boolean shadowView)
-    {
-        this.c = c;
-        this.col = col;
-        this.shadowView = shadowView;
-    }
-
-    public void set(final char c, final Color col)
-    {
-        set(c, col, false);
-    }
-
-    public void set(final char c, final Color col, final boolean shadowView)
-    {
-        this.c = c;
-        this.col = col;
-        this.shadowView = shadowView;
+        items = new IntBag(50);
     }
 }

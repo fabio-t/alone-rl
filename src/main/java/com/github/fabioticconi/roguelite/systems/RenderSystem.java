@@ -89,7 +89,7 @@ public class RenderSystem extends PassiveSystem
                 {
                     // render terrain
                     final Cell cell = map.get(posX, posY);
-                    Color tileFg;
+                    Color      tileFg;
 
                     if (cells.contains(key))
                     {
@@ -148,9 +148,7 @@ public class RenderSystem extends PassiveSystem
 
                         size = mSize.get(entityId);
 
-                        final char c = (size != null && size.value > 0) ?
-                                           Character.toUpperCase(sprite.c) :
-                                           sprite.c;
+                        final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
 
                         terminal.write(c, x, y, tileFg);
                     }

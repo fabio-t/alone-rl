@@ -23,7 +23,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Stamina;
-import com.github.fabioticconi.roguelite.utils.Util;
 
 /**
  * Author: Fabio Ticconi

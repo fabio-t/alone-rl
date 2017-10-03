@@ -2,8 +2,6 @@
 - complete transition to data-driven entity factory (not a single entity component should be hard-coded in bootstrap..
   ideally)
 
-- inventory management (for player). Simple get and drop commands, and Inventory component
-
 - stamina-depleted creatures (and player) should be unable to perform actions (might have to be hand-crafted for
   combat, so that a victim that is exhausted will always be hit)
 

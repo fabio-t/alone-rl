@@ -33,8 +33,8 @@ public enum Cell
     GROUND('.', Color.ORANGE.darker()),
     GRASS(',', Color.GREEN.darker().darker()),
     HILL_GRASS('^', Color.GREEN.darker().darker()),
-    HILL('^', Util.BROWN),
-    MOUNTAIN('^', Util.BROWN.brighter()),
+    HILL('^', Util.BROWN.brighter()),
+    MOUNTAIN('^', Util.BROWN),
     HIGH_MOUNTAIN('^', Color.GRAY.brighter());
 
     public final char  c;

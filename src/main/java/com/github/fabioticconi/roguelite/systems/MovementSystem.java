@@ -24,7 +24,6 @@ import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Health;
 import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
@@ -48,8 +47,8 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Health>     mHealth;
 
-    MapSystem    sMap;
-    AttackSystem sAttack;
+    MapSystem     sMap;
+    AttackSystem  sAttack;
     StaminaSystem sStamina;
 
     @Wire

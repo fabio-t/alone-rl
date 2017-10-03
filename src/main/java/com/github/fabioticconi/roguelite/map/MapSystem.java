@@ -25,7 +25,6 @@ import com.github.fabioticconi.roguelite.constants.Options;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import com.github.fabioticconi.roguelite.utils.Util;
-import com.googlecode.lanterna.terminal.swing.TerminalScrollController;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -40,10 +39,7 @@ import rlforj.math.Point2I;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;

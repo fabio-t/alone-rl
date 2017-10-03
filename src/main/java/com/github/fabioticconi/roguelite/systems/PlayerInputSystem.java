@@ -32,7 +32,8 @@ public class PlayerInputSystem extends PassiveSystem
 {
     ComponentMapper<Speed> mSpeed;
 
-    MovementSystem movement;
+    MovementSystem sMove;
+    ItemSystem     sItems;
 
     PlayerManager pManager;
 
@@ -48,17 +49,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // northwest
-                return movement.moveTo(pID, speed, Side.NW);
+                return sMove.moveTo(pID, speed, Side.NW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // northeast
-                return movement.moveTo(pID, speed, Side.NE);
+                return sMove.moveTo(pID, speed, Side.NE);
             }
             else
             {
                 // north
-                return movement.moveTo(pID, speed, Side.N);
+                return sMove.moveTo(pID, speed, Side.N);
             }
         }
         else if (keys.get(KeyEvent.VK_DOWN))
@@ -66,28 +67,42 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
-                return movement.moveTo(pID, speed, Side.SW);
+                return sMove.moveTo(pID, speed, Side.SW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // southeast
-                return movement.moveTo(pID, speed, Side.SE);
+                return sMove.moveTo(pID, speed, Side.SE);
             }
             else
             {
                 // south
-                return movement.moveTo(pID, speed, Side.S);
+                return sMove.moveTo(pID, speed, Side.S);
             }
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
         {
             // northeast
-            return movement.moveTo(pID, speed, Side.E);
+            return sMove.moveTo(pID, speed, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
             // northwest
-            return movement.moveTo(pID, speed, Side.W);
+            return sMove.moveTo(pID, speed, Side.W);
+        }
+        else if (keys.get(KeyEvent.VK_G))
+        {
+            if (sItems.get(pID) < 0)
+                return 0f;
+            else
+                return 1f; // fixed "cost"
+        }
+        else if (keys.get(KeyEvent.VK_D))
+        {
+            if (sItems.drop(pID) < 0)
+                return 0f;
+            else
+                return 1f; // fixed "cost"
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
