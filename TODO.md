@@ -15,3 +15,5 @@
   This is important so that we'll be able to stop using line of sight instead of pathfinding. We want, for example,
   to see behind a rabbit or even a wolf - but then we have to plan a course around them. So we need both LOS and
   AStar.
+
+- the data directory should be outside the jar so that the yaml can be modified by user

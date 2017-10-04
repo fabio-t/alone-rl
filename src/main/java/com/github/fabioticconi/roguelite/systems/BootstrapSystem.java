@@ -91,7 +91,7 @@ public class BootstrapSystem extends BaseSystem
         grid.set(x, y, id);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
-        edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
+        // edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
         edit.create(Obstacle.class);
         edit.create(Inventory.class);
 

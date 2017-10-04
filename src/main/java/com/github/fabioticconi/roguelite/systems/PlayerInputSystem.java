@@ -114,6 +114,11 @@ public class PlayerInputSystem extends PassiveSystem
         {
             Roguelite.keepRunning = false;
         }
+        else if (keys.get(KeyEvent.VK_SPACE))
+        {
+            Roguelite.paused = !Roguelite.paused;
+            keys.clear(KeyEvent.VK_SPACE);
+        }
 
         return 0f;
     }

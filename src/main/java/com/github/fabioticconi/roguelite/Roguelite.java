@@ -44,6 +44,7 @@ public class Roguelite extends JFrame implements KeyListener
 {
     static final  Logger  log          = LoggerFactory.getLogger(Roguelite.class);
     public static boolean keepRunning  = true;
+    public static boolean paused       = false;
     private final int     fps          = 25;
     private final long    deltaNanos   = Math.round(1000000000.0d / (double) fps);
     private final float   deltaSeconds = 1.0f / (float) fps;
@@ -164,7 +165,10 @@ public class Roguelite extends JFrame implements KeyListener
             while (lag >= deltaNanos)
             {
                 world.setDelta(deltaSeconds);
-                world.process();
+
+                // TODO: add here, in the else, a sleep?
+                if (!paused)
+                    world.process();
 
                 lag -= deltaNanos;
             }
@@ -174,7 +178,7 @@ public class Roguelite extends JFrame implements KeyListener
             // FIXME: to remove when actual rendering and input processing is implemented
             try
             {
-                Thread.sleep(40);
+                Thread.sleep(30);
             } catch (final InterruptedException e)
             {
                 e.printStackTrace();
