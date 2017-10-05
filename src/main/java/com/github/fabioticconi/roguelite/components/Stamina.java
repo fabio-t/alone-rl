@@ -26,8 +26,8 @@ import com.artemis.Component;
  */
 public class Stamina extends Component
 {
-    public float maxValue;
-    public float value;
+    public float   maxValue;
+    public float   value;
     public boolean exhausted;
 
     public Stamina()
@@ -37,8 +37,22 @@ public class Stamina extends Component
 
     public Stamina(final float value)
     {
-        this.maxValue = value;
-        this.value = value;
-        this.exhausted = false;
+        set(value, value);
+    }
+
+    public void set(final float stamina, final float maxStamina)
+    {
+        this.value = stamina;
+        this.maxValue = maxStamina;
+
+        if (stamina <= 0f)
+            this.exhausted = true;
+        else
+            this.exhausted = false;
+    }
+
+    public void set(final float value)
+    {
+        set(value, value);
     }
 }

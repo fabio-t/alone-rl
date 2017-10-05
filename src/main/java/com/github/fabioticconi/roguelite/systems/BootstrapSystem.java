@@ -35,6 +35,7 @@ import com.github.fabioticconi.roguelite.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.awt.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
@@ -46,13 +47,13 @@ public class BootstrapSystem extends BaseSystem
 {
     private final ClassLoader loader = getClass().getClassLoader();
     @Wire
-    SingleGrid grid;
+    SingleGrid   grid;
     @Wire
     MultipleGrid items;
     @Wire
-    Random r;
-    GroupSystem sGroup;
-    MapSystem   sMap;
+    Random       r;
+    GroupSystem   sGroup;
+    MapSystem     sMap;
     PlayerManager pManager;
 
     /*
@@ -347,7 +348,8 @@ public class BootstrapSystem extends BaseSystem
 
     public void loadBody(final String filename, final EntityEdit edit) throws IOException
     {
-        final InputStream fileStream = loader.getResourceAsStream(filename);
+        // final InputStream fileStream = loader.getResourceAsStream(filename);
+        final InputStream fileStream = new FileInputStream(filename);
 
         final YAMLFactory factory = new YAMLFactory();
         final JsonParser  parser  = factory.createParser(fileStream);
@@ -411,9 +413,9 @@ public class BootstrapSystem extends BaseSystem
 
         // Secondary Attributes
         final int size = Math.round((con - agi) / 2f);
-        edit.create(Size.class).value = size;
-        edit.create(Stamina.class).value = 5 + str + con;
-        edit.create(Speed.class).value = (con - str - agi + 6) / 12f;
+        edit.create(Size.class).set(size);
+        edit.create(Stamina.class).set((5 + str + con) * 10);
+        edit.create(Speed.class).set((con - str - agi + 6) / 12f);
         edit.create(Health.class).set((con + 3) * 10);
 
         // Tertiary Attributes

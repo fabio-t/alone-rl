@@ -35,6 +35,11 @@ public class Size extends Component
 
     public Size(final int size)
     {
+        set(size);
+    }
+
+    public void set(final int size)
+    {
         this.value = size;
     }
 }

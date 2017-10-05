@@ -42,7 +42,7 @@ public class StaminaSystem extends IntervalIteratingSystem
     {
         final Stamina stamina = mStamina.get(entityId);
 
-        final float delta = getIntervalDelta();
+        final float delta = getIntervalDelta()*0.5f;
 
         if (stamina.exhausted)
             stamina.exhausted = false;

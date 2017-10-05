@@ -39,7 +39,9 @@ import rlforj.math.Point2I;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -69,9 +71,11 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
         final ClassLoader loader = getClass().getClassLoader();
 
-        final BufferedImage img = ImageIO.read(loader.getResourceAsStream("data/map/map.png"));
+        final InputStream mapStream       = new FileInputStream("data/map/map.png");
+        final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
 
-        final byte[] elevation = IOUtils.toByteArray(loader.getResourceAsStream("data/map/elevation.data"));
+        final BufferedImage img       = ImageIO.read(mapStream);
+        final byte[]        elevation = IOUtils.toByteArray(elevationStream);
 
         Options.MAP_SIZE_X = img.getWidth();
         Options.MAP_SIZE_Y = img.getHeight();

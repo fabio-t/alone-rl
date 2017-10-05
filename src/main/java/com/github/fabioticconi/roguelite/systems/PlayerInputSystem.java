@@ -23,14 +23,20 @@ import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.constants.Side;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 
 public class PlayerInputSystem extends PassiveSystem
 {
-    ComponentMapper<Speed> mSpeed;
+    static final Logger log = LoggerFactory.getLogger(PlayerInputSystem.class);
+
+    ComponentMapper<Speed>   mSpeed;
+    ComponentMapper<Stamina> mStamina;
 
     MovementSystem sMove;
     ItemSystem     sItems;
@@ -42,10 +48,21 @@ public class PlayerInputSystem extends PassiveSystem
         // FIXME: hackish, very crappy but it should work
         final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
+        final Stamina stamina = mStamina.get(pID);
+
         final float speed = mSpeed.get(pID).value;
 
         if (keys.get(KeyEvent.VK_UP))
         {
+            if (stamina.exhausted)
+            {
+                // FIXME: this should go to a message log
+
+                log.info("you are too exhausted to move");
+
+                return 0f;
+            }
+
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // northwest
@@ -64,6 +81,15 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_DOWN))
         {
+            if (stamina.exhausted)
+            {
+                // FIXME: this should go to a message log
+
+                log.info("you are too exhausted to move");
+
+                return 0f;
+            }
+
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
@@ -82,11 +108,29 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
         {
+            if (stamina.exhausted)
+            {
+                // FIXME: this should go to a message log
+
+                log.info("you are too exhausted to move");
+
+                return 0f;
+            }
+
             // east
             return sMove.moveTo(pID, speed, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
+            if (stamina.exhausted)
+            {
+                // FIXME: this should go to a message log
+
+                log.info("you are too exhausted to move");
+
+                return 0f;
+            }
+
             // west
             return sMove.moveTo(pID, speed, Side.W);
         }

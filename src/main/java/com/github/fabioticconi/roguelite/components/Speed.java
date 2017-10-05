@@ -24,6 +24,7 @@ import com.artemis.Component;
  */
 public class Speed extends Component
 {
+    public float maxSpeed;
     public float value;
 
     public Speed()
@@ -33,6 +34,17 @@ public class Speed extends Component
 
     public Speed(final float value)
     {
-        this.value = value;
+        set(value);
+    }
+
+    public void set(final float speed, final float maxSpeed)
+    {
+        this.value = speed;
+        this.maxSpeed = maxSpeed;
+    }
+
+    public void set(final float value)
+    {
+        set(value, value);
     }
 }

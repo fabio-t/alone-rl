@@ -157,10 +157,10 @@ public class Roguelite extends JFrame implements KeyListener
 
             pActionTime = input.handleKeys(pressed);
 
-            // we do the actual computation in nanoseconds, using long numbers to avoid sneaky float
+            // We do the actual computation in nanoseconds, using long numbers to avoid sneaky float
             // incorrectness.
-            // however, artemis-odb wants a float delta representing seconds, so that's what we give.
-            // since we use fixed timestep, this is equivalent
+            // However, artemis-odb wants a float delta representing seconds, so that's what we give.
+            // Since we use fixed timestep, this is equivalent
             // FIXME: check if deltaNanos rounding affects the system with certain fps (eg, 60)
             while (lag >= deltaNanos)
             {
