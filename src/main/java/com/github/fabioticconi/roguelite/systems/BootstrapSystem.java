@@ -268,6 +268,7 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
                     edit.create(Obstacle.class);
+                    edit.create(Tree.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.
                     // ie, the map should be able to get the Obstacle component from the SingleGrid
@@ -301,6 +302,8 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('#', Color.GRAY.darker(), true);
                     edit.create(Obstacle.class);
+                    edit.create(Pushable.class);
+                    edit.create(Crushable.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.
                     // ie, the map should be able to get the Obstacle component from the SingleGrid
@@ -333,6 +336,7 @@ public class BootstrapSystem extends BaseSystem
 
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('o', Color.GRAY.darker());
+                    edit.create(Weapon.class);
 
                     // FIXME: we should only need one or the other to determine if obstacle.
                     // ie, the map should be able to get the Obstacle component from the SingleGrid
