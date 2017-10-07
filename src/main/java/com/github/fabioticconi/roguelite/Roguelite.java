@@ -139,7 +139,7 @@ public class Roguelite extends JFrame implements KeyListener
         // this is because the first and the last will be only processed once,
         // while the logic ones can be re-processed until the lag is gone
 
-        float pActionTime;
+        float pActionTime = 0f;
 
         while (keepRunning)
         {
@@ -155,7 +155,14 @@ public class Roguelite extends JFrame implements KeyListener
 
             lag += elapsed;
 
-            pActionTime = input.handleKeys(pressed);
+            final float curPActionTime = input.handleKeys(pressed);
+
+            // a new action was issued
+            if (curPActionTime > 0f)
+            {
+                paused = false;
+                pActionTime = curPActionTime;
+            }
 
             // We do the actual computation in nanoseconds, using long numbers to avoid sneaky float
             // incorrectness.
@@ -171,14 +178,18 @@ public class Roguelite extends JFrame implements KeyListener
                     world.process();
 
                 lag -= deltaNanos;
+                pActionTime -= deltaSeconds;
             }
+
+            if (pActionTime <= 0f)
+                Roguelite.paused = true;
 
             repaint();
 
             // FIXME: to remove when actual rendering and input processing is implemented
             try
             {
-                Thread.sleep(30);
+                Thread.sleep(40);
             } catch (final InterruptedException e)
             {
                 e.printStackTrace();

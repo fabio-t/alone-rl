@@ -142,7 +142,7 @@ public class PlayerInputSystem extends PassiveSystem
             if (sItems.get(pID) < 0)
                 return 0f;
             else
-                return 1f; // fixed "cost"
+                return 0.1f; // very small fixed "cost"
         }
         else if (keys.get(KeyEvent.VK_D))
         {
@@ -152,7 +152,7 @@ public class PlayerInputSystem extends PassiveSystem
             if (sItems.drop(pID) < 0)
                 return 0f;
             else
-                return 1f; // fixed "cost"
+                return 0.1f; // very small fixed "cost"
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
@@ -160,7 +160,7 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_SPACE))
         {
-            Roguelite.paused = !Roguelite.paused;
+            Roguelite.paused = false;
             keys.clear(KeyEvent.VK_SPACE);
         }
 

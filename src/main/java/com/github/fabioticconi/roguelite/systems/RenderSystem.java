@@ -21,9 +21,7 @@ import asciiPanel.AsciiPanel;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Size;
-import com.github.fabioticconi.roguelite.components.Sprite;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.MapSystem;
@@ -44,6 +42,9 @@ public class RenderSystem extends PassiveSystem
     ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Size>     mSize;
+    ComponentMapper<Hunger>   mHunger;
+    ComponentMapper<Health>   mHealth;
+    ComponentMapper<Stamina>  mStamina;
 
     MapSystem map;
 
@@ -160,5 +161,45 @@ public class RenderSystem extends PassiveSystem
                 }
             }
         }
+
+        final Hunger hunger = mHunger.get(pID);
+        final Health health = mHealth.get(pID);
+        final Stamina stamina = mStamina.get(pID);
+
+        // FIXME all bars must have a normalised length, independently on the actual maxValue and value!!!!
+
+        // hunger bar
+        terminal.write('[', 0, 0, Color.WHITE);
+        int x;
+        for (x = 1; x < hunger.maxValue+1; x++)
+        {
+            if (x < hunger.value)
+                terminal.write('=', x, 0, Color.WHITE);
+            else
+                terminal.write(' ', x, 0, Color.WHITE);
+        }
+        terminal.write(']', x, 0, Color.WHITE);
+
+        // health bar
+        terminal.write('[', 0, 1, Color.RED);
+        for (x = 1; x < health.maxValue+1; x++)
+        {
+            if (x < health.value)
+                terminal.write('=', x, 1, Color.RED);
+            else
+                terminal.write(' ', x, 1, Color.RED);
+        }
+        terminal.write(']', x, 1, Color.RED);
+
+        // stamina bar
+        terminal.write('[', 0, 2, Color.YELLOW);
+        for (x = 1; x < stamina.maxValue+1; x++)
+        {
+            if (x < stamina.value)
+                terminal.write('=', x, 2, Color.YELLOW);
+            else
+                terminal.write(' ', x, 2, Color.YELLOW);
+        }
+        terminal.write(']', x, 2, Color.YELLOW);
     }
 }
