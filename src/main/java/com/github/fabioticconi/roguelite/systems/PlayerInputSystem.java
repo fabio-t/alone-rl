@@ -19,12 +19,14 @@
 package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.constants.Side;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ public class PlayerInputSystem extends PassiveSystem
 
     MovementSystem sMove;
     ItemSystem     sItems;
+    HungerSystem   sHunger;
 
     PlayerManager pManager;
 
@@ -153,6 +156,12 @@ public class PlayerInputSystem extends PassiveSystem
                 return 0f;
             else
                 return 0.1f; // very small fixed "cost"
+        }
+        else if (keys.get(KeyEvent.VK_E))
+        {
+            keys.clear(KeyEvent.VK_D);
+
+            return sHunger.devourClosestCorpse(pID);
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {

@@ -21,11 +21,9 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Dead;
-import com.github.fabioticconi.roguelite.components.Health;
-import com.github.fabioticconi.roguelite.components.Hunger;
-import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.map.MultipleGrid;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * @author Fabio Ticconi
@@ -35,6 +33,7 @@ public class HungerSystem extends IntervalIteratingSystem
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Health>   mHealth;
     ComponentMapper<Position> mPosition;
+    ComponentMapper<Corpse>   mCorpse;
 
     @Wire
     MultipleGrid items;
@@ -93,7 +92,7 @@ public class HungerSystem extends IntervalIteratingSystem
         if (health == null)
             return 0f;
 
-        // remove 25% hunger (or less) and decrease corpse health accordingly
+        // remove 25% hunger (or less) and decrease food health accordingly
 
         final float food = Math.min(h.maxValue * 0.25f, h.value);
 
@@ -112,5 +111,22 @@ public class HungerSystem extends IntervalIteratingSystem
         }
 
         return food;
+    }
+
+    public float devourClosestCorpse(final int entityId)
+    {
+        final Position p = mPosition.get(entityId);
+
+        final IntSet itemsClose = items.getWithinRadius(p.x, p.y, 1);
+
+        for (final int foodId : itemsClose)
+        {
+            if (mCorpse.has(foodId))
+            {
+                return devour(entityId, foodId);
+            }
+        }
+
+        return 0f;
     }
 }

@@ -166,25 +166,23 @@ public class RenderSystem extends PassiveSystem
         final Health health = mHealth.get(pID);
         final Stamina stamina = mStamina.get(pID);
 
-        // FIXME all bars must have a normalised length, independently on the actual maxValue and value!!!!
-
         // hunger bar
-        terminal.write('[', 0, 0, Color.WHITE);
+        terminal.write('[', 0, 0, Color.ORANGE.darker());
         int x;
-        for (x = 1; x < hunger.maxValue+1; x++)
+        for (x = 1; x < 11; x++)
         {
-            if (x < hunger.value)
-                terminal.write('=', x, 0, Color.WHITE);
+            if (x <= hunger.value*10f/hunger.maxValue)
+                terminal.write('=', x, 0, Color.ORANGE.darker());
             else
-                terminal.write(' ', x, 0, Color.WHITE);
+                terminal.write(' ', x, 0, Color.ORANGE.darker());
         }
-        terminal.write(']', x, 0, Color.WHITE);
+        terminal.write(']', x, 0, Color.ORANGE.darker());
 
         // health bar
         terminal.write('[', 0, 1, Color.RED);
-        for (x = 1; x < health.maxValue+1; x++)
+        for (x = 1; x < 11; x++)
         {
-            if (x < health.value)
+            if (x <= health.value*10f/health.maxValue)
                 terminal.write('=', x, 1, Color.RED);
             else
                 terminal.write(' ', x, 1, Color.RED);
@@ -193,9 +191,9 @@ public class RenderSystem extends PassiveSystem
 
         // stamina bar
         terminal.write('[', 0, 2, Color.YELLOW);
-        for (x = 1; x < stamina.maxValue+1; x++)
+        for (x = 1; x < 11; x++)
         {
-            if (x < stamina.value)
+            if (x <= stamina.value*10f/stamina.maxValue)
                 terminal.write('=', x, 2, Color.YELLOW);
             else
                 terminal.write(' ', x, 2, Color.YELLOW);
