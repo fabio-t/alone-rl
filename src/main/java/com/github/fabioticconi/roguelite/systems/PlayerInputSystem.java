@@ -41,6 +41,7 @@ public class PlayerInputSystem extends PassiveSystem
     MovementSystem sMove;
     ItemSystem     sItems;
     HungerSystem   sHunger;
+    ThrowSystem    sThrow;
 
     PlayerManager pManager;
 
@@ -160,6 +161,12 @@ public class PlayerInputSystem extends PassiveSystem
             keys.clear(KeyEvent.VK_E);
 
             return sHunger.devourClosestCorpse(pID);
+        }
+        else if (keys.get(KeyEvent.VK_T))
+        {
+            keys.clear(KeyEvent.VK_T);
+
+            return sThrow.throwSomethingAtClosestEnemy(pID);
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {

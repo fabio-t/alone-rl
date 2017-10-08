@@ -133,7 +133,7 @@ public class SingleGrid
      * Moves concentrically from the specified cell, collecting entities. If the
      * current cell has an entity, returns only that. If there are any entities
      * in the first ring around the cell, returns those only.
-     * It keeps going around until it finds an empty "ring" or up to maxRadius,
+     * It keeps going around until it finds a non-empty "ring" or up to maxRadius,
      * whichever comes first.
      *
      * @param x

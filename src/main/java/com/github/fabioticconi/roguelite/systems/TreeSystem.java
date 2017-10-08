@@ -106,7 +106,7 @@ public class TreeSystem extends DelayedIteratingSystem
         if (treeId < 0 || !mTree.has(treeId))
             return 0f;
 
-        final Inventory items = mInventory.get(treeId);
+        final Inventory items = mInventory.get(entityId);
 
         if (items == null)
             return 0f;
@@ -182,7 +182,7 @@ public class TreeSystem extends DelayedIteratingSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('-', Util.BROWN.brighter());
-        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1);
+        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
 
         return id;
     }

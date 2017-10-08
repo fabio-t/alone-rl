@@ -28,6 +28,8 @@ public class Weapon extends Component
 {
     public Type  damageType;
     public float damage;
+    public boolean canThrow;
+
     public Weapon()
     {
 
@@ -35,13 +37,14 @@ public class Weapon extends Component
 
     public Weapon(final Type damageType, final float damage)
     {
-        set(damageType, damage);
+        set(damageType, damage, false);
     }
 
-    public void set(final Type damageType, final float damage)
+    public void set(final Type damageType, final float damage, final boolean canThrow)
     {
         this.damageType = damageType;
         this.damage = damage;
+        this.canThrow = canThrow;
     }
 
     public enum Type

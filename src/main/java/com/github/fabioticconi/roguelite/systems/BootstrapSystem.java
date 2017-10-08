@@ -328,7 +328,7 @@ public class BootstrapSystem extends BaseSystem
 
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('o', Color.GRAY.darker());
-                    edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2);
+                    edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2, true);
 
                     items.add(id, x, y);
                 }

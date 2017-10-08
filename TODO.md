@@ -9,3 +9,7 @@
   and something like smoke that doesn't block stop but blocks light.
 
 - GUI needs to be redone (with Zircon?), to show a panel for inventory/crafting, the combat log, an input field maybe..
+
+- throwing must be improved: range should be based on strength, accuracy on agility. Then we need to handle the
+  collision when the object lands or intercepts something (the throw strength should also wane with distance
+  of course, but I'll probably keep it linear for now).

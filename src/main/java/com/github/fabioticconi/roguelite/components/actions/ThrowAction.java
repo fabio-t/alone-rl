@@ -19,6 +19,9 @@
 package com.github.fabioticconi.roguelite.components.actions;
 
 import com.github.fabioticconi.roguelite.components.Position;
+import rlforj.math.Point2I;
+
+import java.util.List;
 
 /**
  * Author: Fabio Ticconi
@@ -26,25 +29,22 @@ import com.github.fabioticconi.roguelite.components.Position;
  */
 public class ThrowAction extends DelayedAction
 {
-    public Position destination;
+    public List<Point2I> path;
 
     public ThrowAction()
     {
-        set(-1, -1);
+        set(0f, null, 0f);
     }
 
-    public ThrowAction(final int x, final int y)
+    public ThrowAction(final float cooldown, final List<Point2I> path, final float cost)
     {
-        set(x, y);
+        set(cooldown, path, cost);
     }
 
-    public void set(final int x, final int y)
+    public void set(final float cooldown, final List<Point2I> path, final float cost)
     {
-        destination = new Position(x, y);
-    }
+        set(cooldown, -1, cost);
 
-    public void set(final Position p)
-    {
-        destination = new Position(p.x, p.y);
+        this.path = path;
     }
 }

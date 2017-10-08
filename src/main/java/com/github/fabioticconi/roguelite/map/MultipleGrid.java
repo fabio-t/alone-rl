@@ -482,6 +482,8 @@ public class MultipleGrid
             return true;
         }
 
+        log.warn("item {} was NOT at position ({},{})", id, startX, startY);
+
         return false;
     }
 

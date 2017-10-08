@@ -74,6 +74,8 @@ public class ItemSystem extends PassiveSystem
             return -1;
         }
 
+        mPos.remove(itemId);
+
         items.del(itemId, p.x, p.y);
         i.items.add(itemId);
 
@@ -105,6 +107,8 @@ public class ItemSystem extends PassiveSystem
         final int itemId = i.items.remove(i.items.size() - 1);
 
         items.add(itemId, p.x, p.y);
+
+        mPos.create(itemId).set(p.x, p.y);
 
         return itemId;
     }
