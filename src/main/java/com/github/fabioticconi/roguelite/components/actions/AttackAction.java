@@ -18,28 +18,10 @@
 
 package com.github.fabioticconi.roguelite.components.actions;
 
-import com.artemis.Component;
-import com.artemis.annotations.EntityId;
-
 /**
  * Author: Fabio Ticconi
  * Date: 30/09/17
  */
-public class AttackAction extends Component
+public class AttackAction extends DelayedAction
 {
-    public float cooldown;
-    @EntityId
-    public int   targetId;
-
-    public AttackAction()
-    {
-        cooldown = 0f;
-        targetId = -1;
-    }
-
-    public AttackAction(final float cooldown, final int targetId)
-    {
-        this.cooldown = cooldown;
-        this.targetId = targetId;
-    }
 }

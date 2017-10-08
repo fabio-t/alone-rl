@@ -65,7 +65,7 @@ public class SingleGrid
         return grid[x][y];
     }
 
-    public int set(final int x, final int y, final int id)
+    public int set(final int id, final int x, final int y)
     {
         final int old = grid[x][y];
         grid[x][y] = id;
@@ -74,7 +74,7 @@ public class SingleGrid
 
     public int del(final int x, final int y)
     {
-        return set(x, y, -1);
+        return set(-1, x, y);
     }
 
     public int move(final int oldX, final int oldY, final int x, final int y)
@@ -84,7 +84,7 @@ public class SingleGrid
         // FIXME: throw error in case the source position was actually empty (so we are just moving
         // -1 to another place)?
 
-        return set(x, y, id);
+        return set(id, x, y);
     }
 
     public void clear()

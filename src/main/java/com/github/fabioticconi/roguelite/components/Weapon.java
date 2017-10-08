@@ -26,4 +26,28 @@ import com.artemis.Component;
  */
 public class Weapon extends Component
 {
+    public Type  damageType;
+    public float damage;
+    public Weapon()
+    {
+
+    }
+
+    public Weapon(final Type damageType, final float damage)
+    {
+        set(damageType, damage);
+    }
+
+    public void set(final Type damageType, final float damage)
+    {
+        this.damageType = damageType;
+        this.damage = damage;
+    }
+
+    public enum Type
+    {
+        SLASH,
+        POINT,
+        BLUNT
+    }
 }

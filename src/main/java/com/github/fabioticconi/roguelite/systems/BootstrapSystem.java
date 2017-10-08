@@ -46,14 +46,20 @@ import java.util.Random;
 public class BootstrapSystem extends BaseSystem
 {
     private final ClassLoader loader = getClass().getClassLoader();
+
     @Wire
-    SingleGrid   grid;
+    SingleGrid grid;
+
     @Wire
     MultipleGrid items;
+
     @Wire
-    Random       r;
+    Random r;
+
     GroupSystem   sGroup;
     MapSystem     sMap;
+    TreeSystem    sTree;
+
     PlayerManager pManager;
 
     /*
@@ -77,7 +83,7 @@ public class BootstrapSystem extends BaseSystem
         // load the player's data
         try
         {
-            loadBody("data/creatures/player.yaml", edit);
+            loadBody("data/player.yaml", edit);
         } catch (final IOException e)
         {
             e.printStackTrace();
@@ -89,7 +95,7 @@ public class BootstrapSystem extends BaseSystem
         y = Options.MAP_SIZE_Y / 2;
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('@', Color.WHITE);
-        grid.set(x, y, id);
+        grid.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
         // edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
@@ -134,7 +140,7 @@ public class BootstrapSystem extends BaseSystem
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN);
             edit.create(Obstacle.class);
 
-            grid.set(x, y, id);
+            grid.set(id, x, y);
         }
 
         // add small, independent rabbits/hares
@@ -169,7 +175,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
             edit.create(Obstacle.class);
 
-            grid.set(x, y, id);
+            grid.set(id, x, y);
         }
 
         // add a pack of wolves
@@ -209,7 +215,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
             edit.create(Obstacle.class);
 
-            grid.set(x, y, id);
+            grid.set(id, x, y);
         }
 
         // add solitary pumas
@@ -245,7 +251,7 @@ public class BootstrapSystem extends BaseSystem
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
             edit.create(Obstacle.class);
 
-            grid.set(x, y, id);
+            grid.set(id, x, y);
         }
 
         // add random trees
@@ -262,19 +268,9 @@ public class BootstrapSystem extends BaseSystem
                     if (!grid.isEmpty(x, y))
                         continue;
 
-                    id = world.create();
-                    edit = world.edit(id);
+                    id = sTree.makeTree(x, y);
 
-                    edit.create(Position.class).set(x, y);
-                    edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
-                    edit.create(Obstacle.class);
-                    edit.create(Tree.class);
-
-                    // FIXME: we should only need one or the other to determine if obstacle.
-                    // ie, the map should be able to get the Obstacle component from the SingleGrid
-                    // to determine if the cell is obstructed or not.
-
-                    grid.set(x, y, id);
+                    grid.set(id, x, y);
                 }
             }
         }
@@ -305,11 +301,7 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Pushable.class);
                     edit.create(Crushable.class);
 
-                    // FIXME: we should only need one or the other to determine if obstacle.
-                    // ie, the map should be able to get the Obstacle component from the SingleGrid
-                    // to determine if the cell is obstructed or not.
-
-                    grid.set(x, y, id);
+                    grid.set(id, x, y);
                 }
             }
         }
@@ -336,12 +328,32 @@ public class BootstrapSystem extends BaseSystem
 
                     edit.create(Position.class).set(x, y);
                     edit.create(Sprite.class).set('o', Color.GRAY.darker());
-                    edit.create(Weapon.class);
+                    edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2);
 
-                    // FIXME: we should only need one or the other to determine if obstacle.
-                    // ie, the map should be able to get the Obstacle component from the SingleGrid
-                    // to determine if the cell is obstructed or not.
+                    items.add(id, x, y);
+                }
+            }
+        }
 
+        // add random trunks and branches
+        for (x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final Cell cell = sMap.get(x, y);
+
+                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
+                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
+                {
+                    if (!grid.isEmpty(x, y))
+                        continue;
+
+                    id = sTree.makeTrunk(x, y);
+                    items.add(id, x, y);
+                    id = sTree.makeBranch(x, y);
+                    items.add(id, x, y);
+                    id = sTree.makeBranch(x, y);
                     items.add(id, x, y);
                 }
             }

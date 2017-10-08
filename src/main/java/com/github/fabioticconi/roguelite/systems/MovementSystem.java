@@ -21,9 +21,8 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Dead;
-import com.github.fabioticconi.roguelite.components.Health;
-import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.PushSystem;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
@@ -46,10 +45,14 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Health>     mHealth;
+    ComponentMapper<Tree>       mTree;
+    ComponentMapper<Pushable>   mPushable;
 
     MapSystem     sMap;
     AttackSystem  sAttack;
     StaminaSystem sStamina;
+    TreeSystem    sTree;
+    PushSystem    sPush;
 
     @Wire
     SingleGrid grid;
@@ -97,7 +100,7 @@ public class MovementSystem extends DelayedIteratingSystem
             p.y = newY;
 
             // consume a fixed amount of stamina
-            sStamina.consume(entityId, m.staminaCost);
+            sStamina.consume(entityId, m.cost);
         }
     }
 
@@ -146,8 +149,19 @@ public class MovementSystem extends DelayedIteratingSystem
 
             final int obstacleId = grid.get(newX, newY);
 
-            if (obstacleId >= 0 && mHealth.has(obstacleId))
-                return sAttack.attack(entityId, obstacleId);
+            if (obstacleId >= 0)
+            {
+                if (mTree.has(obstacleId))
+                {
+                    return sTree.cut(entityId, obstacleId);
+                }
+                else if (mPushable.has(obstacleId))
+                {
+                    return sPush.push(entityId, obstacleId);
+                }
+                else if (mHealth.has(obstacleId))
+                    return sAttack.attack(entityId, obstacleId);
+            }
 
             return 0f;
         }
@@ -166,31 +180,28 @@ public class MovementSystem extends DelayedIteratingSystem
         {
             case HILL:
             case HILL_GRASS:
-                m.cooldown = speed * 1.25f;
-                m.staminaCost = 1.25f;
+                m.cost = 1.25f;
+
                 break;
 
             case MOUNTAIN:
-                m.cooldown = speed * 1.5f;
-                m.staminaCost = 1.5f;
+                m.cost = 1.5f;
                 break;
 
             case HIGH_MOUNTAIN:
             case WATER:
-                m.cooldown = speed * 2f;
-                m.staminaCost = 2f;
+                m.cost = 2f;
                 break;
 
             case DEEP_WATER:
-                m.cooldown = speed * 3f;
-                m.staminaCost = 3f;
+                m.cost = 3f;
                 break;
 
             default:
-                m.cooldown = speed;
-                m.staminaCost = 1f;
+                m.cost = 1f;
         }
 
+        m.cooldown = speed * m.cost;
         m.direction = direction;
 
         offerDelay(m.cooldown);

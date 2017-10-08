@@ -16,24 +16,26 @@
  *
  */
 
-package com.github.fabioticconi.roguelite;
+package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Pushable;
+import com.github.fabioticconi.roguelite.components.actions.PushAction;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 08/10/17
  */
 public class PushSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Pushable> mPushable;
+    ComponentMapper<PushAction> mPush;
+    ComponentMapper<Pushable>   mPushable;
 
     public PushSystem()
     {
-        super(Aspect.all(Pushable.class));
+        super(Aspect.all(PushAction.class));
     }
 
     @Override
@@ -52,10 +54,5 @@ public class PushSystem extends DelayedIteratingSystem
     protected void processExpired(final int entityId)
     {
 
-    }
-
-    public float push(final int entityId, final int toPushId)
-    {
-        return 0f;
     }
 }

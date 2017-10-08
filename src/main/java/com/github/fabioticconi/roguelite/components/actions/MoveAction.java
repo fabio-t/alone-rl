@@ -17,33 +17,28 @@
  */
 package com.github.fabioticconi.roguelite.components.actions;
 
-import com.artemis.Component;
 import com.github.fabioticconi.roguelite.constants.Side;
 
 /**
  * @author Fabio Ticconi
  */
-public class MoveAction extends Component
+public class MoveAction extends DelayedAction
 {
-    /**
-     * "Speed" is actually the delay before we can move.
-     * So lowest is fastest, highest is slowest.
-     */
-    public float cooldown;
-    public Side  direction;
-    public float staminaCost;
+    public Side direction;
 
     public MoveAction()
     {
-        cooldown = 0f;
-        direction = Side.HERE;
-        staminaCost = 0f;
+        set(0f, Side.HERE, 0f);
     }
 
-    public MoveAction(final float speed, final Side direction, final float staminaCost)
+    public MoveAction(final float cooldown, final Side direction, final float cost)
     {
-        this.cooldown = speed;
+        set(cooldown, direction, cost);
+    }
+
+    public void set(final float cooldown, final Side direction, final float cost)
+    {
+        set(cooldown, -1, cost);
         this.direction = direction;
-        this.staminaCost = staminaCost;
     }
 }

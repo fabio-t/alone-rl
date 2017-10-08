@@ -125,7 +125,7 @@ public class RenderSystem extends PassiveSystem
                         }
                     }
 
-                    // on top, render the creatures/trees/walls etc
+                    // on top, render the obstacles/trees/walls etc
 
                     final int entityId = grid.get(posX, posY);
 
@@ -162,8 +162,8 @@ public class RenderSystem extends PassiveSystem
             }
         }
 
-        final Hunger hunger = mHunger.get(pID);
-        final Health health = mHealth.get(pID);
+        final Hunger  hunger  = mHunger.get(pID);
+        final Health  health  = mHealth.get(pID);
         final Stamina stamina = mStamina.get(pID);
 
         // hunger bar
@@ -171,7 +171,7 @@ public class RenderSystem extends PassiveSystem
         int x;
         for (x = 1; x < 11; x++)
         {
-            if (x <= hunger.value*10f/hunger.maxValue)
+            if (x <= hunger.value * 10f / hunger.maxValue)
                 terminal.write('=', x, 0, Color.ORANGE.darker());
             else
                 terminal.write(' ', x, 0, Color.ORANGE.darker());
@@ -182,7 +182,7 @@ public class RenderSystem extends PassiveSystem
         terminal.write('[', 0, 1, Color.RED);
         for (x = 1; x < 11; x++)
         {
-            if (x <= health.value*10f/health.maxValue)
+            if (x <= health.value * 10f / health.maxValue)
                 terminal.write('=', x, 1, Color.RED);
             else
                 terminal.write(' ', x, 1, Color.RED);
@@ -193,7 +193,7 @@ public class RenderSystem extends PassiveSystem
         terminal.write('[', 0, 2, Color.YELLOW);
         for (x = 1; x < 11; x++)
         {
-            if (x <= stamina.value*10f/stamina.maxValue)
+            if (x <= stamina.value * 10f / stamina.maxValue)
                 terminal.write('=', x, 2, Color.YELLOW);
             else
                 terminal.write(' ', x, 2, Color.YELLOW);

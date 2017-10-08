@@ -20,8 +20,8 @@ package com.github.fabioticconi.roguelite.components.actions;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 08/10/17
  */
-public class CrushAction extends DelayedAction
+public class CutAction extends DelayedAction
 {
 }

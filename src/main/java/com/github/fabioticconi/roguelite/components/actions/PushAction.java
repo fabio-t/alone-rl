@@ -18,12 +18,10 @@
 
 package com.github.fabioticconi.roguelite.components.actions;
 
-import com.artemis.Component;
-
 /**
  * Author: Fabio Ticconi
  * Date: 07/10/17
  */
-public class PushAction extends Component
+public class PushAction extends DelayedAction
 {
 }

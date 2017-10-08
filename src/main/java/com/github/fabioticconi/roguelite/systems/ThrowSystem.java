@@ -20,26 +20,22 @@ package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Crushable;
-import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.SingleGrid;
+import com.github.fabioticconi.roguelite.components.Throwable;
+import com.github.fabioticconi.roguelite.components.actions.ThrowAction;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 08/10/17
  */
-public class CrushingSystem extends DelayedIteratingSystem
+public class ThrowSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Crushable> mCrushable;
+    ComponentMapper<ThrowAction> mThrow;
+    ComponentMapper<Throwable>   mThrowable;
 
-    @Wire
-    SingleGrid obstacles;
-
-    public CrushingSystem()
+    public ThrowSystem()
     {
-        super(Aspect.all(Crushable.class));
+        super(Aspect.all(ThrowAction.class));
     }
 
     @Override
@@ -56,11 +52,6 @@ public class CrushingSystem extends DelayedIteratingSystem
 
     @Override
     protected void processExpired(final int entityId)
-    {
-
-    }
-
-    public void crush(final int entityId, final Side direction)
     {
 
     }

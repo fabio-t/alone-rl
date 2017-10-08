@@ -24,12 +24,16 @@ import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Ticconi
  */
 public class HungerSystem extends IntervalIteratingSystem
 {
+    static final Logger log = LoggerFactory.getLogger(HungerSystem.class);
+
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Health>   mHealth;
     ComponentMapper<Position> mPosition;

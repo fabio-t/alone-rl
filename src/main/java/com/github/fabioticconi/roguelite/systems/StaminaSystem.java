@@ -23,7 +23,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.roguelite.components.Dead;
 import com.github.fabioticconi.roguelite.components.Stamina;
-import com.github.fabioticconi.roguelite.components.attributes.Constitution;
 
 /**
  * Author: Fabio Ticconi
@@ -43,7 +42,7 @@ public class StaminaSystem extends IntervalIteratingSystem
     {
         final Stamina stamina = mStamina.get(entityId);
 
-        final float delta = 2f*getIntervalDelta();
+        final float delta = 2f * getIntervalDelta();
 
         if (stamina.exhausted)
             stamina.exhausted = false;

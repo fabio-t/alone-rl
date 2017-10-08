@@ -16,46 +16,38 @@
  *
  */
 
-package com.github.fabioticconi.roguelite;
+package com.github.fabioticconi.roguelite.components.actions;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Pushable;
+import com.artemis.Component;
+import com.artemis.annotations.EntityId;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 08/10/17
  */
-public class PushSystem extends DelayedIteratingSystem
+public abstract class DelayedAction extends Component
 {
-    ComponentMapper<Pushable> mPushable;
+    public float cooldown;
 
-    public PushSystem()
+    @EntityId
+    public int targetId;
+
+    public float cost;
+
+    public DelayedAction()
     {
-        super(Aspect.all(Pushable.class));
+        set(0f, -1, 0f);
     }
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
+    public DelayedAction(final float cooldown, final int targetId, final float cost)
     {
-        return 0;
+        set(cooldown, targetId, cost);
     }
 
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
+    public void set(final float cooldown, final int targetId, final float cost)
     {
-
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-
-    }
-
-    public float push(final int entityId, final int toPushId)
-    {
-        return 0f;
+        this.cooldown = cooldown;
+        this.targetId = targetId;
+        this.cost = cost;
     }
 }

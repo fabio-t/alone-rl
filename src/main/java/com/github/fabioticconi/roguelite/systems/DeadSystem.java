@@ -39,7 +39,7 @@ public class DeadSystem extends IteratingSystem
     ComponentMapper<Size>     mSize;
 
     @Wire
-    SingleGrid creatures;
+    SingleGrid obstacles;
 
     @Wire
     MultipleGrid items;
@@ -56,7 +56,7 @@ public class DeadSystem extends IteratingSystem
         final Size     size = mSize.get(entityId);
 
         // remove dead creature from the world
-        creatures.del(p.x, p.y);
+        obstacles.del(p.x, p.y);
         world.delete(entityId);
 
         // add corpse item

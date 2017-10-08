@@ -19,14 +19,12 @@
 package com.github.fabioticconi.roguelite.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.roguelite.Roguelite;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.constants.Side;
-import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +157,7 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_E))
         {
-            keys.clear(KeyEvent.VK_D);
+            keys.clear(KeyEvent.VK_E);
 
             return sHunger.devourClosestCorpse(pID);
         }
@@ -169,7 +167,31 @@ public class PlayerInputSystem extends PassiveSystem
         }
         else if (keys.get(KeyEvent.VK_SPACE))
         {
-            Roguelite.paused = false;
+            if (keys.get(KeyEvent.VK_CONTROL))
+            {
+                // Ctrl+Space means we are toggling the real-time mode
+                Roguelite.realtime = !Roguelite.realtime;
+                // as well as toggling the pause, of course
+                Roguelite.paused = !Roguelite.paused;
+
+                keys.clear(KeyEvent.VK_CONTROL);
+            }
+            else
+            {
+                // Space alone has two meanings:
+
+                if (Roguelite.realtime)
+                {
+                    // in real-time mode, space means pause/unpause the game
+                    Roguelite.paused = !Roguelite.paused;
+                }
+                else
+                {
+                    // in turn-based mode, space means unpause the game for this frame
+                    Roguelite.paused = false;
+                }
+            }
+
             keys.clear(KeyEvent.VK_SPACE);
         }
 

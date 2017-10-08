@@ -77,12 +77,12 @@ public class AttackSystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        final AttackAction cAttack = mAttack.get(entityId);
+        final AttackAction attack = mAttack.get(entityId);
 
         // whatever the outcome, this action must be removed
         mAttack.remove(entityId);
 
-        final int targetId = cAttack.targetId;
+        final int targetId = attack.targetId;
 
         if (targetId < 0)
         {
@@ -98,9 +98,10 @@ public class AttackSystem extends DelayedIteratingSystem
         final Skin    tSkin    = mSkin.get(targetId);
 
         // whether it hits or not, both attacker and defender get a penalty to their stamina
-        // (higher for the attacker)
-        sStamina.consume(entityId, 2f);
-        sStamina.consume(entityId, 0.5f);
+        // (fixed, small cost for the defender)
+        final float cost = attack.cost;
+        sStamina.consume(entityId, cost);
+        sStamina.consume(entityId, 0.25f);
 
         final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
 
@@ -126,19 +127,24 @@ public class AttackSystem extends DelayedIteratingSystem
         final Speed cSpeed = mSpeed.get(entityId);
         final float speed  = cSpeed.value;
 
-        final AttackAction cAttack = mAttack.create(entityId);
+        final AttackAction attack = mAttack.create(entityId);
 
-        if (cAttack.targetId == targetId)
+        if (attack.targetId == targetId)
         {
             // if already attacking same target, don't reset the timer
-            return cAttack.cooldown;
+            return attack.cooldown;
         }
 
-        cAttack.targetId = targetId;
-        cAttack.cooldown = speed;
+        // it's harder than walking
 
-        offerDelay(cAttack.cooldown);
+        final float cost = 1.5f;
 
-        return speed;
+        final float cooldown = speed * cost;
+
+        attack.set(cooldown, targetId, cost);
+
+        offerDelay(cooldown);
+
+        return cooldown;
     }
 }

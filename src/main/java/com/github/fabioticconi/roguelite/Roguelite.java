@@ -45,6 +45,7 @@ public class Roguelite extends JFrame implements KeyListener
     static final  Logger  log          = LoggerFactory.getLogger(Roguelite.class);
     public static boolean keepRunning  = true;
     public static boolean paused       = false;
+    public static boolean realtime     = false;
     private final int     fps          = 25;
     private final long    deltaNanos   = Math.round(1000000000.0d / (double) fps);
     private final float   deltaSeconds = 1.0f / (float) fps;
@@ -95,6 +96,9 @@ public class Roguelite extends JFrame implements KeyListener
         config.setSystem(MovementSystem.class);
         config.setSystem(AttackSystem.class);
         config.setSystem(ItemSystem.class);
+        config.setSystem(TreeSystem.class);
+        config.setSystem(PushSystem.class);
+        config.setSystem(CrushSystem.class);
         // ai behaviours (passive)
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);
@@ -160,6 +164,7 @@ public class Roguelite extends JFrame implements KeyListener
             // a new action was issued
             if (curPActionTime > 0f)
             {
+                // even in real time mode a player action unpauses the game
                 paused = false;
                 pActionTime = curPActionTime;
             }
@@ -181,7 +186,7 @@ public class Roguelite extends JFrame implements KeyListener
                 pActionTime -= deltaSeconds;
             }
 
-            if (pActionTime <= 0f)
+            if (pActionTime <= 0f && !realtime)
                 Roguelite.paused = true;
 
             repaint();
