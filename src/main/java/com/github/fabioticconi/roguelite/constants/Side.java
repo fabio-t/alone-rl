@@ -43,6 +43,11 @@ public enum Side
         this.y = y;
     }
 
+    public static Side getSide(final int fromX, final int fromY, final int toX, final int toY)
+    {
+        return getSideAt(toX - fromX, toY - fromY);
+    }
+
     public static Side getSideAt(int x, int y)
     {
         x = Math.max(Math.min(x, 1), -1);

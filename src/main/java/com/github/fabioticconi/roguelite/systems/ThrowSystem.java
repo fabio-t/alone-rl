@@ -22,16 +22,12 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Inventory;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Speed;
-import com.github.fabioticconi.roguelite.components.Weapon;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.actions.ThrowAction;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
+import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
-import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
-import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,17 +47,18 @@ public class ThrowSystem extends DelayedIteratingSystem
     ComponentMapper<Inventory>   mInventory;
     ComponentMapper<Speed>       mSpeed;
     ComponentMapper<Weapon>      mWeapon;
-    ComponentMapper<Position>    mPosition;
+    ComponentMapper<Position>    mPos;
     ComponentMapper<Sight>       mSight;
+    ComponentMapper<Obstacle>    mObstacle;
+    ComponentMapper<Path>        mPath;
 
-    MapSystem map;
+    MapSystem     map;
+
     StaminaSystem sStamina;
+    BumpSystem    sBump;
 
     @Wire
     SingleGrid obstacles;
-
-    @Wire
-    MultipleGrid items;
 
     public ThrowSystem()
     {
@@ -85,31 +82,49 @@ public class ThrowSystem extends DelayedIteratingSystem
     {
         final ThrowAction t = mThrow.get(entityId);
 
-        final Position p = mPosition.get(entityId);
+        mThrow.remove(entityId);
 
-        final Point2I newP = t.path.remove(0);
+        final int targetId = t.targetId;
 
-        // TODO: if the new cell is not empty, then we have to handle the collision (if not a live obstacle
-        // then the item simply stops there)
-
-        // we don't use 'move' because it doesn't like when it's not present at the start position
-        items.del(entityId, p.x, p.y);
-        items.add(entityId, newP.x, newP.y);
-
-        p.set(newP.x, newP.y);
-
-        if (t.path.isEmpty())
+        // something might have happened to the item..
+        if (targetId < 0)
         {
-            mThrow.remove(entityId);
+            log.warn("item being thrown by {} has disappeared", entityId);
+            return;
+        }
+
+        final Point2I newP = t.path.get(0);
+
+        if (map.isFree(newP.x, newP.y))
+        {
+            final Inventory inventory = mInventory.get(entityId);
+
+            // we are throwing away the weapon, so we don't have it anymore
+            inventory.items.removeValue(targetId);
+
+            // how long does it take the object to move one step?
+            // TODO should be based on thrower's strength and weapon characteristics, maybe
+            final float cooldown = 0.1f;
+
+            mSpeed.create(targetId).set(cooldown);
+            mPath.create(targetId).set(cooldown, t.path);
+            mPos.create(targetId).set(newP.x, newP.y);
+
+            // at this point it really happened: the weapon is flying at its new position
+            obstacles.set(targetId, newP.x, newP.y);
         }
         else
         {
-            final float speed = mSpeed.get(entityId).value;
+            // FIXME decide on a better way to handle this
+            // for now, if there's something at the first step then we don't actually throw, but
+            // consider this a bump action of the THROWER.
 
-            t.cooldown = speed;
+            final Position p = mPos.get(entityId);
 
-            offerDelay(speed);
+            sBump.bumpAction(entityId, Side.getSide(p.x, p.y, newP.x, newP.y));
         }
+
+        sStamina.consume(entityId, 1.5f);
     }
 
     public float throwSomethingAtClosestEnemy(final int entityId)
@@ -136,16 +151,16 @@ public class ThrowSystem extends DelayedIteratingSystem
             if (weapon == null || !weapon.canThrow)
                 continue;
 
-            final Position p = mPosition.get(entityId);
-            final Sight sight = mSight.get(entityId);
+            final Position p     = mPos.get(entityId);
+            final Sight    sight = mSight.get(entityId);
 
             // among the visible creatures, only keep the closest one
             final IntSet creatures = obstacles.getEntities(map.getVisibleCells(p.x, p.y, sight.value));
-            final IntSet closest = obstacles.getClosestEntities(p.x, p.y, sight.value);
+            final IntSet closest   = obstacles.getClosestEntities(p.x, p.y, sight.value);
             creatures.retainAll(closest);
             final int targetId = creatures.iterator().nextInt();
 
-            final Position targetPos = mPosition.get(targetId);
+            final Position targetPos = mPos.get(targetId);
 
             final List<Point2I> path = map.getLineOfSight(p.x, p.y, targetPos.x, targetPos.y);
 
@@ -159,29 +174,15 @@ public class ThrowSystem extends DelayedIteratingSystem
             // first index is the current position
             path.remove(0);
 
-            // FIXME: as said later, this should actually be set on entityId (ie, the thrower)
-            final ThrowAction t = mThrow.create(itemId);
+            final ThrowAction t = mThrow.create(entityId);
 
-            // we set here the time the object will take to fly one step
-            final float cooldown = 0.1f;
-            mSpeed.create(itemId).set(cooldown);
-            t.set(cooldown, path, 0f);
+            final float cooldown = 1f;
+
+            t.set(cooldown, itemId, 1.5f, path);
 
             offerDelay(cooldown);
 
-            // the weapon must be removed from the inventory and put on the ground
-            inventory.items.remove(i);
-            mPosition.create(itemId).set(p.x, p.y);
-            items.add(itemId, p.x, p.y);
-
-            sStamina.consume(entityId, 1.5f);
-
-            // FIXME: this was a lazy approach. Later, the ThrowAction will refer to the ACT OF THROWING,
-            // so that the weapon is only thrown at the expiration of the cooldown.
-            // At that point, the thrown object will have to be handled through a PathSystem which will be
-            // akin to movement but will automatically perform steps.
-
-            return 1.5f;
+            return cooldown;
         }
 
         log.info("{} cannot throw: no suitable weapon", entityId);

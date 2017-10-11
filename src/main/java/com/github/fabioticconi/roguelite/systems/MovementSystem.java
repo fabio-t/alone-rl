@@ -21,19 +21,17 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.PushSystem;
-import com.github.fabioticconi.roguelite.components.*;
+import com.github.fabioticconi.roguelite.components.Dead;
+import com.github.fabioticconi.roguelite.components.Position;
+import com.github.fabioticconi.roguelite.components.Speed;
+import com.github.fabioticconi.roguelite.components.Stamina;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
-import com.github.fabioticconi.roguelite.utils.Coords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point2I;
-
-import java.util.List;
 
 /**
  * @author Fabio Ticconi
@@ -44,15 +42,11 @@ public class MovementSystem extends DelayedIteratingSystem
 
     ComponentMapper<Position>   mPosition;
     ComponentMapper<MoveAction> mMove;
-    ComponentMapper<Health>     mHealth;
-    ComponentMapper<Tree>       mTree;
-    ComponentMapper<Pushable>   mPushable;
+    ComponentMapper<Stamina>    mStamina;
+    ComponentMapper<Speed>      mSpeed;
 
     MapSystem     sMap;
-    AttackSystem  sAttack;
     StaminaSystem sStamina;
-    TreeSystem    sTree;
-    PushSystem    sPush;
 
     @Wire
     SingleGrid grid;
@@ -100,44 +94,20 @@ public class MovementSystem extends DelayedIteratingSystem
             p.y = newY;
 
             // consume a fixed amount of stamina
-            sStamina.consume(entityId, m.cost);
+            if (mStamina.has(entityId))
+                sStamina.consume(entityId, m.cost);
         }
     }
 
     // Public API
 
-    public float moveTo(final int entityId, final float speed, final Position target)
-    {
-        final Position pos = mPosition.get(entityId);
-
-        if (Coords.distanceChebyshev(pos.x, pos.y, target.x, target.y) == 1)
-        {
-            // it's only one step away, no point calculating line of sight
-            return moveTo(entityId, speed, Side.getSideAt(target.x - pos.x, target.y - pos.y));
-        }
-
-        final List<Point2I> path = sMap.getLineOfSight(pos.x, pos.y, target.x, target.y);
-
-        if (path == null || path.size() < 2)
-        {
-            // the target position is the same as the entity's position,
-            // or the target is not visible. Either way, we don't move.
-
-            return 0f;
-        }
-
-        // position 0 is "HERE"
-        final Point2I p = path.get(1);
-
-        return moveTo(entityId, speed, Side.getSideAt(p.x - pos.x, p.y - pos.y));
-    }
-
-    public float moveTo(final int entityId, final float speed, final Side direction)
+    public float moveTo(final int entityId, final Side direction)
     {
         if (direction.equals(Side.HERE))
             return 0f;
 
-        final Position p = mPosition.get(entityId);
+        final Position p     = mPosition.get(entityId);
+        final Speed    speed = mSpeed.get(entityId);
 
         final int newX = p.x + direction.x;
         final int newY = p.y + direction.y;
@@ -146,22 +116,6 @@ public class MovementSystem extends DelayedIteratingSystem
         {
             // clear movement completely, even if we were going in another direction
             mMove.remove(entityId);
-
-            final int obstacleId = grid.get(newX, newY);
-
-            if (obstacleId >= 0)
-            {
-                if (mTree.has(obstacleId))
-                {
-                    return sTree.cut(entityId, obstacleId);
-                }
-                else if (mPushable.has(obstacleId))
-                {
-                    return sPush.push(entityId, obstacleId);
-                }
-                else if (mHealth.has(obstacleId))
-                    return sAttack.attack(entityId, obstacleId);
-            }
 
             return 0f;
         }
@@ -201,7 +155,7 @@ public class MovementSystem extends DelayedIteratingSystem
                 m.cost = 1f;
         }
 
-        m.cooldown = speed * m.cost;
+        m.cooldown = speed.value * m.cost;
         m.direction = direction;
 
         offerDelay(m.cooldown);

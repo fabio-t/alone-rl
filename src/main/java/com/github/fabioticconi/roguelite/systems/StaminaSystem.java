@@ -44,6 +44,9 @@ public class StaminaSystem extends IntervalIteratingSystem
 
         final float delta = 2f * getIntervalDelta();
 
+        // TODO: stamina re-generation should be in a separated component (so this system becomes
+        // a DelayedIteratingSystem) so that it can be personalised and, if needed removed)
+
         if (stamina.exhausted)
             stamina.exhausted = false;
         else if (stamina.value <= 0f)

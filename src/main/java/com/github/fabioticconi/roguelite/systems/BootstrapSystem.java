@@ -56,9 +56,9 @@ public class BootstrapSystem extends BaseSystem
     @Wire
     Random r;
 
-    GroupSystem   sGroup;
-    MapSystem     sMap;
-    TreeSystem    sTree;
+    GroupSystem sGroup;
+    MapSystem   sMap;
+    TreeSystem  sTree;
 
     PlayerManager pManager;
 

@@ -27,7 +27,7 @@ import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -42,10 +42,9 @@ public class FleeBehaviour extends AbstractBehaviour
 
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
-    ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Carnivore> mCarnivore; // FIXME make a more generic FleeFrom
 
-    MovementSystem sMovement;
+    BumpSystem sBump;
 
     MapSystem sMap;
 
@@ -122,11 +121,6 @@ public class FleeBehaviour extends AbstractBehaviour
             direction = Side.getRandom();
         }
 
-        if (direction == Side.HERE)
-            return 0f;
-
-        final float speed = mSpeed.get(entityId).value;
-
-        return sMovement.moveTo(entityId, speed, direction);
+        return sBump.bumpAction(entityId, direction);
     }
 }

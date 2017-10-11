@@ -25,8 +25,8 @@ import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +42,11 @@ public class GrazeBehaviour extends AbstractBehaviour
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
-    ComponentMapper<Speed>    mSpeed;
 
-    HungerSystem   sHunger;
-    MovementSystem sMovement;
+    HungerSystem sHunger;
+    BumpSystem   sBump;
 
-    MapSystem sMap;
+    MapSystem map;
 
     // FIXME: this should be in a Context of sort
     private Hunger hunger;
@@ -81,14 +80,13 @@ public class GrazeBehaviour extends AbstractBehaviour
     {
         final Position pos   = mPosition.get(entityId);
         final int      sight = mSight.get(entityId).value;
-        final float    speed = mSpeed.get(entityId).value;
 
         // FIXME: does not take visibility into account!
 
         // FIXME: should differentiate on the "feeding capability"
         // and also, possibly, on the creature's preference (ie, the EnumSet
         // should be within a EatingPreference component of some kind)
-        final int[] coords = sMap.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
+        final int[] coords = map.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
 
         // TODO: the behaviour actually FAILED here, couldn't do anything:
         // should we somehow relay this information to the AISystem, so that
@@ -104,6 +102,6 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         final Position destination = new Position(coords[0], coords[1]);
 
-        return sMovement.moveTo(entityId, speed, destination);
+        return sBump.bumpAction(entityId, destination);
     }
 }

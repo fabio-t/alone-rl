@@ -25,7 +25,7 @@ import com.github.fabioticconi.roguelite.components.Position;
 import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +37,9 @@ public class WanderBehaviour extends AbstractBehaviour
     static final Logger log = LoggerFactory.getLogger(WanderBehaviour.class);
 
     ComponentMapper<Position> mPosition;
-    ComponentMapper<Speed>    mSpeed;
 
-    MovementSystem sMovement;
-    MapSystem      sMap;
+    BumpSystem sBump;
+    MapSystem  sMap;
 
     @Wire
     Random r;
@@ -66,8 +65,7 @@ public class WanderBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final Position pos   = mPosition.get(entityId);
-        final float    speed = mSpeed.get(entityId).value;
+        final Position pos = mPosition.get(entityId);
 
         // System.out.println(entityId + " " + pos);
 
@@ -83,7 +81,7 @@ public class WanderBehaviour extends AbstractBehaviour
         for (final Side exit : exits)
         {
             if (i == choice)
-                return sMovement.moveTo(entityId, speed, exit);
+                return sBump.bumpAction(entityId, exit);
 
             i++;
         }

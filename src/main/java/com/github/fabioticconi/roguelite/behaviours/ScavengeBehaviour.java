@@ -28,8 +28,8 @@ import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.MultipleGrid;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import com.github.fabioticconi.roguelite.systems.HungerSystem;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -46,12 +46,11 @@ public class ScavengeBehaviour extends AbstractBehaviour
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
-    ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Corpse>   mCorpse;
 
-    HungerSystem   sHunger;
-    MovementSystem sMovement;
-    MapSystem      sMap;
+    HungerSystem sHunger;
+    BumpSystem   sBump;
+    MapSystem    sMap;
 
     @Wire
     MultipleGrid items;
@@ -112,8 +111,6 @@ public class ScavengeBehaviour extends AbstractBehaviour
             return sHunger.devour(entityId, corpseId);
         }
 
-        final float speed = mSpeed.get(entityId).value;
-
-        return sMovement.moveTo(entityId, speed, corpsePos);
+        return sBump.bumpAction(entityId, corpsePos);
     }
 }

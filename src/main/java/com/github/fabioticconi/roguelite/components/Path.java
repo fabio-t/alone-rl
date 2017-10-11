@@ -19,38 +19,32 @@
 package com.github.fabioticconi.roguelite.components;
 
 import com.artemis.Component;
+import rlforj.math.Point2I;
+
+import java.util.List;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 11/10/17
  */
-public class Weapon extends Component
+public class Path extends Component
 {
-    public Type    damageType;
-    public float   damage;
-    public boolean canThrow;
+    public float         cooldown;
+    public List<Point2I> steps;
 
-    public Weapon()
+    public Path()
     {
 
     }
 
-    public Weapon(final Type damageType, final float damage)
+    public Path(final float cooldown, final List<Point2I> steps)
     {
-        set(damageType, damage, false);
+        set(cooldown, steps);
     }
 
-    public void set(final Type damageType, final float damage, final boolean canThrow)
+    public void set(final float cooldown, final List<Point2I> steps)
     {
-        this.damageType = damageType;
-        this.damage = damage;
-        this.canThrow = canThrow;
-    }
-
-    public enum Type
-    {
-        SLASH,
-        POINT,
-        BLUNT
+        this.cooldown = cooldown;
+        this.steps = steps;
     }
 }

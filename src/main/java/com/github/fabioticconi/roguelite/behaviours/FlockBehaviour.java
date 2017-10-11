@@ -27,8 +27,8 @@ import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import com.github.fabioticconi.roguelite.systems.GroupSystem;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -44,9 +44,9 @@ public class FlockBehaviour extends AbstractBehaviour
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Group>    mGroup;
 
-    MovementSystem sMovement;
-    GroupSystem    sGroup;
-    MapSystem      sMap;
+    BumpSystem  sBump;
+    GroupSystem sGroup;
+    MapSystem   sMap;
 
     @Wire
     SingleGrid grid;
@@ -152,8 +152,6 @@ public class FlockBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final float speed = mSpeed.get(entityId).value;
-
-        return sMovement.moveTo(entityId, speed, centerOfGroup);
+        return sBump.bumpAction(entityId, centerOfGroup);
     }
 }

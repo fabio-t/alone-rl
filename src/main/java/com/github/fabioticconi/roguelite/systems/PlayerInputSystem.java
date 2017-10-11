@@ -38,10 +38,10 @@ public class PlayerInputSystem extends PassiveSystem
     ComponentMapper<Speed>   mSpeed;
     ComponentMapper<Stamina> mStamina;
 
-    MovementSystem sMove;
-    ItemSystem     sItems;
-    HungerSystem   sHunger;
-    ThrowSystem    sThrow;
+    BumpSystem   sBump;
+    ItemSystem   sItems;
+    HungerSystem sHunger;
+    ThrowSystem  sThrow;
 
     PlayerManager pManager;
 
@@ -68,17 +68,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // northwest
-                return sMove.moveTo(pID, speed, Side.NW);
+                return sBump.bumpAction(pID, Side.NW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // northeast
-                return sMove.moveTo(pID, speed, Side.NE);
+                return sBump.bumpAction(pID, Side.NE);
             }
             else
             {
                 // north
-                return sMove.moveTo(pID, speed, Side.N);
+                return sBump.bumpAction(pID, Side.N);
             }
         }
         else if (keys.get(KeyEvent.VK_DOWN))
@@ -95,17 +95,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
-                return sMove.moveTo(pID, speed, Side.SW);
+                return sBump.bumpAction(pID, Side.SW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // southeast
-                return sMove.moveTo(pID, speed, Side.SE);
+                return sBump.bumpAction(pID, Side.SE);
             }
             else
             {
                 // south
-                return sMove.moveTo(pID, speed, Side.S);
+                return sBump.bumpAction(pID, Side.S);
             }
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
@@ -120,7 +120,7 @@ public class PlayerInputSystem extends PassiveSystem
             }
 
             // east
-            return sMove.moveTo(pID, speed, Side.E);
+            return sBump.bumpAction(pID, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
@@ -134,7 +134,7 @@ public class PlayerInputSystem extends PassiveSystem
             }
 
             // west
-            return sMove.moveTo(pID, speed, Side.W);
+            return sBump.bumpAction(pID, Side.W);
         }
         else if (keys.get(KeyEvent.VK_G))
         {

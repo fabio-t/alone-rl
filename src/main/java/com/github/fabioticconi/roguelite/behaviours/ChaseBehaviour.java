@@ -27,7 +27,7 @@ import com.github.fabioticconi.roguelite.components.Speed;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
-import com.github.fabioticconi.roguelite.systems.MovementSystem;
+import com.github.fabioticconi.roguelite.systems.BumpSystem;
 import com.github.fabioticconi.roguelite.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -43,11 +43,10 @@ public class ChaseBehaviour extends AbstractBehaviour
     ComponentMapper<Hunger>    mHunger;
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Position>  mPosition;
-    ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Herbivore> mHerbivore;
 
-    MovementSystem sMovement;
-    MapSystem      sMap;
+    BumpSystem sBump;
+    MapSystem  sMap;
 
     @Wire
     SingleGrid grid;
@@ -111,8 +110,6 @@ public class ChaseBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        final float speed = mSpeed.get(entityId).value;
-
-        return sMovement.moveTo(entityId, speed, chasePos);
+        return sBump.bumpAction(entityId, chasePos);
     }
 }
