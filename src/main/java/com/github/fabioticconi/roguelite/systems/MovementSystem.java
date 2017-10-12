@@ -21,14 +21,12 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.roguelite.components.Dead;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Speed;
-import com.github.fabioticconi.roguelite.components.Stamina;
+import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.actions.MoveAction;
 import com.github.fabioticconi.roguelite.constants.Cell;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +42,16 @@ public class MovementSystem extends DelayedIteratingSystem
     ComponentMapper<MoveAction> mMove;
     ComponentMapper<Stamina>    mStamina;
     ComponentMapper<Speed>      mSpeed;
+    ComponentMapper<Obstacle>   mObstacle;
 
     MapSystem     sMap;
     StaminaSystem sStamina;
 
     @Wire
     SingleGrid grid;
+
+    @Wire
+    MultipleGrid items;
 
     public MovementSystem()
     {
@@ -79,7 +81,17 @@ public class MovementSystem extends DelayedIteratingSystem
         final int newX = p.x + m.direction.x;
         final int newY = p.y + m.direction.y;
 
-        if (sMap.isFree(newX, newY))
+        if (!mObstacle.has(entityId))
+        {
+            // it's a moving item
+            items.move(entityId, p.x, p.y, newX, newY);
+
+            p.x = newX;
+            p.y = newY;
+
+            // it doesn't have stamina
+        }
+        else if (sMap.isFree(newX, newY))
         {
             final int id = grid.move(p.x, p.y, newX, newY);
 
@@ -93,9 +105,7 @@ public class MovementSystem extends DelayedIteratingSystem
             p.x = newX;
             p.y = newY;
 
-            // consume a fixed amount of stamina
-            if (mStamina.has(entityId))
-                sStamina.consume(entityId, m.cost);
+            sStamina.consume(entityId, m.cost);
         }
     }
 

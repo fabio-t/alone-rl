@@ -59,6 +59,9 @@ public class StaminaSystem extends IntervalIteratingSystem
     {
         final Stamina stamina = mStamina.get(entityId);
 
+        if (stamina == null)
+            return -1f;
+
         // reduce stamina by a certain amount
         final float consumed = Math.min(amount, stamina.value);
 

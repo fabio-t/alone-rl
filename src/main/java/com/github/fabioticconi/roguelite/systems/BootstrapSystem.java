@@ -342,19 +342,30 @@ public class BootstrapSystem extends BaseSystem
             {
                 final Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
+                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
+                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.HILL) && r.nextGaussian() > 4f))
                 {
                     if (!grid.isEmpty(x, y))
                         continue;
 
-                    id = sTree.makeTrunk(x, y);
-                    items.add(id, x, y);
-                    id = sTree.makeBranch(x, y);
-                    items.add(id, x, y);
-                    id = sTree.makeBranch(x, y);
-                    items.add(id, x, y);
+                    switch (r.nextInt(3))
+                    {
+                        case 0:
+                            id = sTree.makeTrunk(x, y);
+                            items.add(id, x, y);
+                            break;
+
+                        case 1:
+                            id = sTree.makeBranch(x, y);
+                            items.add(id, x, y);
+                            break;
+
+                        case 2:
+                            id = sTree.makeBranch(x, y);
+                            items.add(id, x, y);
+                            break;
+                    }
                 }
             }
         }

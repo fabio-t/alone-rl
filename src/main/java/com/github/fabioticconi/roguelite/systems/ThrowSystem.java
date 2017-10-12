@@ -24,9 +24,12 @@ import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.components.*;
 import com.github.fabioticconi.roguelite.components.actions.ThrowAction;
+import com.github.fabioticconi.roguelite.components.attributes.Agility;
 import com.github.fabioticconi.roguelite.components.attributes.Sight;
+import com.github.fabioticconi.roguelite.components.attributes.Strength;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
+import com.github.fabioticconi.roguelite.map.MultipleGrid;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -49,8 +52,9 @@ public class ThrowSystem extends DelayedIteratingSystem
     ComponentMapper<Weapon>      mWeapon;
     ComponentMapper<Position>    mPos;
     ComponentMapper<Sight>       mSight;
-    ComponentMapper<Obstacle>    mObstacle;
     ComponentMapper<Path>        mPath;
+    ComponentMapper<Strength>    mStrength;
+    ComponentMapper<Agility>     mAgility;
 
     MapSystem     map;
 
@@ -59,6 +63,9 @@ public class ThrowSystem extends DelayedIteratingSystem
 
     @Wire
     SingleGrid obstacles;
+
+    @Wire
+    MultipleGrid items;
 
     public ThrowSystem()
     {
@@ -110,8 +117,15 @@ public class ThrowSystem extends DelayedIteratingSystem
             mPath.create(targetId).set(cooldown, t.path);
             mPos.create(targetId).set(newP.x, newP.y);
 
+            // Now, it's exactly as if we were wielding the object. Later it should be more complicated,
+            // eg reduce strength proportionally to length (eg, -1 each 3 or 4 steps) and set agility to
+            // 0, maybe, so the victim's agility counts more.
+            mStrength.create(targetId).value = mStrength.get(entityId).value;
+            mAgility.create(targetId).value = mAgility.get(entityId).value;
+
             // at this point it really happened: the weapon is flying at its new position
-            obstacles.set(targetId, newP.x, newP.y);
+            // obstacles.set(targetId, newP.x, newP.y);
+            items.add(targetId, newP.x, newP.y);
         }
         else
         {

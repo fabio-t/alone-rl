@@ -18,13 +18,13 @@
 
 package com.github.fabioticconi.roguelite.systems;
 
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
+import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.roguelite.PushSystem;
-import com.github.fabioticconi.roguelite.components.Health;
-import com.github.fabioticconi.roguelite.components.Position;
-import com.github.fabioticconi.roguelite.components.Pushable;
-import com.github.fabioticconi.roguelite.components.Tree;
+import com.github.fabioticconi.roguelite.components.*;
+import com.github.fabioticconi.roguelite.components.actions.BumpAction;
 import com.github.fabioticconi.roguelite.constants.Side;
 import com.github.fabioticconi.roguelite.map.MapSystem;
 import com.github.fabioticconi.roguelite.map.SingleGrid;
@@ -38,12 +38,14 @@ import java.util.List;
  * Author: Fabio Ticconi
  * Date: 11/10/17
  */
-public class BumpSystem extends PassiveSystem
+public class BumpSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Health>   mHealth;
-    ComponentMapper<Tree>     mTree;
-    ComponentMapper<Pushable> mPushable;
-    ComponentMapper<Position> mPos;
+    ComponentMapper<BumpAction> mBump;
+    ComponentMapper<Health>     mHealth;
+    ComponentMapper<Tree>       mTree;
+    ComponentMapper<Pushable>   mPushable;
+    ComponentMapper<Position>   mPos;
+    ComponentMapper<Player>     mPlayer;
 
     MapSystem map;
 
@@ -54,6 +56,33 @@ public class BumpSystem extends PassiveSystem
 
     @Wire
     SingleGrid grid;
+
+    public BumpSystem()
+    {
+        super(Aspect.all(BumpAction.class));
+    }
+
+    @Override
+    protected float getRemainingDelay(final int entityId)
+    {
+        return mBump.get(entityId).cooldown;
+    }
+
+    @Override
+    protected void processDelta(final int entityId, final float accumulatedDelta)
+    {
+        mBump.get(entityId).cooldown -= accumulatedDelta;
+    }
+
+    @Override
+    protected void processExpired(final int entityId)
+    {
+        // TODO: actually run the action?
+
+        // FIXME: something to remember: if STARTING an action changed state, we cannot roll back
+        // in case this bump action is interrupted.
+        // (incidentally, we need interrupting behaviour)
+    }
 
     public float bumpAction(final int entityId, final Side direction)
     {
@@ -78,22 +107,18 @@ public class BumpSystem extends PassiveSystem
             return 0f;
         }
 
-        // FIXME note how we don't know which action is already running, we need a way of
-        // tracking them down so we can interrupt them if needed
-        // One option is through the use of a BumpAction component that this BumpSystem would iterate over,
-        // so that a new action overrides the BumpAction and thus essentially stops it.
-        // There are of course problems, eg if starting an action changed state, we cannot roll back.
-
-        if (mTree.has(targetId))
+        if (mPlayer.has(entityId) && mTree.has(targetId))
         {
             return sTree.cut(entityId, targetId);
         }
-        else if (mPushable.has(targetId))
+        else if (mPlayer.has(entityId) && mPushable.has(targetId))
         {
             return sPush.push(entityId, targetId);
         }
         else if (mHealth.has(targetId))
+        {
             return sAttack.attack(entityId, targetId);
+        }
 
         return 0f;
     }

@@ -34,8 +34,9 @@ import rlforj.math.Point2I;
  */
 public class PathSystem extends DelayedIteratingSystem
 {
-    ComponentMapper<Path>  mPath;
-    ComponentMapper<Speed> mSpeed;
+    ComponentMapper<Path>     mPath;
+    ComponentMapper<Speed>    mSpeed;
+    ComponentMapper<Position> mPos;
 
     MapSystem map;
 
@@ -62,14 +63,20 @@ public class PathSystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        final Path    path      = mPath.get(entityId);
+        final Path     path = mPath.get(entityId);
+        final Position p    = mPos.get(entityId);
+
         final Point2I newP      = path.steps.remove(0);
-        final Side    direction = Side.getSideAt(newP.x, newP.y);
+        final Side    direction = Side.getSide(p.x, p.y, newP.x, newP.y);
 
         final float wait = sBump.bumpAction(entityId, direction);
 
         // FIXME: if wait is zero, it usually means the bump failed somehow. If that's true than we need
         // to stop path-moving. Maybe we should reserve -1 for when the bump fails?
+
+        // in general, actually, we should stop whenever the bump did not do a movement. This
+        // requires a more complicated handling which should, I believe, be completely performed by
+        // BumpSystem.
 
         if (path.steps.isEmpty())
         {

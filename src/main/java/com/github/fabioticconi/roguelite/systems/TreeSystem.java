@@ -170,7 +170,7 @@ public class TreeSystem extends DelayedIteratingSystem
 
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('_', Util.BROWN.brighter());
+        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
 
         return id;
     }
@@ -181,7 +181,7 @@ public class TreeSystem extends DelayedIteratingSystem
 
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
+        edit.create(Sprite.class).set('/', Util.BROWN.brighter());
         edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
 
         return id;
