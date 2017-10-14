@@ -90,35 +90,35 @@ public class MapSystem extends PassiveSystem implements ILosBoard
                 final int  uns_h = Byte.toUnsignedInt(h);
                 value = (float) (uns_h) / 255f;
 
-                if (value == 0f)
+                if (value < 0.01)
                 {
                     terrain[x][y] = Cell.DEEP_WATER;
                 }
-                else if (value < 0.005f)
+                else if (value < 0.05f)
                 {
                     terrain[x][y] = Cell.WATER;
                 }
-                else if (value < 0.03f)
+                else if (value < 0.08f)
                 {
                     terrain[x][y] = Cell.SAND;
                 }
-                else if (value < 0.04f)
+                else if (value < 0.1f)
                 {
                     terrain[x][y] = Cell.GROUND;
                 }
-                else if (value < 0.7f)
+                else if (value < 0.4f)
                 {
                     terrain[x][y] = Cell.GRASS;
                 }
-                else if (value < 0.8f)
+                else if (value < 0.7f)
                 {
                     terrain[x][y] = Cell.HILL_GRASS;
                 }
-                else if (value < 0.9f)
+                else if (value < 0.8f)
                 {
                     terrain[x][y] = Cell.HILL;
                 }
-                else if (value < 0.99f)
+                else if (value < 0.9f)
                 {
                     terrain[x][y] = Cell.MOUNTAIN;
                 }

@@ -21,3 +21,6 @@
   The approach is simple: inside, eg, AttackSystem, get hold of the EntityLinkManager instance and register
   the Attack component (or BumpAction, when the migration is done) with a LinkAdapter instance overriding the onTargetDead
   function. This should suffice, so that the action is interrupted if the target dies.
+
+- make the map-type thresholds loadable from a yaml file.
+
