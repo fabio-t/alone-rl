@@ -1,33 +1,48 @@
-# Alone: the roguelite
+# Alone
 
-Simple single-player ANSI roguelite. It's intended as a toy project to learn a bit about single-player game programming
-(and also specifically to learn artemis-odb) without the hassle of game physics and most importantly graphics.
+Simple single-player ANSI roguelike/roguelite. It's intended as a toy project to learn a bit about single-player game
+programming (and also specifically to learn artemis-odb) without the hassle of game physics and most importantly
+graphics.
 
-It deviates a bit from the "roguelite canon" already at this early stage: the creatures and objects are permanent.
-A basic reproductive ability and genetic modification should allow for an increasingly difficult environment,
-adapting to itself and to the player growing in strength.
+It's a real-time game but it defaults to a turn-based modality where the world only advances during player actions,
+for as long as the player action runs. Pure real-time gameplay can be toggled.
 
-**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far. Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
+**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far.
+Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
+
+# Screenshots
+
+## Grassy Hill
+
+Plenty of trees and animals, some fallen trunks or branches, a corpse in red. Some stones are visible, too (they can be
+used as weapons, or thrown).
+
+![alt tag](screenshots/grassy hill.png)
+
+## High Hill
+
+Higher up there's no proper grass, but it's still not mountain. Trees are sparse, some big boulders are visible (these
+are proper obstacles like trees: they block both light and movement). Moving in higher terrain consumes more stamina.
+
+![alt tag](screenshots/hill.png)
 
 # Features
-
-Not all the following is completely implemented, but you can see as a "core feature". It will be in.
 
 ## Field of view
 
 Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
 
-![alt tag](screenshots/screenshot.png)
-
 Creatures and player alike have, thus, only a limited view of the world and can hide from indiscreet eyes.
 
-## Persistence
+Right now, everything that is an obstacle blocks both light and movement, from rabbits to trees. Later some things
+will block movement but not light, so that you will be able to see behind most animals (minus the biggest ones).
+
+## Simple Ecology
 
 Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking.
+This is the main difference between Alone and most roguelikes/roguelites. It makes it a simulation game, to an extent.
 
-## Small-scale ecology
-
-Different creatures have different set of behaviours. Here we see four animal species:
+Different creatures have different set of behaviours:
 
 - small, independent **r**abbits are fleeing from a puma
 - large **B**isons, pacifically grazing and staying close to the herd, are attacked (and divided! that's unintentional, btw) by wolves
@@ -36,14 +51,12 @@ Different creatures have different set of behaviours. Here we see four animal sp
 
 The Size of animals determines whether the letter is uppercase or lowercase. This should prove useful to quickly gauge whether to go fight or flight.
 
-Many of the attributes for the animals are currently configurable in a yaml file, but it's still not enough.
-Eventually any creature, flora, item or terrain feature will be completely specifiable via those yaml files.
+## Survival
 
-Trees are present but don't do anything yet.
+The main goal of the game. You need to eat, drink and keep your health up. Escape predators, steal their carcasses if
+you can, or kill them and eat them.
 
-NOTE: the specific animals are just chosen for now to cover the four different most important combinations:
+## Crafting
 
-- Herbivore/Carnivore
-- Solitary/Group
-
-The actual "name" may change, I may add more, not sure. But they make for good testing.
+Not implemented yet. It will cover the basic primitive technology of a Neolithic hunger, eg stone knives, spears and axes,
+simple bark protection, a shelter, maybe rudimentary pit traps and extraction of parts from dead animals.

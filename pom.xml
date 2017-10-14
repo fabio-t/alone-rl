@@ -161,7 +161,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.fabioticconi.roguelite.Roguelite</mainClass>
+                            <mainClass>com.github.fabioticconi.alone.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>.</Class-Path>
