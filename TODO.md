@@ -15,3 +15,9 @@
 - Hide SingleGrid and MultipleGrid behind Map, so that I can generalise MovementSystem to move creatures and items,
   without if-else.. maybe? We'll see if this happens more often, if it's only for the movement of
   thrown stuff than we can leave it like this.
+
+- Must handle "linked entities" better using LinkListener. It's probably not needed for items, but for creatures, trees
+  and boulders (eg, entities that can be destroyed) yes. When fire is implemented, items too should be handled.
+  The approach is simple: inside, eg, AttackSystem, get hold of the EntityLinkManager instance and register
+  the Attack component (or BumpAction, when the migration is done) with a LinkAdapter instance overriding the onTargetDead
+  function. This should suffice, so that the action is interrupted if the target dies.

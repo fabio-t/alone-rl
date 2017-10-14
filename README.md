@@ -39,17 +39,21 @@ will block movement but not light, so that you will be able to see behind most a
 
 ## Simple Ecology
 
-Creatures don't "pop", they don't appear when needed, but the simulation keeps going even when the player is not looking.
+Creatures don't "pop" or "spawn", they don't just appear when needed but they keeps going even when the
+player is not looking.
+
 This is the main difference between Alone and most roguelikes/roguelites. It makes it a simulation game, to an extent.
 
 Different creatures have different set of behaviours:
 
-- small, independent **r**abbits are fleeing from a puma
-- large **B**isons, pacifically grazing and staying close to the herd, are attacked (and divided! that's unintentional, btw) by wolves
-- relatively small **w**olves chase bisons with pack behaviour
-- relatively large **P**umas attack their prey (here, rabbits) independently, they are not a pack
+* Herbivores flee from Carnivores on sight, and can only feed on grass. They'll seek grass terrain (plain or hill)
+  when they see it.
+   
+* Carnivores will feed on a corpse if they see one, and chase any herbivores on sight unless they are not hungry at all.
 
-The Size of animals determines whether the letter is uppercase or lowercase. This should prove useful to quickly gauge whether to go fight or flight.
+* Some types of herbivores are solitary, others live in packs/herds. Same for carnivores. Being far away from the
+  other elements of the group might trigger a Flock behaviour, but it's unlikely to take precedence over seeking food
+  or fleeing a predator.
 
 ## Survival
 
