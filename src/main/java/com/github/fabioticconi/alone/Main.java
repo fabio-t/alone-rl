@@ -76,8 +76,8 @@ public class Main extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        // first thing ever to be loaded?
-        config.register(EntityLinkManager.class);
+        // first things to be loaded
+        config.setSystem(EntityLinkManager.class);
         config.setSystem(MapSystem.class);
         // POJOs
         config.register(new SingleGrid());
@@ -115,7 +115,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(DeadSystem.class);
 
         world = new World(config);
-        
+
         addKeyListener(this);
     }
 

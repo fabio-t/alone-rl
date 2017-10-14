@@ -10,22 +10,6 @@ for as long as the player action runs. Pure real-time gameplay can be toggled.
 **NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far.
 Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
 
-# Screenshots
-
-## Grassy Hill
-
-Plenty of trees and animals, some fallen trunks or branches, a corpse in red. Some stones are visible, too (they can be
-used as weapons, or thrown).
-
-![alt tag](screenshots/grassy_hill.png)
-
-## High Hill
-
-Higher up there's no proper grass, but it's still not mountain. Trees are sparse, some big boulders are visible (these
-are proper obstacles like trees: they block both light and movement). Moving in higher terrain consumes more stamina.
-
-![alt tag](screenshots/hill.png)
-
 # Features
 
 ## Field of view
@@ -62,5 +46,22 @@ you can, or kill them and eat them.
 
 ## Crafting
 
-Not implemented yet. It will cover the basic primitive technology of a Neolithic hunger, eg stone knives, spears and axes,
+Not implemented yet. It will cover the basic primitive technology of a Neolithic hunter, eg stone knives, spears and axes,
 simple bark protection, a shelter, maybe rudimentary pit traps and extraction of parts from dead animals.
+
+# Screenshots
+
+## Grassy Hill
+
+Plenty of trees and animals, some fallen trunks or branches, a corpse in red. Some stones are visible, too (they can be
+used as weapons, or thrown).
+
+![alt tag](screenshots/grassy_hill.png)
+
+## High Hill
+
+Higher up there's no proper grass, but it's still not mountain. Trees are sparse, some big boulders are visible (these
+are proper obstacles like trees: they block both light and movement). Moving in higher terrain consumes more stamina.
+
+![alt tag](screenshots/hill.png)
+
