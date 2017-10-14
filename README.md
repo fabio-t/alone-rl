@@ -17,7 +17,7 @@ Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelit
 Plenty of trees and animals, some fallen trunks or branches, a corpse in red. Some stones are visible, too (they can be
 used as weapons, or thrown).
 
-![alt tag](screenshots/grassy hill.png)
+![alt tag](screenshots/grassy_hill.png)
 
 ## High Hill
 
