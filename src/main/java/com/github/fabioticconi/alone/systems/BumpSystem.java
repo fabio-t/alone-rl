@@ -85,10 +85,10 @@ public class BumpSystem extends PassiveSystem
         {
             c = sTree.cut(entityId, targetId);
         }
-        else if (mPlayer.has(entityId) && mPushable.has(targetId))
-        {
-            c = sPush.push(entityId, targetId);
-        }
+        // else if (mPlayer.has(entityId) && mPushable.has(targetId))
+        // {
+        //     c = sPush.push(entityId, targetId);
+        // }
         else if (mPlayer.has(entityId) && mCrushable.has(targetId))
         {
             c = sCrush.crush(entityId, targetId);

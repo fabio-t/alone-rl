@@ -22,6 +22,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -39,6 +40,7 @@ public class ItemSystem extends PassiveSystem
 
     ComponentMapper<Position>  mPos;
     ComponentMapper<Inventory> mInventory;
+    ComponentMapper<Weapon>    mWeapon;
 
     @Wire
     MultipleGrid items;
@@ -136,5 +138,36 @@ public class ItemSystem extends PassiveSystem
 
             mPos.create(itemId).set(p.x, p.y);
         }
+    }
+
+    public int getWeapon(final int entityId, final Weapon.Type weaponType)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0; i < items.items.size(); i++)
+        {
+            final int itemId = data[i];
+
+            if (itemId < 0)
+            {
+                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+
+                continue;
+            }
+
+            final Weapon weapon = mWeapon.get(itemId);
+
+            // need a slashing weapon to cut down the tree
+            if (weapon == null || weapon.damageType != weaponType)
+                continue;
+
+            return itemId;
+        }
+
+        return -1;
     }
 }

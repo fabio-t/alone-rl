@@ -32,12 +32,12 @@ public class PushSystem extends PassiveSystem
 {
     ComponentMapper<Pushable> mPushable;
 
-    public PushAction push(final int entityId, final int toPushId)
+    public PushAction push(final int entityId, final int targetId)
     {
         final PushAction p = new PushAction();
 
         p.actorId = entityId;
-        p.targetId = toPushId;
+        p.targetId = targetId;
 
         return p;
     }

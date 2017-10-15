@@ -43,13 +43,12 @@ public class TreeSystem extends PassiveSystem
     static final Logger log = LoggerFactory.getLogger(TreeSystem.class);
 
     ComponentMapper<Tree>      mTree;
-    ComponentMapper<Inventory> mInventory;
-    ComponentMapper<Weapon>    mWeapon;
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Position>  mPosition;
 
     StaminaSystem sStamina;
+    ItemSystem    sItem;
 
     @Wire
     SingleGrid obstacles;
@@ -116,43 +115,22 @@ public class TreeSystem extends PassiveSystem
             if (treeId < 0 || !mTree.has(treeId))
                 return false;
 
-            final Inventory items = mInventory.get(actorId);
+            axeId = sItem.getWeapon(actorId, Weapon.Type.SLASH);
 
-            if (items == null)
-                return false;
-
-            final int[] data = items.items.getData();
-            for (int i = 0; i < items.items.size(); i++)
+            if (axeId < 0)
             {
-                final int itemId = data[i];
+                log.info("{} cannot cut down tree {}: no suitable weapon", actorId, treeId);
 
-                if (itemId < 0)
-                {
-                    // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
-
-                    continue;
-                }
-
-                final Weapon weapon = mWeapon.get(itemId);
-
-                // need a slashing weapon to cut down the tree
-                if (weapon == null || !weapon.damageType.equals(Weapon.Type.SLASH))
-                    continue;
-
-                axeId = itemId;
-
-                // FIXME further adjust delay and cost using the axe power (in this way, cutting down a tree
-                // with a cutting knife will be possible but long and hard, while using a strong axe will be
-                // quick and easy
-                delay = mSpeed.get(actorId).value;
-                cost = delay / (mStrength.get(actorId).value + 3f);
-
-                return true;
+                return false;
             }
 
-            log.info("{} cannot startCut down tree {}: no suitable weapon", actorId, treeId);
+            // FIXME further adjust delay and cost using the axe power (in this way, cutting down a tree
+            // with a cutting knife will be possible but long and hard, while using a strong axe will be
+            // quick and easy
+            delay = mSpeed.get(actorId).value;
+            cost = delay / (mStrength.get(actorId).value + 3f);
 
-            return false;
+            return true;
         }
 
         public void doAction()

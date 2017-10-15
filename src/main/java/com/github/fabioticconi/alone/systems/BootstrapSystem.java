@@ -59,6 +59,7 @@ public class BootstrapSystem extends BaseSystem
     GroupSystem sGroup;
     MapSystem   sMap;
     TreeSystem  sTree;
+    CrushSystem sCrush;
 
     PlayerManager pManager;
 
@@ -323,13 +324,7 @@ public class BootstrapSystem extends BaseSystem
                     if (!grid.isEmpty(x, y))
                         continue;
 
-                    id = world.create();
-                    edit = world.edit(id);
-
-                    edit.create(Position.class).set(x, y);
-                    edit.create(Sprite.class).set('o', Color.GRAY.darker());
-                    edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2, true);
-
+                    id = sCrush.makeStone(x, y);
                     items.add(id, x, y);
                 }
             }
