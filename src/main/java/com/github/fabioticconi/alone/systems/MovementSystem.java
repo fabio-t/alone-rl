@@ -19,7 +19,9 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.Obstacle;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
@@ -37,9 +39,9 @@ public class MovementSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
 
-    ComponentMapper<Position>   mPosition;
-    ComponentMapper<Speed>      mSpeed;
-    ComponentMapper<Obstacle>   mObstacle;
+    ComponentMapper<Position> mPosition;
+    ComponentMapper<Speed>    mSpeed;
+    ComponentMapper<Obstacle> mObstacle;
 
     MapSystem     sMap;
     StaminaSystem sStamina;
@@ -49,6 +51,19 @@ public class MovementSystem extends PassiveSystem
 
     @Wire
     MultipleGrid items;
+
+    public MoveAction move(final int entityId, final Side direction)
+    {
+        if (direction.equals(Side.HERE))
+            return null;
+
+        final MoveAction a = new MoveAction();
+
+        a.actorId = entityId;
+        a.direction = direction;
+
+        return a;
+    }
 
     public class MoveAction extends ActionContext
     {
@@ -104,7 +119,7 @@ public class MovementSystem extends PassiveSystem
         @Override
         public void doAction()
         {
-            final Position   p = mPosition.get(actorId);
+            final Position p = mPosition.get(actorId);
 
             final int newX = p.x + direction.x;
             final int newY = p.y + direction.y;
@@ -136,18 +151,11 @@ public class MovementSystem extends PassiveSystem
                 sStamina.consume(actorId, cost);
             }
         }
-    }
 
-    public MoveAction move(final int entityId, final Side direction)
-    {
-        if (direction.equals(Side.HERE))
-            return null;
-
-        final MoveAction a = new MoveAction();
-
-        a.actorId = entityId;
-        a.direction = direction;
-
-        return a;
+        @Override
+        public boolean equals(final Object o)
+        {
+            return super.equals(o) && direction == ((MoveAction) o).direction;
+        }
     }
 }

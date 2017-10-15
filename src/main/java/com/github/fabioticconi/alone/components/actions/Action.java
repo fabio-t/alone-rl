@@ -27,7 +27,7 @@ import com.artemis.Component;
 public class Action extends Component
 {
     public ActionContext context;
-    public float cooldown;
+    public float         cooldown;
 
     public Action()
     {

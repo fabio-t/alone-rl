@@ -18,10 +18,8 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.EntityId;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.Pushable;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -32,11 +30,22 @@ import net.mostlyoriginal.api.system.core.PassiveSystem;
  */
 public class PushSystem extends PassiveSystem
 {
-    ComponentMapper<Pushable>   mPushable;
+    ComponentMapper<Pushable> mPushable;
+
+    public PushAction push(final int entityId, final int targetId)
+    {
+        final PushAction p = new PushAction();
+
+        p.actorId = entityId;
+        p.targetId = targetId;
+
+        return p;
+    }
 
     public class PushAction extends ActionContext
     {
-        @EntityId public int targetId = -1;
+        @EntityId
+        public int targetId = -1;
 
         @Override
         public boolean tryAction()
@@ -49,15 +58,5 @@ public class PushSystem extends PassiveSystem
         {
 
         }
-    }
-
-    public PushAction push(final int entityId, final int targetId)
-    {
-        final PushAction p = new PushAction();
-
-        p.actorId = entityId;
-        p.targetId = targetId;
-
-        return p;
     }
 }

@@ -32,9 +32,20 @@ public class PushSystem extends PassiveSystem
 {
     ComponentMapper<Pushable> mPushable;
 
+    public PushAction push(final int entityId, final int toPushId)
+    {
+        final PushAction p = new PushAction();
+
+        p.actorId = entityId;
+        p.targetId = toPushId;
+
+        return p;
+    }
+
     public class PushAction extends ActionContext
     {
-        @EntityId public int targetId = -1;
+        @EntityId
+        public int targetId = -1;
 
         @Override
         public boolean tryAction()
@@ -47,15 +58,11 @@ public class PushSystem extends PassiveSystem
         {
 
         }
-    }
 
-    public PushAction push(final int entityId, final int toPushId)
-    {
-        final PushAction p = new PushAction();
-
-        p.actorId = entityId;
-        p.targetId = toPushId;
-
-        return p;
+        @Override
+        public boolean equals(final Object o)
+        {
+            return super.equals(o) && targetId == ((PushAction) o).targetId;
+        }
     }
 }

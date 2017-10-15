@@ -19,10 +19,13 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
+import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,19 +45,11 @@ public class HungerSystem extends IntervalIteratingSystem
     @Wire
     MultipleGrid items;
 
-    /**
-     * @param interval
-     */
     public HungerSystem(final float interval)
     {
         super(Aspect.all(Hunger.class).exclude(Dead.class), interval);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.systems.IntervalIteratingSystem#process(int)
-     */
     @Override
     protected void process(final int entityId)
     {
@@ -66,58 +61,26 @@ public class HungerSystem extends IntervalIteratingSystem
         h.value = Math.min(h.value, h.maxValue);
     }
 
-    // Public API
-
-    // TODO this should be dependent on "interval" or on some value as argument
-    public float feed(final int entityId)
+    public EatAction devour(final int entityId, final int corpseId)
     {
-        if (!mHunger.has(entityId))
-            return 0f;
-
-        final Hunger h = mHunger.get(entityId);
-
-        // remove 25% hunger
-        final float food = Math.min(h.maxValue * 0.25f, h.value);
-
-        h.value -= food;
-
-        return food;
-    }
-
-    public float devour(final int entityId, final int foodId)
-    {
-        final Hunger h = mHunger.get(entityId);
-
-        if (h == null)
-            return 0f;
-
-        final Health health = mHealth.get(foodId);
-
-        if (health == null)
-            return 0f;
-
-        // remove 25% hunger (or less) and decrease food health accordingly
-
-        final float food = Math.min(h.maxValue * 0.25f, h.value);
-
-        h.value -= food;
-        health.value -= food;
-
-        if (health.value <= 0f)
+        if (!mCorpse.has(corpseId))
         {
-            // destroy food item, but also recover the wrongly-reduced hunger
+            log.warn("{} is trying to eat a not-corpse, {}", entityId, corpseId);
 
-            h.value -= health.value;
-
-            final Position p = mPosition.get(foodId);
-            items.del(foodId, p.x, p.y);
-            world.delete(foodId);
+            return null;
         }
 
-        return food;
+        final EatAction a = new EatAction();
+
+        a.actorId = entityId;
+        a.targetId = corpseId;
+
+        a.delay = 1f;
+
+        return a;
     }
 
-    public float devourClosestCorpse(final int entityId)
+    public EatAction devourClosestCorpse(final int entityId)
     {
         final Position p = mPosition.get(entityId);
 
@@ -127,10 +90,106 @@ public class HungerSystem extends IntervalIteratingSystem
         {
             if (mCorpse.has(foodId))
             {
-                return devour(entityId, foodId);
+                final EatAction a = new EatAction();
+
+                a.actorId = entityId;
+                a.targetId = foodId;
+
+                a.delay = 1f;
+                a.cost = 0.5f;
+
+                return a;
             }
         }
 
-        return 0f;
+        return null;
+    }
+
+    public FeedAction feed(final int entityId)
+    {
+        final FeedAction a = new FeedAction();
+
+        a.actorId = entityId;
+
+        a.delay = 1f;
+        a.cost = 0.5f;
+
+        return a;
+    }
+
+    public class EatAction extends ActionContext
+    {
+        @EntityId
+        public int targetId = -1;
+
+        @Override
+        public boolean tryAction()
+        {
+            if (targetId < 0)
+                return false;
+
+            final Position p1 = mPosition.get(actorId);
+            final Position p2 = mPosition.get(targetId);
+
+            if (Coords.distanceChebyshev(p1.x, p1.y, p2.x, p2.y) < 2 && mCorpse.has(targetId))
+                return true;
+
+            return false;
+        }
+
+        @Override
+        public void doAction()
+        {
+            final Hunger h = mHunger.get(actorId);
+
+            if (h == null)
+                return;
+
+            final Health health = mHealth.get(targetId);
+
+            if (health == null)
+                return;
+
+            // remove 25% hunger (or less) and decrease food health accordingly
+
+            final float food = Math.min(h.maxValue * 0.25f, h.value);
+
+            h.value -= food;
+            health.value -= food;
+
+            if (health.value <= 0f)
+            {
+                // destroy food item, but also recover the wrongly-reduced hunger
+
+                h.value -= health.value;
+
+                final Position p = mPosition.get(targetId);
+                items.del(targetId, p.x, p.y);
+                world.delete(targetId);
+            }
+        }
+    }
+
+    public class FeedAction extends ActionContext
+    {
+        @Override
+        public boolean tryAction()
+        {
+            return true;
+        }
+
+        @Override
+        public void doAction()
+        {
+            if (!mHunger.has(actorId))
+                return;
+
+            final Hunger h = mHunger.get(actorId);
+
+            // remove 25% hunger
+            final float food = Math.min(h.maxValue * 0.25f, h.value);
+
+            h.value -= food;
+        }
     }
 }

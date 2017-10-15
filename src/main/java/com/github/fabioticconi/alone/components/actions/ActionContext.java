@@ -26,7 +26,8 @@ import com.artemis.annotations.EntityId;
  */
 public abstract class ActionContext
 {
-    @EntityId public int actorId = -1;
+    @EntityId
+    public int actorId = -1;
 
     public float cost;
     public float delay;
@@ -56,5 +57,24 @@ public abstract class ActionContext
     }
 
     public abstract boolean tryAction();
+
     public abstract void doAction();
+
+    @Override
+    public boolean equals(final Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final ActionContext that = (ActionContext) o;
+
+        return actorId == that.actorId;
+    }
+
+    public boolean canJoin(final ActionContext context)
+    {
+        return equals(context);
+    }
 }

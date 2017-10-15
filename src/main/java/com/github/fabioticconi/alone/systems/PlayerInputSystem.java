@@ -22,7 +22,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
-import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Stamina;
 import com.github.fabioticconi.alone.constants.Side;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -48,9 +47,9 @@ public class PlayerInputSystem extends PassiveSystem
     public float handleKeys(final BitVector keys)
     {
         // FIXME: hackish, very crappy but it should work
-        final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final Stamina stamina = mStamina.get(pID);
+        final Stamina stamina = mStamina.get(playerId);
 
         if (keys.get(KeyEvent.VK_UP))
         {
@@ -66,17 +65,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // northwest
-                return sBump.bumpAction(pID, Side.NW);
+                return sBump.bumpAction(playerId, Side.NW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // northeast
-                return sBump.bumpAction(pID, Side.NE);
+                return sBump.bumpAction(playerId, Side.NE);
             }
             else
             {
                 // north
-                return sBump.bumpAction(pID, Side.N);
+                return sBump.bumpAction(playerId, Side.N);
             }
         }
         else if (keys.get(KeyEvent.VK_DOWN))
@@ -93,17 +92,17 @@ public class PlayerInputSystem extends PassiveSystem
             if (keys.get(KeyEvent.VK_LEFT))
             {
                 // southwest
-                return sBump.bumpAction(pID, Side.SW);
+                return sBump.bumpAction(playerId, Side.SW);
             }
             else if (keys.get(KeyEvent.VK_RIGHT))
             {
                 // southeast
-                return sBump.bumpAction(pID, Side.SE);
+                return sBump.bumpAction(playerId, Side.SE);
             }
             else
             {
                 // south
-                return sBump.bumpAction(pID, Side.S);
+                return sBump.bumpAction(playerId, Side.S);
             }
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
@@ -118,7 +117,7 @@ public class PlayerInputSystem extends PassiveSystem
             }
 
             // east
-            return sBump.bumpAction(pID, Side.E);
+            return sBump.bumpAction(playerId, Side.E);
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
@@ -132,33 +131,31 @@ public class PlayerInputSystem extends PassiveSystem
             }
 
             // west
-            return sBump.bumpAction(pID, Side.W);
+            return sBump.bumpAction(playerId, Side.W);
         }
         else if (keys.get(KeyEvent.VK_G))
         {
-            // no combined key-presses like for movement, so we make sure to clear it
             keys.clear(KeyEvent.VK_G);
 
-            return sAction.act(sItems.get(pID));
+            return sAction.act(sItems.get(playerId));
         }
         else if (keys.get(KeyEvent.VK_D))
         {
-            // no combined key-presses like for movement, so we make sure to clear it
             keys.clear(KeyEvent.VK_D);
 
-            return sAction.act(sItems.drop(pID));
+            return sAction.act(sItems.drop(playerId));
         }
         else if (keys.get(KeyEvent.VK_E))
         {
             keys.clear(KeyEvent.VK_E);
 
-            return sHunger.devourClosestCorpse(pID);
+            return sAction.act(sHunger.devourClosestCorpse(playerId));
         }
         else if (keys.get(KeyEvent.VK_T))
         {
             keys.clear(KeyEvent.VK_T);
 
-            return sAction.act(sThrow.throwWeapon(pID));
+            return sAction.act(sThrow.throwWeapon(playerId));
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {

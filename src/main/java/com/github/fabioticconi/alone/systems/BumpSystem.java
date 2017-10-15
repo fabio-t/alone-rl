@@ -38,12 +38,12 @@ import java.util.List;
  */
 public class BumpSystem extends PassiveSystem
 {
-    ComponentMapper<Health>     mHealth;
-    ComponentMapper<Tree>       mTree;
-    ComponentMapper<Pushable>   mPushable;
-    ComponentMapper<Crushable>  mCrushable;
-    ComponentMapper<Position>   mPos;
-    ComponentMapper<Player>     mPlayer;
+    ComponentMapper<Health>    mHealth;
+    ComponentMapper<Tree>      mTree;
+    ComponentMapper<Pushable>  mPushable;
+    ComponentMapper<Crushable> mCrushable;
+    ComponentMapper<Position>  mPos;
+    ComponentMapper<Player>    mPlayer;
 
     MapSystem map;
 

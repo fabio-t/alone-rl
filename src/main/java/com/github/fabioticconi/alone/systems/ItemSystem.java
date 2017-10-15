@@ -43,6 +43,24 @@ public class ItemSystem extends PassiveSystem
     @Wire
     MultipleGrid items;
 
+    public GetAction get(final int entityId)
+    {
+        final GetAction a = new GetAction();
+
+        a.actorId = entityId;
+
+        return a;
+    }
+
+    public DropAction drop(final int entityId)
+    {
+        final DropAction a = new DropAction();
+
+        a.actorId = entityId;
+
+        return a;
+    }
+
     public class GetAction extends ActionContext
     {
 
@@ -118,23 +136,5 @@ public class ItemSystem extends PassiveSystem
 
             mPos.create(itemId).set(p.x, p.y);
         }
-    }
-
-    public GetAction get(final int entityId)
-    {
-        final GetAction a = new GetAction();
-
-        a.actorId = entityId;
-
-        return a;
-    }
-
-    public DropAction drop(final int entityId)
-    {
-        final DropAction a = new DropAction();
-
-        a.actorId = entityId;
-
-        return a;
     }
 }

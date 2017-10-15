@@ -25,6 +25,7 @@ import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.map.MapSystem;
+import com.github.fabioticconi.alone.systems.ActionSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.HungerSystem;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class GrazeBehaviour extends AbstractBehaviour
 
     HungerSystem sHunger;
     BumpSystem   sBump;
+    ActionSystem sAction;
 
     MapSystem map;
 
@@ -98,7 +100,7 @@ public class GrazeBehaviour extends AbstractBehaviour
 
         // we are right on a feed-friendly cell, so let's eat
         if (coords[0] == pos.x && coords[1] == pos.y)
-            return sHunger.feed(entityId);
+            return sAction.act(sHunger.feed(entityId));
 
         final Position destination = new Position(coords[0], coords[1]);
 

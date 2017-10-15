@@ -57,10 +57,58 @@ public class TreeSystem extends PassiveSystem
     @Wire
     MultipleGrid items;
 
+    public CutAction cut(final int entityId, final int treeId)
+    {
+        final CutAction c = new CutAction();
+
+        c.actorId = entityId;
+        c.treeId = treeId;
+
+        return c;
+    }
+
+    public int makeTree(final int x, final int y)
+    {
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
+        edit.create(Obstacle.class);
+        edit.create(Tree.class);
+
+        return id;
+    }
+
+    public int makeTrunk(final int x, final int y)
+    {
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
+
+        return id;
+    }
+
+    public int makeBranch(final int x, final int y)
+    {
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('/', Util.BROWN.brighter());
+        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
+
+        return id;
+    }
+
     public class CutAction extends ActionContext
     {
-        @EntityId public int treeId = -1;
-        @EntityId public int axeId = -1;
+        @EntityId
+        public int treeId = -1;
+        @EntityId
+        public int axeId  = -1;
 
         @Override
         public boolean tryAction()
@@ -126,51 +174,16 @@ public class TreeSystem extends PassiveSystem
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
         }
-    }
 
-    public CutAction cut(final int entityId, final int treeId)
-    {
-        final CutAction c = new CutAction();
+        @Override
+        public boolean equals(final Object o)
+        {
+            if (!super.equals(o))
+                return false;
 
-        c.actorId = entityId;
-        c.treeId = treeId;
+            final CutAction a = (CutAction) o;
 
-        return c;
-    }
-
-    public int makeTree(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
-        edit.create(Obstacle.class);
-        edit.create(Tree.class);
-
-        return id;
-    }
-
-    public int makeTrunk(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
-
-        return id;
-    }
-
-    public int makeBranch(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('/', Util.BROWN.brighter());
-        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
-
-        return id;
+            return treeId == a.treeId && axeId == a.axeId;
+        }
     }
 }

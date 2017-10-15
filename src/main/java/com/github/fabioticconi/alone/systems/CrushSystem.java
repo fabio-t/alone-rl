@@ -32,6 +32,16 @@ public class CrushSystem extends PassiveSystem
 {
     ComponentMapper<Crushable> mCrushable;
 
+    public CrushAction crush(final int entityId, final int targetId)
+    {
+        final CrushAction c = new CrushAction();
+
+        c.actorId = entityId;
+        c.targetId = targetId;
+
+        return c;
+    }
+
     public class CrushAction extends ActionContext
     {
         @EntityId
@@ -48,15 +58,11 @@ public class CrushSystem extends PassiveSystem
         {
 
         }
-    }
 
-    public CrushAction crush(final int entityId, final int targetId)
-    {
-        final CrushAction c = new CrushAction();
-
-        c.actorId = entityId;
-        c.targetId = targetId;
-
-        return c;
+        @Override
+        public boolean equals(final Object o)
+        {
+            return super.equals(o) && targetId == ((CrushAction) o).targetId;
+        }
     }
 }

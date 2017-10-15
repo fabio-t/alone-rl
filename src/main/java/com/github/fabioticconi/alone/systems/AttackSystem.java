@@ -18,14 +18,11 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Health;
-import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
@@ -46,21 +43,32 @@ public class AttackSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(AttackSystem.class);
 
-    ComponentMapper<Strength>     mStrength;
-    ComponentMapper<Agility>      mAgility;
-    ComponentMapper<Health>       mHealth;
-    ComponentMapper<Skin>         mSkin;
-    ComponentMapper<Speed>        mSpeed;
-    ComponentMapper<Dead>         mDead;
+    ComponentMapper<Strength> mStrength;
+    ComponentMapper<Agility>  mAgility;
+    ComponentMapper<Health>   mHealth;
+    ComponentMapper<Skin>     mSkin;
+    ComponentMapper<Speed>    mSpeed;
+    ComponentMapper<Dead>     mDead;
 
     @Wire
     Random r;
 
     StaminaSystem sStamina;
 
+    public AttackAction attack(final int entityId, final int targetId)
+    {
+        final AttackAction a = new AttackAction();
+
+        a.actorId = entityId;
+        a.targetId = targetId;
+
+        return a;
+    }
+
     public class AttackAction extends ActionContext
     {
-        @EntityId public int targetId = -1;
+        @EntityId
+        public int targetId = -1;
 
         @Override
         public boolean tryAction()
@@ -106,8 +114,7 @@ public class AttackSystem extends PassiveSystem
             sStamina.consume(actorId, cost);
             sStamina.consume(targetId, 0.25f);
 
-            final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f,
-                                                 0.05f, 0.95f);
+            final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
 
             if (r.nextFloat() < toHit)
             {
@@ -124,16 +131,16 @@ public class AttackSystem extends PassiveSystem
                     mDead.create(targetId);
                 }
             }
+            else
+            {
+                log.info("{} misses {}", actorId, targetId);
+            }
         }
-    }
 
-    public AttackAction attack(final int entityId, final int targetId)
-    {
-        final AttackAction a = new AttackAction();
-
-        a.actorId = entityId;
-        a.targetId = targetId;
-
-        return a;
+        @Override
+        public boolean equals(final Object o)
+        {
+            return super.equals(o) && targetId == ((AttackAction) o).targetId;
+        }
     }
 }

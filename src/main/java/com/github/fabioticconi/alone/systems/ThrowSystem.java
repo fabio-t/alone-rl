@@ -18,11 +18,9 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
@@ -48,16 +46,16 @@ public class ThrowSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(ThrowSystem.class);
 
-    ComponentMapper<Inventory>   mInventory;
-    ComponentMapper<Speed>       mSpeed;
-    ComponentMapper<Weapon>      mWeapon;
-    ComponentMapper<Position>    mPos;
-    ComponentMapper<Sight>       mSight;
-    ComponentMapper<Path>        mPath;
-    ComponentMapper<Strength>    mStrength;
-    ComponentMapper<Agility>     mAgility;
+    ComponentMapper<Inventory> mInventory;
+    ComponentMapper<Speed>     mSpeed;
+    ComponentMapper<Weapon>    mWeapon;
+    ComponentMapper<Position>  mPos;
+    ComponentMapper<Sight>     mSight;
+    ComponentMapper<Path>      mPath;
+    ComponentMapper<Strength>  mStrength;
+    ComponentMapper<Agility>   mAgility;
 
-    MapSystem     map;
+    MapSystem map;
 
     StaminaSystem sStamina;
     BumpSystem    sBump;
@@ -68,9 +66,19 @@ public class ThrowSystem extends PassiveSystem
     @Wire
     MultipleGrid items;
 
+    public ThrowAction throwWeapon(final int entityId)
+    {
+        final ThrowAction t = new ThrowAction();
+
+        t.actorId = entityId;
+
+        return t;
+    }
+
     public class ThrowAction extends ActionContext
     {
-        @EntityId public int targetId = -1;
+        @EntityId
+        public int weaponId = -1;
 
         public List<Point2I> path;
 
@@ -99,6 +107,8 @@ public class ThrowSystem extends PassiveSystem
                 if (weapon == null || !weapon.canThrow)
                     continue;
 
+                weaponId = itemId;
+
                 final Position p     = mPos.get(actorId);
                 final Sight    sight = mSight.get(actorId);
 
@@ -106,7 +116,11 @@ public class ThrowSystem extends PassiveSystem
                 final IntSet creatures = obstacles.getEntities(map.getVisibleCells(p.x, p.y, sight.value));
                 final IntSet closest   = obstacles.getClosestEntities(p.x, p.y, sight.value);
                 creatures.retainAll(closest);
+
                 final int targetId = creatures.iterator().nextInt();
+
+                if (targetId < 0)
+                    return false;
 
                 final Position targetPos = mPos.get(targetId);
 
@@ -121,6 +135,9 @@ public class ThrowSystem extends PassiveSystem
 
                 // first index is the current position
                 path.remove(0);
+
+                // target position is not included
+                path.add(new Point2I(targetPos.x, targetPos.y));
 
                 delay = 1f;
                 cost = 1.5f;
@@ -137,7 +154,7 @@ public class ThrowSystem extends PassiveSystem
         public void doAction()
         {
             // something might have happened to the item..
-            if (targetId < 0)
+            if (weaponId < 0)
             {
                 log.warn("item being thrown by {} has disappeared", actorId);
                 return;
@@ -150,25 +167,25 @@ public class ThrowSystem extends PassiveSystem
                 final Inventory inventory = mInventory.get(actorId);
 
                 // we are throwing away the weapon, so we don't have it anymore
-                inventory.items.removeValue(targetId);
+                inventory.items.removeValue(weaponId);
 
                 // how long does it take the object to move one step?
                 // TODO should be based on thrower's strength and weapon characteristics, maybe
-                final float cooldown = 0.1f;
+                final float cooldown = 0.05f;
 
-                mSpeed.create(targetId).set(cooldown);
-                mPath.create(targetId).set(cooldown, path);
-                mPos.create(targetId).set(newP.x, newP.y);
+                mSpeed.create(weaponId).set(cooldown);
+                mPath.create(weaponId).set(cooldown, path);
+                mPos.create(weaponId).set(newP.x, newP.y);
 
                 // Now, it's exactly as if we were wielding the object. Later it should be more complicated,
                 // eg reduce strength proportionally to length (eg, -1 each 3 or 4 steps) and set agility to
                 // 0, maybe, so the victim's agility counts more.
-                mStrength.create(targetId).value = mStrength.get(actorId).value;
-                mAgility.create(targetId).value = mAgility.get(actorId).value;
+                mStrength.create(weaponId).value = mStrength.get(actorId).value;
+                mAgility.create(weaponId).value = mAgility.get(actorId).value;
 
                 // at this point it really happened: the weapon is flying at its new position
                 // obstacles.set(targetId, newP.x, newP.y);
-                items.add(targetId, newP.x, newP.y);
+                items.add(weaponId, newP.x, newP.y);
             }
             else
             {
@@ -183,14 +200,5 @@ public class ThrowSystem extends PassiveSystem
 
             sStamina.consume(actorId, 1.5f);
         }
-    }
-
-    public ThrowAction throwWeapon(final int entityId)
-    {
-        final ThrowAction t = new ThrowAction();
-
-        t.actorId = entityId;
-
-        return t;
     }
 }

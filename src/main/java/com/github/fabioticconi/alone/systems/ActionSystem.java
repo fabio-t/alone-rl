@@ -75,10 +75,21 @@ public class ActionSystem extends DelayedIteratingSystem
             return 0f;
         }
 
-        // whether the action succeeds or not, is immediate or delayed, etc, we need to interrupt
-        // any previously running action. Which simply means we need to remove their Action component.
-        // FIXME check if this really works when, a few lines below, mAction.create(actorId) is called.
-        mAction.remove(actorId);
+        Action a = mAction.get(actorId);
+
+        if (a != null)
+        {
+            if (a.context.canJoin(context))
+            {
+                // we are trying to do exactly the same action so we just stop here
+
+                return a.cooldown;
+            }
+            else
+            {
+                mAction.remove(actorId);
+            }
+        }
 
         final boolean tryAct = context.tryAction();
 
@@ -96,7 +107,7 @@ public class ActionSystem extends DelayedIteratingSystem
         }
         else
         {
-            final Action a = mAction.create(actorId);
+            a = mAction.create(actorId);
 
             // inside the context there's the original delay, but we copy it instead of directly using that
             // so that we can decrease without modifying the context (useful if we need to know how much
