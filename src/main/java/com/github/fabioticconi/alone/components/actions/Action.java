@@ -18,10 +18,30 @@
 
 package com.github.fabioticconi.alone.components.actions;
 
+import com.artemis.Component;
+
 /**
  * Author: Fabio Ticconi
- * Date: 30/09/17
+ * Date: 15/10/17
  */
-public class AttackAction extends DelayedAction
+public class Action extends Component
 {
+    public ActionContext context;
+    public float cooldown;
+
+    public Action()
+    {
+
+    }
+
+    public Action(final ActionContext context, final float cooldown)
+    {
+        set(context, cooldown);
+    }
+
+    public void set(final ActionContext context, final float cooldown)
+    {
+        this.context = context;
+        this.cooldown = cooldown;
+    }
 }

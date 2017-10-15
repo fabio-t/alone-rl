@@ -17,30 +17,27 @@
  */
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
-import com.github.fabioticconi.alone.components.actions.MoveAction;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Fabio Ticconi
  */
-public class MovementSystem extends DelayedIteratingSystem
+public class MovementSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
 
     ComponentMapper<Position>   mPosition;
-    ComponentMapper<MoveAction> mMove;
-    ComponentMapper<Stamina>    mStamina;
     ComponentMapper<Speed>      mSpeed;
     ComponentMapper<Obstacle>   mObstacle;
 
@@ -53,123 +50,104 @@ public class MovementSystem extends DelayedIteratingSystem
     @Wire
     MultipleGrid items;
 
-    public MovementSystem()
+    public class MoveAction extends ActionContext
     {
-        super(Aspect.all(Position.class, MoveAction.class).exclude(Dead.class));
-    }
+        public Side direction = Side.HERE;
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
-    {
-        return mMove.get(entityId).cooldown;
-    }
-
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
-        mMove.get(entityId).cooldown -= accumulatedDelta;
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-        final Position   p = mPosition.get(entityId);
-        final MoveAction m = mMove.get(entityId);
-
-        mMove.remove(entityId);
-
-        final int newX = p.x + m.direction.x;
-        final int newY = p.y + m.direction.y;
-
-        if (!mObstacle.has(entityId))
+        @Override
+        public boolean tryAction()
         {
-            // it's a moving item
-            items.move(entityId, p.x, p.y, newX, newY);
+            if (direction.equals(Side.HERE))
+                return false;
 
-            p.x = newX;
-            p.y = newY;
+            final Position p     = mPosition.get(actorId);
+            final Speed    speed = mSpeed.get(actorId);
 
-            // it doesn't have stamina
-        }
-        else if (sMap.isFree(newX, newY))
-        {
-            final int id = grid.move(p.x, p.y, newX, newY);
+            final int newX = p.x + direction.x;
+            final int newY = p.y + direction.y;
 
-            if (id >= 0)
+            if (!sMap.isFree(newX, newY))
+                return false;
+
+            final Cell cell = sMap.get(newX, newY);
+
+            switch (cell)
             {
-                log.error("entity {} was at the new position {}", id, p);
+                case HILL:
+                case HILL_GRASS:
+                    cost = 1.25f;
 
-                return;
+                    break;
+
+                case MOUNTAIN:
+                    cost = 1.5f;
+                    break;
+
+                case HIGH_MOUNTAIN:
+                case WATER:
+                    cost = 2f;
+                    break;
+
+                case DEEP_WATER:
+                    cost = 3f;
+                    break;
+
+                default:
+                    cost = 1f;
             }
 
-            p.x = newX;
-            p.y = newY;
+            delay = speed.value * cost;
 
-            sStamina.consume(entityId, m.cost);
+            return true;
+        }
+
+        @Override
+        public void doAction()
+        {
+            final Position   p = mPosition.get(actorId);
+
+            final int newX = p.x + direction.x;
+            final int newY = p.y + direction.y;
+
+            if (!mObstacle.has(actorId))
+            {
+                // it's a moving item
+                items.move(actorId, p.x, p.y, newX, newY);
+
+                p.x = newX;
+                p.y = newY;
+
+                // it doesn't have stamina
+            }
+            else if (sMap.isFree(newX, newY))
+            {
+                final int id = grid.move(p.x, p.y, newX, newY);
+
+                if (id >= 0)
+                {
+                    log.error("entity {} was at the new position {}", id, p);
+
+                    return;
+                }
+
+                p.x = newX;
+                p.y = newY;
+
+                sStamina.consume(actorId, cost);
+            }
         }
     }
 
-    // Public API
-
-    public float moveTo(final int entityId, final Side direction)
+    public MoveAction move(final int entityId, final Side direction)
     {
         if (direction.equals(Side.HERE))
-            return 0f;
+            return null;
 
-        final Position p     = mPosition.get(entityId);
-        final Speed    speed = mSpeed.get(entityId);
+        final MoveAction a = new MoveAction();
 
-        final int newX = p.x + direction.x;
-        final int newY = p.y + direction.y;
+        a.actorId = entityId;
+        a.direction = direction;
 
-        if (!sMap.isFree(newX, newY))
-        {
-            // clear movement completely, even if we were going in another direction
-            mMove.remove(entityId);
-
-            return 0f;
-        }
-
-        // now we can actually move (or update the movement)
-
-        final MoveAction m = mMove.create(entityId);
-
-        // if going in the same direction, don't increase speed
-        if (m.direction == direction)
-            return m.cooldown;
-
-        final Cell cell = sMap.get(newX, newY);
-
-        switch (cell)
-        {
-            case HILL:
-            case HILL_GRASS:
-                m.cost = 1.25f;
-
-                break;
-
-            case MOUNTAIN:
-                m.cost = 1.5f;
-                break;
-
-            case HIGH_MOUNTAIN:
-            case WATER:
-                m.cost = 2f;
-                break;
-
-            case DEEP_WATER:
-                m.cost = 3f;
-                break;
-
-            default:
-                m.cost = 1f;
-        }
-
-        m.cooldown = speed.value * m.cost;
-        m.direction = direction;
-
-        offerDelay(m.cooldown);
-
-        return m.cooldown;
+        return a;
     }
 }

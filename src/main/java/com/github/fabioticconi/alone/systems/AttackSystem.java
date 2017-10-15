@@ -20,17 +20,19 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Health;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
-import com.github.fabioticconi.alone.components.actions.AttackAction;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.utils.Util;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +42,10 @@ import java.util.Random;
  * Author: Fabio Ticconi
  * Date: 28/09/17
  */
-public class AttackSystem extends DelayedIteratingSystem
+public class AttackSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(AttackSystem.class);
 
-    ComponentMapper<AttackAction> mAttack;
     ComponentMapper<Strength>     mStrength;
     ComponentMapper<Agility>      mAgility;
     ComponentMapper<Health>       mHealth;
@@ -57,94 +58,82 @@ public class AttackSystem extends DelayedIteratingSystem
 
     StaminaSystem sStamina;
 
-    public AttackSystem()
+    public class AttackAction extends ActionContext
     {
-        super(Aspect.all(Position.class, AttackAction.class).exclude(Dead.class));
-    }
+        @EntityId public int targetId = -1;
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
-    {
-        return mAttack.get(entityId).cooldown;
-    }
-
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
-        mAttack.get(entityId).cooldown -= accumulatedDelta;
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-        final AttackAction attack = mAttack.get(entityId);
-
-        // whatever the outcome, this action must be removed
-        mAttack.remove(entityId);
-
-        final int targetId = attack.targetId;
-
-        if (targetId < 0)
+        @Override
+        public boolean tryAction()
         {
-            log.info("target does not exist");
-            return;
+            if (targetId < 0)
+            {
+                log.info("target does not exist");
+                return false;
+            }
+
+            // FIXME check the target is close by?
+
+            final float speed = mSpeed.get(actorId).value;
+
+            // FIXME maybe dependent on strength and/or weight of weapon?
+            cost = 1.5f;
+
+            delay = speed * cost;
+
+            return true;
         }
 
-        final Strength cStrength = mStrength.get(entityId);
-        final Agility  cAgility  = mAgility.get(entityId);
-
-        final Agility tAgility = mAgility.get(targetId);
-        final Health  tHealth  = mHealth.get(targetId);
-        final Skin    tSkin    = mSkin.get(targetId);
-
-        // whether it hits or not, both attacker and defender get a penalty to their stamina
-        // (fixed, small cost for the defender)
-        final float cost = attack.cost;
-        sStamina.consume(entityId, cost);
-        sStamina.consume(entityId, 0.25f);
-
-        final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
-
-        if (r.nextFloat() < toHit)
+        @Override
+        public void doAction()
         {
-            final float damage = Math.max(((cStrength.value + 2) - tSkin.value), 1f);
-
-            tHealth.value -= damage;
-
-            log.info("{} hits {} for D={} (H={})", entityId, targetId, damage, tHealth.value);
-
-            if (tHealth.value <= 0)
+            if (targetId < 0)
             {
-                log.info("{} is killed by {}", targetId, entityId);
+                log.info("target does not exist anymore");
+                return;
+            }
 
-                mDead.create(targetId);
+            // FIXME check the target is still close by?
+
+            final Strength cStrength = mStrength.get(actorId);
+            final Agility  cAgility  = mAgility.get(actorId);
+
+            final Agility tAgility = mAgility.get(targetId);
+            final Health  tHealth  = mHealth.get(targetId);
+            final Skin    tSkin    = mSkin.get(targetId);
+
+            // whether it hits or not, both attacker and defender get a penalty to their stamina
+            // (fixed, small cost for the defender)
+            sStamina.consume(actorId, cost);
+            sStamina.consume(targetId, 0.25f);
+
+            final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f,
+                                                 0.05f, 0.95f);
+
+            if (r.nextFloat() < toHit)
+            {
+                final float damage = Math.max(((cStrength.value + 2) - tSkin.value), 1f);
+
+                tHealth.value -= damage;
+
+                log.info("{} hits {} for D={} (H={})", actorId, targetId, damage, tHealth.value);
+
+                if (tHealth.value <= 0)
+                {
+                    log.info("{} is killed by {}", targetId, actorId);
+
+                    mDead.create(targetId);
+                }
             }
         }
     }
 
-    public float attack(final int entityId, final int targetId)
+    public AttackAction attack(final int entityId, final int targetId)
     {
-        final Speed cSpeed = mSpeed.get(entityId);
-        final float speed  = cSpeed.value;
+        final AttackAction a = new AttackAction();
 
-        final AttackAction attack = mAttack.create(entityId);
+        a.actorId = entityId;
+        a.targetId = targetId;
 
-        if (attack.targetId == targetId)
-        {
-            // if already attacking same target, don't reset the timer
-            return attack.cooldown;
-        }
-
-        // it's harder than walking
-
-        final float cost = 1.5f;
-
-        final float cooldown = speed * cost;
-
-        attack.set(cooldown, targetId, cost);
-
-        offerDelay(cooldown);
-
-        return cooldown;
+        return a;
     }
 }

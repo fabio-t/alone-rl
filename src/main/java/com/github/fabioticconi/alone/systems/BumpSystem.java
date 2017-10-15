@@ -18,17 +18,16 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.PushSystem;
 import com.github.fabioticconi.alone.components.*;
-import com.github.fabioticconi.alone.components.actions.BumpAction;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 import rlforj.math.Point2I;
 
 import java.util.List;
@@ -37,51 +36,26 @@ import java.util.List;
  * Author: Fabio Ticconi
  * Date: 11/10/17
  */
-public class BumpSystem extends DelayedIteratingSystem
+public class BumpSystem extends PassiveSystem
 {
-    ComponentMapper<BumpAction> mBump;
     ComponentMapper<Health>     mHealth;
     ComponentMapper<Tree>       mTree;
     ComponentMapper<Pushable>   mPushable;
+    ComponentMapper<Crushable>  mCrushable;
     ComponentMapper<Position>   mPos;
     ComponentMapper<Player>     mPlayer;
 
     MapSystem map;
 
+    ActionSystem   sAction;
     AttackSystem   sAttack;
     TreeSystem     sTree;
     PushSystem     sPush;
+    CrushSystem    sCrush;
     MovementSystem sMove;
 
     @Wire
     SingleGrid grid;
-
-    public BumpSystem()
-    {
-        super(Aspect.all(BumpAction.class));
-    }
-
-    @Override
-    protected float getRemainingDelay(final int entityId)
-    {
-        return mBump.get(entityId).cooldown;
-    }
-
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
-        mBump.get(entityId).cooldown -= accumulatedDelta;
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-        // TODO: actually run the action?
-
-        // FIXME: something to remember: if STARTING an action changed state, we cannot roll back
-        // in case this bump action is interrupted.
-        // (incidentally, we need interrupting behaviour)
-    }
 
     public float bumpAction(final int entityId, final Side direction)
     {
@@ -93,33 +67,38 @@ public class BumpSystem extends DelayedIteratingSystem
         final int newX = p.x + direction.x;
         final int newY = p.y + direction.y;
 
-        if (map.isFree(newX, newY))
-        {
-            return sMove.moveTo(entityId, direction);
-        }
+        if (!map.contains(newX, newY))
+            return 0f;
+
+        ActionContext c = null;
 
         final int targetId = grid.get(newX, newY);
 
         if (targetId < 0)
         {
-            // there's no creature/wall but the cell itself is inaccessible
-            return 0f;
+            c = sMove.move(entityId, direction);
+            sAction.act(c);
+            return c.delay;
         }
 
         if (mPlayer.has(entityId) && mTree.has(targetId))
         {
-            return sTree.cut(entityId, targetId);
+            c = sTree.cut(entityId, targetId);
         }
         else if (mPlayer.has(entityId) && mPushable.has(targetId))
         {
-            return sPush.push(entityId, targetId);
+            c = sPush.push(entityId, targetId);
+        }
+        else if (mPlayer.has(entityId) && mCrushable.has(targetId))
+        {
+            c = sCrush.crush(entityId, targetId);
         }
         else if (mHealth.has(targetId))
         {
-            return sAttack.attack(entityId, targetId);
+            c = sAttack.attack(entityId, targetId);
         }
 
-        return 0f;
+        return sAction.act(c);
     }
 
     public float bumpAction(final int entityId, final Position target)

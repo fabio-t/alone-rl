@@ -15,30 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package com.github.fabioticconi.alone.components.actions;
 
-import com.github.fabioticconi.alone.constants.Side;
+import com.artemis.annotations.EntityId;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 15/10/17
  */
-public class MoveAction extends DelayedAction
+public abstract class ActionContext
 {
-    public Side direction;
+    @EntityId public int actorId = -1;
 
-    public MoveAction()
+    public float cost;
+    public float delay;
+
+    public ActionContext()
     {
-        set(0f, Side.HERE, 0f);
+
     }
 
-    public MoveAction(final float cooldown, final Side direction, final float cost)
+    public ActionContext set(final int actorId, final float cost, final float delay)
     {
-        set(cooldown, direction, cost);
+        this.actorId = actorId;
+        this.cost = cost;
+        this.delay = delay;
+
+        return this;
     }
 
-    public void set(final float cooldown, final Side direction, final float cost)
+    public ActionContext set(final int actorId, final float cost)
     {
-        set(cooldown, -1, cost);
-        this.direction = direction;
+        return set(actorId, cost, 0f);
     }
+
+    public ActionContext set(final int actorId)
+    {
+        return set(actorId, 0f, 0f);
+    }
+
+    public abstract boolean tryAction();
+    public abstract void doAction();
 }

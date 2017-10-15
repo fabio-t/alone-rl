@@ -22,6 +22,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -42,74 +43,98 @@ public class ItemSystem extends PassiveSystem
     @Wire
     MultipleGrid items;
 
-    /**
-     * Get the first item on the ground, if any, and return its Id.
-     *
-     * @param entityId
-     * @return
-     */
-    public int get(final int entityId)
+    public class GetAction extends ActionContext
     {
-        final Position  p = mPos.get(entityId);
-        final Inventory i = mInventory.get(entityId);
 
-        if (p == null || i == null)
+        @Override
+        public boolean tryAction()
         {
-            log.warn("{} does not have the required composition", entityId);
-
-            return -1;
+            return true;
         }
 
-        final IntSet itemsHere = items.get(p.x, p.y);
-
-        if (itemsHere.isEmpty())
-            return -1;
-
-        final int itemId = itemsHere.iterator().nextInt();
-
-        if (itemId < 0)
+        @Override
+        public void doAction()
         {
-            log.warn("position {} has a item with Id=", p, itemId);
+            final Position  p = mPos.get(actorId);
+            final Inventory i = mInventory.get(actorId);
 
-            return -1;
+            if (p == null || i == null)
+            {
+                log.warn("{} does not have the required composition", actorId);
+
+                return;
+            }
+
+            final IntSet itemsHere = items.get(p.x, p.y);
+
+            if (itemsHere.isEmpty())
+                return;
+
+            final int itemId = itemsHere.iterator().nextInt();
+
+            if (itemId < 0)
+            {
+                log.warn("position {} has a item with Id=", p, itemId);
+
+                return;
+            }
+
+            mPos.remove(itemId);
+
+            items.del(itemId, p.x, p.y);
+            i.items.add(itemId);
         }
-
-        mPos.remove(itemId);
-
-        items.del(itemId, p.x, p.y);
-        i.items.add(itemId);
-
-        return itemId;
     }
 
-    /**
-     * Drop the first item on the ground, if you have any, and return its Id.
-     *
-     * @param entityId
-     * @return
-     */
-    public int drop(final int entityId)
+    public class DropAction extends ActionContext
     {
-        final Position  p = mPos.get(entityId);
-        final Inventory i = mInventory.get(entityId);
 
-        if (p == null || i == null)
+        @Override
+        public boolean tryAction()
         {
-            log.warn("{} does not have the required composition", entityId);
-
-            return -1;
+            return true;
         }
 
-        if (i.items.isEmpty())
-            return -1;
+        @Override
+        public void doAction()
+        {
+            final Position  p = mPos.get(actorId);
+            final Inventory i = mInventory.get(actorId);
 
-        // remove the last element
-        final int itemId = i.items.remove(i.items.size() - 1);
+            if (p == null || i == null)
+            {
+                log.warn("{} does not have the required composition", actorId);
 
-        items.add(itemId, p.x, p.y);
+                return;
+            }
 
-        mPos.create(itemId).set(p.x, p.y);
+            if (i.items.isEmpty())
+                return;
 
-        return itemId;
+            // remove the last element
+            final int itemId = i.items.remove(i.items.size() - 1);
+
+            items.add(itemId, p.x, p.y);
+
+            mPos.create(itemId).set(p.x, p.y);
+        }
+    }
+
+    public GetAction get(final int entityId)
+    {
+        final GetAction a = new GetAction();
+
+        a.actorId = entityId;
+
+        return a;
+    }
+
+    public DropAction drop(final int entityId)
+    {
+        final DropAction a = new DropAction();
+
+        a.actorId = entityId;
+
+        return a;
     }
 }

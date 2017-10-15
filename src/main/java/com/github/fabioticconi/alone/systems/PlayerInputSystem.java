@@ -35,9 +35,9 @@ public class PlayerInputSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(PlayerInputSystem.class);
 
-    ComponentMapper<Speed>   mSpeed;
     ComponentMapper<Stamina> mStamina;
 
+    ActionSystem sAction;
     BumpSystem   sBump;
     ItemSystem   sItems;
     HungerSystem sHunger;
@@ -51,8 +51,6 @@ public class PlayerInputSystem extends PassiveSystem
         final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Stamina stamina = mStamina.get(pID);
-
-        final float speed = mSpeed.get(pID).value;
 
         if (keys.get(KeyEvent.VK_UP))
         {
@@ -141,20 +139,14 @@ public class PlayerInputSystem extends PassiveSystem
             // no combined key-presses like for movement, so we make sure to clear it
             keys.clear(KeyEvent.VK_G);
 
-            if (sItems.get(pID) < 0)
-                return 0f;
-            else
-                return 0.1f; // very small fixed "cost"
+            return sAction.act(sItems.get(pID));
         }
         else if (keys.get(KeyEvent.VK_D))
         {
             // no combined key-presses like for movement, so we make sure to clear it
             keys.clear(KeyEvent.VK_D);
 
-            if (sItems.drop(pID) < 0)
-                return 0f;
-            else
-                return 0.1f; // very small fixed "cost"
+            return sAction.act(sItems.drop(pID));
         }
         else if (keys.get(KeyEvent.VK_E))
         {
@@ -166,7 +158,7 @@ public class PlayerInputSystem extends PassiveSystem
         {
             keys.clear(KeyEvent.VK_T);
 
-            return sThrow.throwSomethingAtClosestEnemy(pID);
+            return sAction.act(sThrow.throwWeapon(pID));
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {

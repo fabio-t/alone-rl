@@ -20,39 +20,44 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.EntityId;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.Pushable;
-import com.github.fabioticconi.alone.components.actions.PushAction;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 /**
  * Author: Fabio Ticconi
  * Date: 08/10/17
  */
-public class PushSystem extends DelayedIteratingSystem
+public class PushSystem extends PassiveSystem
 {
-    ComponentMapper<PushAction> mPush;
     ComponentMapper<Pushable>   mPushable;
 
-    public PushSystem()
+    public class PushAction extends ActionContext
     {
-        super(Aspect.all(PushAction.class));
+        @EntityId public int targetId = -1;
+
+        @Override
+        public boolean tryAction()
+        {
+            return false;
+        }
+
+        @Override
+        public void doAction()
+        {
+
+        }
     }
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
+    public PushAction push(final int entityId, final int targetId)
     {
-        return 0;
-    }
+        final PushAction p = new PushAction();
 
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
+        p.actorId = entityId;
+        p.targetId = targetId;
 
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-
+        return p;
     }
 }

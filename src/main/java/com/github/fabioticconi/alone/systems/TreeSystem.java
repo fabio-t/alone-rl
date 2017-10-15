@@ -18,16 +18,17 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
+import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
-import com.github.fabioticconi.alone.components.actions.CutAction;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
+import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Util;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +38,15 @@ import java.awt.*;
  * Author: Fabio Ticconi
  * Date: 07/10/17
  */
-public class TreeSystem extends DelayedIteratingSystem
+public class TreeSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(TreeSystem.class);
 
     ComponentMapper<Tree>      mTree;
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Weapon>    mWeapon;
-    ComponentMapper<CutAction> mCut;
     ComponentMapper<Speed>     mSpeed;
+    ComponentMapper<Strength>  mStrength;
     ComponentMapper<Position>  mPosition;
 
     StaminaSystem sStamina;
@@ -56,99 +57,85 @@ public class TreeSystem extends DelayedIteratingSystem
     @Wire
     MultipleGrid items;
 
-    public TreeSystem()
+    public class CutAction extends ActionContext
     {
-        super(Aspect.all(CutAction.class));
-    }
+        @EntityId public int treeId = -1;
+        @EntityId public int axeId = -1;
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
-    {
-        return mCut.get(entityId).cooldown;
-    }
-
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
-        mCut.get(entityId).cooldown -= accumulatedDelta;
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-        final CutAction cut = mCut.get(entityId);
-
-        // whatever the outcome, we remove the component
-        mCut.remove(entityId);
-
-        final int targetId = cut.targetId;
-
-        // something hijacked us and cut the tree beforehand, maybe
-        if (targetId < 0 || !mTree.has(targetId))
-            return;
-
-        final Position p = mPosition.get(targetId);
-
-        // from a tree we get a trunk and two branches
-        obstacles.del(p.x, p.y);
-        world.delete(targetId);
-
-        items.add(makeTrunk(p.x, p.y), p.x, p.y);
-        items.add(makeBranch(p.x, p.y), p.x, p.y);
-        items.add(makeBranch(p.x, p.y), p.x, p.y);
-
-        // consume a fixed amount of stamina
-        sStamina.consume(entityId, cut.cost);
-    }
-
-    public float cut(final int entityId, final int treeId)
-    {
-        if (treeId < 0 || !mTree.has(treeId))
-            return 0f;
-
-        final Inventory items = mInventory.get(entityId);
-
-        if (items == null)
-            return 0f;
-
-        final int[] data = items.items.getData();
-        for (int i = 0; i < items.items.size(); i++)
+        @Override
+        public boolean tryAction()
         {
-            final int itemId = data[i];
+            if (treeId < 0 || !mTree.has(treeId))
+                return false;
 
-            if (itemId < 0)
+            final Inventory items = mInventory.get(actorId);
+
+            if (items == null)
+                return false;
+
+            final int[] data = items.items.getData();
+            for (int i = 0; i < items.items.size(); i++)
             {
-                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+                final int itemId = data[i];
 
-                continue;
+                if (itemId < 0)
+                {
+                    // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+
+                    continue;
+                }
+
+                final Weapon weapon = mWeapon.get(itemId);
+
+                // need a slashing weapon to cut down the tree
+                if (weapon == null || !weapon.damageType.equals(Weapon.Type.SLASH))
+                    continue;
+
+                axeId = itemId;
+
+                // FIXME further adjust delay and cost using the axe power (in this way, cutting down a tree
+                // with a cutting knife will be possible but long and hard, while using a strong axe will be
+                // quick and easy
+                delay = mSpeed.get(actorId).value;
+                cost = delay / (mStrength.get(actorId).value + 3f);
+
+                return true;
             }
 
-            final Weapon weapon = mWeapon.get(itemId);
+            log.info("{} cannot startCut down tree {}: no suitable weapon", actorId, treeId);
 
-            // need a slashing weapon to cut down the tree
-            if (weapon == null || !weapon.damageType.equals(Weapon.Type.SLASH))
-                continue;
-
-            final CutAction cut = mCut.create(entityId);
-
-            if (cut.targetId == itemId)
-            {
-                // we are already cutting down that tree, don't reset timer
-                return cut.cooldown;
-            }
-
-            final float speed = mSpeed.get(entityId).value;
-
-            cut.set(speed, itemId, 1.5f);
-
-            offerDelay(speed);
-
-            return speed;
+            return false;
         }
 
-        log.info("{} cannot cut down tree {}: no suitable weapon", entityId, treeId);
+        public void doAction()
+        {
+            // something hijacked us and cut the tree beforehand, maybe
+            if (treeId < 0 || !mTree.has(treeId))
+                return;
 
-        return 0f;
+            final Position p = mPosition.get(treeId);
+
+            // from a tree we get a trunk and two branches
+            obstacles.del(p.x, p.y);
+            world.delete(treeId);
+
+            items.add(makeTrunk(p.x, p.y), p.x, p.y);
+            items.add(makeBranch(p.x, p.y), p.x, p.y);
+            items.add(makeBranch(p.x, p.y), p.x, p.y);
+
+            // consume a fixed amount of stamina
+            sStamina.consume(actorId, cost);
+        }
+    }
+
+    public CutAction cut(final int entityId, final int treeId)
+    {
+        final CutAction c = new CutAction();
+
+        c.actorId = entityId;
+        c.treeId = treeId;
+
+        return c;
     }
 
     public int makeTree(final int x, final int y)

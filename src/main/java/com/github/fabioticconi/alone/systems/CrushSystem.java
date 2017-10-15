@@ -18,52 +18,45 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
-import com.artemis.systems.DelayedIteratingSystem;
+import com.artemis.annotations.EntityId;
 import com.github.fabioticconi.alone.components.Crushable;
-import com.github.fabioticconi.alone.components.actions.CrushAction;
-import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.components.actions.ActionContext;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 /**
  * Author: Fabio Ticconi
  * Date: 07/10/17
  */
-public class CrushSystem extends DelayedIteratingSystem
+public class CrushSystem extends PassiveSystem
 {
-    ComponentMapper<CrushAction> mCrush;
-    ComponentMapper<Crushable>   mCrushable;
+    ComponentMapper<Crushable> mCrushable;
 
-    @Wire
-    SingleGrid obstacles;
-
-    public CrushSystem()
+    public class CrushAction extends ActionContext
     {
-        super(Aspect.all(CrushAction.class));
+        @EntityId
+        public int targetId = -1;
+
+        @Override
+        public boolean tryAction()
+        {
+            return false;
+        }
+
+        @Override
+        public void doAction()
+        {
+
+        }
     }
 
-    @Override
-    protected float getRemainingDelay(final int entityId)
+    public CrushAction crush(final int entityId, final int targetId)
     {
-        return 0;
-    }
+        final CrushAction c = new CrushAction();
 
-    @Override
-    protected void processDelta(final int entityId, final float accumulatedDelta)
-    {
+        c.actorId = entityId;
+        c.targetId = targetId;
 
-    }
-
-    @Override
-    protected void processExpired(final int entityId)
-    {
-
-    }
-
-    public void crush(final int entityId, final Side direction)
-    {
-
+        return c;
     }
 }

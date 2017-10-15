@@ -76,18 +76,19 @@ public class Main extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        // first things to be loaded
-        config.setSystem(EntityLinkManager.class);
+        // first thing to be loaded
         config.setSystem(MapSystem.class);
         // POJOs
         config.register(new SingleGrid());
         config.register(new MultipleGrid());
         config.register(new Random());
         // passive systems, one-timers, managers etc
-        config.setSystem(BootstrapSystem.class); // once
+        config.setSystem(EntityLinkManager.class);
+        config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerManager.class);
         config.setSystem(GroupSystem.class);
         config.setSystem(WorldSerializationManager.class);
+        config.setSystem(ActionSystem.class);
         config.setSystem(input);
         config.setSystem(render);
         // actual game logic
@@ -136,7 +137,7 @@ public class Main extends JFrame implements KeyListener
         long previousTime = System.nanoTime();
         long currentTime;
 
-        long lag = 0l;
+        long lag = 0L;
         long elapsed;
 
         // FIXME: without this the first rendering happens before the first process
