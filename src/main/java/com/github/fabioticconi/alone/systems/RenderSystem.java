@@ -66,8 +66,10 @@ public class RenderSystem extends PassiveSystem
         final int xmax = terminal.getWidthInCharacters();
         final int ymax = terminal.getHeightInCharacters();
 
+        final int panelSize = 8;
+
         final int halfcols = xmax / 2;
-        final int halfrows = ymax / 2;
+        final int halfrows = (ymax - panelSize) / 2;
 
         int posX;
         int posY;
@@ -162,42 +164,51 @@ public class RenderSystem extends PassiveSystem
             }
         }
 
+        // title:
+        terminal.writeCenter("ALONE", 1);
+
         final Hunger  hunger  = mHunger.get(pID);
         final Health  health  = mHealth.get(pID);
         final Stamina stamina = mStamina.get(pID);
 
-        // hunger bar
-        terminal.write('[', 0, 0, Color.ORANGE.darker());
         int x;
-        for (x = 1; x < 11; x++)
-        {
-            if (x <= hunger.value * 10f / hunger.maxValue)
-                terminal.write('=', x, 0, Color.ORANGE.darker());
-            else
-                terminal.write(' ', x, 0, Color.ORANGE.darker());
-        }
-        terminal.write(']', x, 0, Color.ORANGE.darker());
+
+        final int yoff = 3;
 
         // health bar
-        terminal.write('[', 0, 1, Color.RED);
+        terminal.write('[', 0, yoff, Color.RED);
         for (x = 1; x < 11; x++)
         {
             if (x <= health.value * 10f / health.maxValue)
-                terminal.write('=', x, 1, Color.RED);
+                terminal.write('=', x, yoff, Color.RED);
             else
-                terminal.write(' ', x, 1, Color.RED);
+                terminal.write(' ', x, yoff, Color.RED);
         }
-        terminal.write(']', x, 1, Color.RED);
+        terminal.write(']', x, yoff, Color.RED);
 
         // stamina bar
-        terminal.write('[', 0, 2, Color.YELLOW);
+        terminal.write('[', 0, yoff+1, Color.YELLOW);
         for (x = 1; x < 11; x++)
         {
             if (x <= stamina.value * 10f / stamina.maxValue)
-                terminal.write('=', x, 2, Color.YELLOW);
+                terminal.write('=', x, yoff+1, Color.YELLOW);
             else
-                terminal.write(' ', x, 2, Color.YELLOW);
+                terminal.write(' ', x, yoff+1, Color.YELLOW);
         }
-        terminal.write(']', x, 2, Color.YELLOW);
+        terminal.write(']', x, yoff+1, Color.YELLOW);
+
+        // hunger bar
+        terminal.write(']', xmax-1, yoff, Color.ORANGE.darker());
+        for (x = 1; x < 11; x++)
+        {
+            if (x <= hunger.value * 10f / hunger.maxValue)
+                terminal.write('=', xmax-x-1, yoff, Color.ORANGE.darker());
+            else
+                terminal.write(' ', xmax-x-1, yoff, Color.ORANGE.darker());
+        }
+        terminal.write('[', xmax-x-1, yoff, Color.ORANGE.darker());
+
+        // small panel
+        terminal.clear(' ', 0, ymax-panelSize, xmax, panelSize, Color.WHITE, Color.BLACK);
     }
 }

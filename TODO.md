@@ -1,5 +1,5 @@
   
-- complete transition to data-driven entity factory (not a single entity component should be hard-coded in bootstrap..
+- complete transition to data-driven entity factory (not a single entity should be hard-coded in bootstrap..
   ideally)
   
 - rlforj must be changed so that instead of isObstacle, it has two functions: blocksLight and blocksStep.
@@ -18,9 +18,10 @@
 
 - Must handle "linked entities" better using LinkListener. It's probably not needed for items, but for creatures, trees
   and boulders (eg, entities that can be destroyed) yes. When fire is implemented, items too should be handled.
-  The approach is simple: inside, eg, AttackSystem, get hold of the EntityLinkManager instance and register
-  the Attack component (or BumpAction, when the migration is done) with a LinkAdapter instance overriding the onTargetDead
-  function. This should suffice, so that the action is interrupted if the target dies.
+  The approach is simple: inside the ActionSystem get hold of the EntityLinkManager instance and register
+  the Action component with a LinkAdapter instance overriding the onTargetDead function.
+  This means that when a target dies, the corresponding action is interrupted. Right now the relevant field is
+  set to -1 but that's it.
 
 - make the map-type thresholds loadable from a yaml file.
 
