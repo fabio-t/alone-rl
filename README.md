@@ -10,6 +10,21 @@ for as long as the player action runs. Pure real-time gameplay can be toggled.
 **NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far.
 Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
 
+# Controls
+
+* Move using the directional arrows (hold two together for diagonal movement, eg UP+RIGHT to go north-east)
+
+* Move into creatures to attack them (message/combat log coming soon), trees to cut them, boulders to crush them.
+  For the last two you need proper tools (a cutting weapon for cutting three, not craftable yet, and a blunt weapon
+  for crushing boulders: you can use a stone for that)
+  
+* Type **g** to get the first item on the ground you are currently positioned on (stones, sticks, corpses, tree trunks..
+  there's no inventory limit for now).
+  Type **d** to drop the oldest item in your inventory. Inventory screen upcoming..
+  
+* Type **t** to throw a throwable weapon (only stones, for now). The targeting system is just a stub for now: it simply
+  targets the closest creature, tree or boulders in your view. Soon there'll be proper targeting.
+
 # Features
 
 ## Field of view
@@ -51,17 +66,11 @@ simple bark protection, a shelter, maybe rudimentary pit traps and extraction of
 
 # Screenshots
 
-## Grassy Hill
+![alt tag](screenshots/screenshot.png)
 
-Plenty of trees and animals, some fallen trunks or branches, a corpse in red. Some stones are visible, too (they can be
-used as weapons, or thrown).
+Plenty of trees and animals on the grassy hill, one fall tree trunk, a corpse in red.
+One stone is visible, too (they can be used as weapons, or thrown).
 
-![alt tag](screenshots/grassy_hill.png)
-
-## High Hill
-
-Higher up there's no proper grass, but it's still not mountain. Trees are sparse, some big boulders are visible (these
-are proper obstacles like trees: they block both light and movement). Moving in higher terrain consumes more stamina.
-
-![alt tag](screenshots/hill.png)
+Higher up there's no proper grass, but it's still not mountain. Trees are sparse here, but some big boulders are visible (these
+are proper obstacles like trees: they block both light and movement).
 

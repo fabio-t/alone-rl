@@ -99,7 +99,6 @@ public class BootstrapSystem extends BaseSystem
         grid.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
-        // edit.create(Speed.class).value = 0f; // FIXME to remove later, only for debug
         edit.create(Obstacle.class);
         edit.create(Inventory.class);
 
@@ -436,7 +435,7 @@ public class BootstrapSystem extends BaseSystem
         // Secondary Attributes
         final int size = Math.round((con - agi) / 2f);
         edit.create(Size.class).set(size);
-        edit.create(Stamina.class).set((5 + str + con) * 10);
+        edit.create(Stamina.class).set((5 + str + con) * 20);
         edit.create(Speed.class).set((con - str - agi + 6) / 12f);
         edit.create(Health.class).set((con + 3) * 10);
 

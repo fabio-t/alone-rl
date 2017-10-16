@@ -90,21 +90,21 @@ public class MovementSystem extends PassiveSystem
             {
                 case HILL:
                 case HILL_GRASS:
-                    cost = 1.25f;
+                    cost = 1.5f;
 
                     break;
 
                 case MOUNTAIN:
-                    cost = 1.5f;
+                    cost = 2f;
                     break;
 
                 case HIGH_MOUNTAIN:
                 case WATER:
-                    cost = 2f;
+                    cost = 3f;
                     break;
 
                 case DEEP_WATER:
-                    cost = 3f;
+                    cost = 4f;
                     break;
 
                 default:

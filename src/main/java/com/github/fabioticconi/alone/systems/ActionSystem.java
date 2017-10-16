@@ -21,6 +21,7 @@ package com.github.fabioticconi.alone.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.DelayedIteratingSystem;
+import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.actions.Action;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 
@@ -34,7 +35,7 @@ public class ActionSystem extends DelayedIteratingSystem
 
     public ActionSystem()
     {
-        super(Aspect.all(Action.class));
+        super(Aspect.all(Action.class).exclude(Dead.class));
     }
 
     @Override

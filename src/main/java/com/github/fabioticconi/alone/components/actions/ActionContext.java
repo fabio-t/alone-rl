@@ -18,13 +18,14 @@
 
 package com.github.fabioticconi.alone.components.actions;
 
+import com.artemis.Component;
 import com.artemis.annotations.EntityId;
 
 /**
  * Author: Fabio Ticconi
  * Date: 15/10/17
  */
-public abstract class ActionContext
+public abstract class ActionContext extends Component
 {
     @EntityId
     public int actorId = -1;

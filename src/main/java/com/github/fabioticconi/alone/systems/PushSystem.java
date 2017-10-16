@@ -58,5 +58,11 @@ public class PushSystem extends PassiveSystem
         {
 
         }
+
+        @Override
+        public boolean equals(final Object o)
+        {
+            return super.equals(o) && targetId == ((PushAction) o).targetId;
+        }
     }
 }

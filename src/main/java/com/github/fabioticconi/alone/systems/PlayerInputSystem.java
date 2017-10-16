@@ -22,6 +22,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
+import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Stamina;
 import com.github.fabioticconi.alone.constants.Side;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -35,6 +36,7 @@ public class PlayerInputSystem extends PassiveSystem
     static final Logger log = LoggerFactory.getLogger(PlayerInputSystem.class);
 
     ComponentMapper<Stamina> mStamina;
+    ComponentMapper<Speed>   mSpeed;
 
     ActionSystem sAction;
     BumpSystem   sBump;
@@ -43,6 +45,9 @@ public class PlayerInputSystem extends PassiveSystem
     ThrowSystem  sThrow;
 
     PlayerManager pManager;
+
+    // FIXME only for debug..
+    float savedSpeed;
 
     public float handleKeys(final BitVector keys)
     {
@@ -160,6 +165,18 @@ public class PlayerInputSystem extends PassiveSystem
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
             Main.keepRunning = false;
+        }
+        else if (keys.get(KeyEvent.VK_F1))
+        {
+            keys.clear(KeyEvent.VK_F1);
+            if (savedSpeed == 0f)
+                savedSpeed = mSpeed.get(playerId).value;
+            mSpeed.get(playerId).value = 0f; // FIXME to remove later, only for debug
+        }
+        else if (keys.get(KeyEvent.VK_F2))
+        {
+            keys.clear(KeyEvent.VK_F2);
+            mSpeed.create(playerId).value = savedSpeed; // FIXME to remove later, only for debug
         }
         else if (keys.get(KeyEvent.VK_SPACE))
         {

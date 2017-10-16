@@ -67,6 +67,9 @@ public class StaminaSystem extends IntervalIteratingSystem
 
         stamina.value -= consumed;
 
+        if (stamina.value <= 0f)
+            stamina.exhausted = true;
+
         return consumed;
     }
 }
