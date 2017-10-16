@@ -24,6 +24,10 @@ Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelit
   
 * Type **t** to throw a throwable weapon (only stones, for now). The targeting system is just a stub for now: it simply
   targets the closest creature, tree or boulders in your view. Soon there'll be proper targeting.
+  
+* Type **e** to eat if there's a corpse in the cell you are on or in any of the 8 neighbouring cells. If you got a corpse
+  from the ground, you need to drop it before you can eat it. Quantities have to be optimised but generally even a rabbit
+  corpse should be enough to empty your hunger bar.
 
 # Features
 
