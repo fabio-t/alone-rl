@@ -74,3 +74,10 @@ One stone is visible, too (they can be used as weapons, or thrown).
 Higher up there's no proper grass, but it's still not mountain. Trees are sparse here, but some big boulders are visible (these
 are proper obstacles like trees: they block both light and movement).
 
+![alt tag](map_scripts/map.png)
+
+Thanks to the map generator from [Red Blob Games](https://www.redblobgames.com/), I produced the map above. The one in
+the game is fundamentally based on this (eg, it uses this heightmap) but it then simplifies the terrains into less
+groups - so my map is much less coloured and it has less water mass.
+
+The rivers and lakes are also currently not present. The map is 2048x2048 pixels/cells, so it's pretty big.
