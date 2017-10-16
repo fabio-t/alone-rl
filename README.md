@@ -42,7 +42,7 @@ will block movement but not light, so that you will be able to see behind most a
 
 ## Simple Ecology
 
-Creatures don't "pop" or "spawn", they don't just appear when needed but they keeps going even when the
+Creatures don't "pop" or "spawn", they don't just appear when needed but they keep going even when the
 player is not looking.
 
 This is the main difference between Alone and most roguelikes/roguelites. It makes it a simulation game, to an extent.
