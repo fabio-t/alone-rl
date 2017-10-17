@@ -1,7 +1,4 @@
   
-- complete transition to data-driven entity factory (not a single entity should be hard-coded in bootstrap..
-  ideally)
-  
 - rlforj must be changed so that instead of isObstacle, it has two functions: blocksLight and blocksStep.
   In this way we can have FOV algorithm only using blocksLight, pathfinding algorithms only using
   blocksStep, and allow the use of both for special cases. Generally, creatures will block step while trees/walls
@@ -23,5 +20,17 @@
   This means that when a target dies, the corresponding action is interrupted. Right now the relevant field is
   set to -1 but that's it.
 
-- make the map-type thresholds loadable from a yaml file.
+- Data-driven via YAML:
+  - Map thresholds for terrain (colours, character, elevation)
+  - Item templates
+  - Game configuration (height and width of terminal, font..)
+  - Crafting recipes
 
+- Fish behaviour: swim around, flee from any creature in the field of view making an action but completely ignore
+  still creatures, maybe eat when on shallow water and consume when on deep water?
+
+- Sneaky bug: entities within the concrete Action Contexts are not handled by EntityLinkManager apparently.
+  Or maybe it's because they haven't been added to the entity.
+  Must keep two separate components, in one storing cooldown and ComponentType of context, and the other would be
+  concrete "Context" for the specific action. Then we iterate over Action like now, then we get the specific
+  component from the ComponentType and there we can call "do action" etc.

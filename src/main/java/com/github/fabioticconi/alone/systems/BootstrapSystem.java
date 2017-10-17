@@ -84,7 +84,7 @@ public class BootstrapSystem extends BaseSystem
         // load the player's data
         try
         {
-            loadBody("data/player.yaml", edit);
+            loadBody("data/player.yml", edit);
         } catch (final IOException e)
         {
             e.printStackTrace();
@@ -119,7 +119,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("data/creatures/buffalo.yaml", edit);
+                loadBody("data/creatures/buffalo.yml", edit);
             } catch (final IOException e)
             {
                 e.printStackTrace();
@@ -158,7 +158,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("data/creatures/rabbit.yaml", edit);
+                loadBody("data/creatures/rabbit.yml", edit);
             } catch (final IOException e)
             {
                 e.printStackTrace();
@@ -195,7 +195,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("data/creatures/wolf.yaml", edit);
+                loadBody("data/creatures/wolf.yml", edit);
             } catch (final IOException e)
             {
                 e.printStackTrace();
@@ -233,7 +233,7 @@ public class BootstrapSystem extends BaseSystem
 
             try
             {
-                loadBody("data/creatures/puma.yaml", edit);
+                loadBody("data/creatures/puma.yml", edit);
             } catch (final IOException e)
             {
                 e.printStackTrace();
@@ -252,6 +252,47 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Obstacle.class);
 
             grid.set(id, x, y);
+        }
+
+        // add fish in the sea
+        for (x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final Cell cell = sMap.get(x, y);
+
+                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
+                    // (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
+                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
+                    (cell.equals(Cell.WATER) && r.nextGaussian() > 4f))
+                {
+                    if (!grid.isEmpty(x, y))
+                        continue;
+
+                    id = world.create();
+                    edit = world.edit(id);
+
+                    try
+                    {
+                        loadBody("data/creatures/fish.yml", edit);
+                    } catch (final IOException e)
+                    {
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
+
+                    final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
+                    ai.behaviours.add(world.getSystem(UnderwaterBehaviour.class));
+                    edit.add(ai);
+                    edit.create(Position.class).set(x, y);
+                    edit.create(Alertness.class).value = 0.0f;
+                    edit.create(Sprite.class).set('f', Color.CYAN.darker());
+                    // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
+                    edit.create(Obstacle.class);
+
+                    grid.set(id, x, y);
+                }
+            }
         }
 
         // add random trees
@@ -287,7 +328,7 @@ public class BootstrapSystem extends BaseSystem
                     (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
                     (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
                     (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
+                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 4f))
                 {
                     if (!grid.isEmpty(x, y))
                         continue;
@@ -428,9 +469,11 @@ public class BootstrapSystem extends BaseSystem
                 if (carnivore)
                     edit.create(Carnivore.class);
             }
+            else if (name.equals("underwater"))
+            {
+                edit.create(Underwater.class);
+            }
         }
-
-        // TODO check if neither herbivore nor carnivore? player is currently as such, for testing
 
         // Secondary Attributes
         final int size = Math.round((con - agi) / 2f);
@@ -440,6 +483,9 @@ public class BootstrapSystem extends BaseSystem
         edit.create(Health.class).set((con + 3) * 10);
 
         // Tertiary Attributes
-        edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
+
+        // a fish does not need to eat, for now
+        if (herbivore || carnivore)
+            edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
     }
 }

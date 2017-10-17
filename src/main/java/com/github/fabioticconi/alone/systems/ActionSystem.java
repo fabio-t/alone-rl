@@ -20,6 +20,7 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.ComponentType;
 import com.artemis.systems.DelayedIteratingSystem;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.actions.Action;
@@ -75,6 +76,10 @@ public class ActionSystem extends DelayedIteratingSystem
             // TODO log warning
             return 0f;
         }
+
+        ComponentType t;
+
+        world.getEntity(actorId).getComponent(Action.class);
 
         Action a = mAction.get(actorId);
 

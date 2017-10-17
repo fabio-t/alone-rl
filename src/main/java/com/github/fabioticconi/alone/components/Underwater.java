@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.github.fabioticconi.alone.behaviours;
 
-import com.artemis.Aspect;
-import com.artemis.annotations.EntityId;
-import net.mostlyoriginal.api.system.core.PassiveSystem;
+package com.github.fabioticconi.alone.components;
+
+import com.artemis.Component;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 17/10/17
  */
-public abstract class AbstractBehaviour extends PassiveSystem implements Behaviour
+public class Underwater extends Component
 {
-    @EntityId protected int entityId = -1;
-    protected Aspect aspect;
-
-    public boolean interested(final int entityId)
-    {
-        return aspect.isInterested(world.getEntity(entityId));
-    }
 }

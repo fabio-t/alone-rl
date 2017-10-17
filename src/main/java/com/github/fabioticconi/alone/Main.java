@@ -112,6 +112,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(FlockBehaviour.class);
         config.setSystem(ScavengeBehaviour.class);
         config.setSystem(WanderBehaviour.class);
+        config.setSystem(UnderwaterBehaviour.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
