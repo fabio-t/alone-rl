@@ -77,8 +77,6 @@ public class ActionSystem extends DelayedIteratingSystem
             return 0f;
         }
 
-        ComponentType t;
-
         world.getEntity(actorId).getComponent(Action.class);
 
         Action a = mAction.get(actorId);
