@@ -77,13 +77,11 @@ public class ActionSystem extends DelayedIteratingSystem
             return 0f;
         }
 
-        world.getEntity(actorId).getComponent(Action.class);
-
         Action a = mAction.get(actorId);
 
         if (a != null)
         {
-            if (a.context.canJoin(context))
+            if (a.context.equals(context))
             {
                 // we are trying to do exactly the same action so we just stop here
 
@@ -112,6 +110,8 @@ public class ActionSystem extends DelayedIteratingSystem
         else
         {
             a = mAction.create(actorId);
+
+            a.targets = context.targets;
 
             // inside the context there's the original delay, but we copy it instead of directly using that
             // so that we can decrease without modifying the context (useful if we need to know how much

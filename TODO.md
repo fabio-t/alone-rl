@@ -28,9 +28,3 @@
 
 - Fish behaviour: swim around, flee from any creature in the field of view making an action but completely ignore
   still creatures, maybe eat when on shallow water and consume when on deep water?
-
-- Sneaky bug: entities within the concrete Action Contexts are not handled by EntityLinkManager apparently.
-  Or maybe it's because they haven't been added to the entity.
-  Must keep two separate components, in one storing cooldown and ComponentType of context, and the other would be
-  concrete "Context" for the specific action. Then we iterate over Action like now, then we get the specific
-  component from the ComponentType and there we can call "do action" etc.

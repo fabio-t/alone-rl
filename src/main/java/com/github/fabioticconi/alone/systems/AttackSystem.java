@@ -60,19 +60,19 @@ public class AttackSystem extends PassiveSystem
         final AttackAction a = new AttackAction();
 
         a.actorId = entityId;
-        a.targetId = targetId;
+
+        a.targets.add(targetId);
 
         return a;
     }
 
     public class AttackAction extends ActionContext
     {
-        @EntityId
-        public int targetId = -1;
-
         @Override
         public boolean tryAction()
         {
+            final int targetId = targets.get(0);
+
             if (targetId < 0)
             {
                 log.info("target does not exist");
@@ -94,6 +94,8 @@ public class AttackSystem extends PassiveSystem
         @Override
         public void doAction()
         {
+            final int targetId = targets.get(0);
+
             if (targetId < 0)
             {
                 log.info("target does not exist anymore");
@@ -135,12 +137,6 @@ public class AttackSystem extends PassiveSystem
             {
                 log.info("{} misses {}", actorId, targetId);
             }
-        }
-
-        @Override
-        public boolean equals(final Object o)
-        {
-            return super.equals(o) && targetId == ((AttackAction) o).targetId;
         }
     }
 }

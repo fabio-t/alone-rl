@@ -65,7 +65,6 @@ public class ItemSystem extends PassiveSystem
 
     public class GetAction extends ActionContext
     {
-
         @Override
         public boolean tryAction()
         {
@@ -108,7 +107,6 @@ public class ItemSystem extends PassiveSystem
 
     public class DropAction extends ActionContext
     {
-
         @Override
         public boolean tryAction()
         {

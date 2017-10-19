@@ -18,24 +18,24 @@
 
 package com.github.fabioticconi.alone.components.actions;
 
-import com.artemis.Component;
-import com.artemis.annotations.EntityId;
+import com.artemis.utils.IntBag;
 
 /**
  * Author: Fabio Ticconi
  * Date: 15/10/17
  */
-public abstract class ActionContext extends Component
+public abstract class ActionContext
 {
-    @EntityId
     public int actorId = -1;
 
     public float cost;
     public float delay;
 
+    final public IntBag targets;
+
     public ActionContext()
     {
-
+        targets = new IntBag(3);
     }
 
     public ActionContext set(final int actorId, final float cost, final float delay)
@@ -58,7 +58,6 @@ public abstract class ActionContext extends Component
     }
 
     public abstract boolean tryAction();
-
     public abstract void doAction();
 
     @Override
@@ -71,11 +70,6 @@ public abstract class ActionContext extends Component
 
         final ActionContext that = (ActionContext) o;
 
-        return actorId == that.actorId;
-    }
-
-    public boolean canJoin(final ActionContext context)
-    {
-        return equals(context);
+        return actorId == that.actorId && targets.equals(that.targets);
     }
 }

@@ -77,9 +77,6 @@ public class ThrowSystem extends PassiveSystem
 
     public class ThrowAction extends ActionContext
     {
-        @EntityId
-        public int weaponId = -1;
-
         public List<Point2I> path;
 
         @Override
@@ -107,8 +104,6 @@ public class ThrowSystem extends PassiveSystem
                 if (weapon == null || !weapon.canThrow)
                     continue;
 
-                weaponId = itemId;
-
                 final Position p     = mPos.get(actorId);
                 final Sight    sight = mSight.get(actorId);
 
@@ -133,6 +128,9 @@ public class ThrowSystem extends PassiveSystem
                     return false;
                 }
 
+                // adding weapon
+                targets.add(itemId);
+
                 // first index is the current position
                 path.remove(0);
 
@@ -153,10 +151,12 @@ public class ThrowSystem extends PassiveSystem
         @Override
         public void doAction()
         {
+            final int weaponId = targets.get(0);
+
             // something might have happened to the item..
-            if (weaponId < 0)
+            if (weaponId < 0 || !mWeapon.has(weaponId))
             {
-                log.warn("item being thrown by {} has disappeared", actorId);
+                log.warn("item being thrown by {} is invalid: {}", actorId, weaponId);
                 return;
             }
 

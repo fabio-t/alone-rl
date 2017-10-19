@@ -60,25 +60,23 @@ public class CrushSystem extends PassiveSystem
         final CrushAction c = new CrushAction();
 
         c.actorId = entityId;
-        c.targetId = targetId;
+
+        c.targets.add(targetId);
 
         return c;
     }
 
     public class CrushAction extends ActionContext
     {
-        @EntityId
-        public int targetId = -1;
-
-        @EntityId public int hammerId = -1;
-
         @Override
         public boolean tryAction()
         {
+            final int targetId = targets.get(0);
+
             if (targetId < 0 || !mCrushable.has(targetId))
                 return false;
 
-            hammerId = sItem.getWeapon(actorId, Weapon.Type.BLUNT);
+            final int hammerId = sItem.getWeapon(actorId, Weapon.Type.BLUNT);
 
             if (hammerId < 0)
             {
@@ -86,6 +84,8 @@ public class CrushSystem extends PassiveSystem
 
                 return false;
             }
+
+            targets.add(hammerId);
 
             // FIXME further adjust delay and cost using the hammer power
             delay = mSpeed.get(actorId).value;
@@ -97,7 +97,10 @@ public class CrushSystem extends PassiveSystem
         @Override
         public void doAction()
         {
-            if (targetId < 0 || !mCrushable.has(targetId))
+            final int targetId = targets.get(0);
+            final int hammerId = targets.get(1);
+
+            if (targetId < 0 || hammerId < 0 || !mCrushable.has(targetId))
                 return;
 
             final Position p = mPosition.get(targetId);
@@ -111,17 +114,6 @@ public class CrushSystem extends PassiveSystem
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
-        }
-
-        @Override
-        public boolean equals(final Object o)
-        {
-            if (!super.equals(o))
-                return false;
-
-            final CrushAction a = (CrushAction) o;
-
-            return targetId == a.targetId && hammerId == a.hammerId;
         }
     }
 

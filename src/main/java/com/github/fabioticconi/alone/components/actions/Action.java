@@ -19,6 +19,8 @@
 package com.github.fabioticconi.alone.components.actions;
 
 import com.artemis.Component;
+import com.artemis.annotations.EntityId;
+import com.artemis.utils.IntBag;
 
 /**
  * Author: Fabio Ticconi
@@ -29,9 +31,11 @@ public class Action extends Component
     public ActionContext context;
     public float         cooldown;
 
+    @EntityId public IntBag targets;
+
     public Action()
     {
-
+        
     }
 
     public Action(final ActionContext context, final float cooldown)

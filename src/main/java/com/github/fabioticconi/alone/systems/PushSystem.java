@@ -37,16 +37,14 @@ public class PushSystem extends PassiveSystem
         final PushAction p = new PushAction();
 
         p.actorId = entityId;
-        p.targetId = targetId;
+
+        p.targets.add(targetId);
 
         return p;
     }
 
     public class PushAction extends ActionContext
     {
-        @EntityId
-        public int targetId = -1;
-
         @Override
         public boolean tryAction()
         {
@@ -57,12 +55,6 @@ public class PushSystem extends PassiveSystem
         public void doAction()
         {
 
-        }
-
-        @Override
-        public boolean equals(final Object o)
-        {
-            return super.equals(o) && targetId == ((PushAction) o).targetId;
         }
     }
 }

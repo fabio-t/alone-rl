@@ -73,7 +73,8 @@ public class HungerSystem extends IntervalIteratingSystem
         final EatAction a = new EatAction();
 
         a.actorId = entityId;
-        a.targetId = corpseId;
+
+        a.targets.add(corpseId);
 
         a.delay = 1f;
 
@@ -93,7 +94,8 @@ public class HungerSystem extends IntervalIteratingSystem
                 final EatAction a = new EatAction();
 
                 a.actorId = entityId;
-                a.targetId = foodId;
+
+                a.targets.add(foodId);
 
                 a.delay = 1f;
                 a.cost = 0.5f;
@@ -119,12 +121,11 @@ public class HungerSystem extends IntervalIteratingSystem
 
     public class EatAction extends ActionContext
     {
-        @EntityId
-        public int targetId = -1;
-
         @Override
         public boolean tryAction()
         {
+            final int targetId = targets.get(0);
+
             if (targetId < 0)
                 return false;
 
@@ -144,6 +145,8 @@ public class HungerSystem extends IntervalIteratingSystem
 
             if (h == null)
                 return;
+
+            final int targetId = targets.get(0);
 
             final Health health = mHealth.get(targetId);
 
