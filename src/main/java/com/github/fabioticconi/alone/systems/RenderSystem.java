@@ -93,17 +93,20 @@ public class RenderSystem extends PassiveSystem
                     // render terrain
                     final Cell cell = map.get(posX, posY);
                     Color      tileFg;
+                    final Color      tileBg;
 
                     if (cells.contains(key))
                     {
                         tileFg = cell.col;
+                        tileBg = cell.bg;
                     }
                     else
                     {
                         tileFg = cell.col.darker().darker().darker();
+                        tileBg = cell.bg.darker().darker().darker();
                     }
 
-                    terminal.write(cell.c, x, y, tileFg);
+                    terminal.write(cell.c, x, y, tileFg, tileBg);
 
                     if (cells.contains(key))
                     {
@@ -121,7 +124,7 @@ public class RenderSystem extends PassiveSystem
                             if (sprite == null)
                                 continue;
 
-                            terminal.write(sprite.c, x, y, sprite.col);
+                            terminal.write(sprite.c, x, y, sprite.col, tileBg);
 
                             break;
                         }
@@ -153,7 +156,7 @@ public class RenderSystem extends PassiveSystem
 
                         final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
 
-                        terminal.write(c, x, y, tileFg);
+                        terminal.write(c, x, y, tileFg, tileBg);
                     }
                 }
                 else

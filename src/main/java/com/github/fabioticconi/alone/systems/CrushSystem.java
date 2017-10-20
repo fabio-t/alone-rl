@@ -71,6 +71,9 @@ public class CrushSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
+            if (targets.size() != 1)
+                return false;
+
             final int targetId = targets.get(0);
 
             if (targetId < 0 || !mCrushable.has(targetId))
@@ -97,11 +100,10 @@ public class CrushSystem extends PassiveSystem
         @Override
         public void doAction()
         {
-            final int targetId = targets.get(0);
-            final int hammerId = targets.get(1);
-
-            if (targetId < 0 || hammerId < 0 || !mCrushable.has(targetId))
+            if (targets.size() != 2)
                 return;
+
+            final int targetId = targets.get(0);
 
             final Position p = mPosition.get(targetId);
 
@@ -123,8 +125,22 @@ public class CrushSystem extends PassiveSystem
 
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('o', Color.GRAY.darker());
+        edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
         edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2, true);
+
+        return id;
+    }
+
+    public int makeBoulder(final int x, final int y)
+    {
+        final int id = world.create();
+        final EntityEdit edit = world.edit(id);
+
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('#', Color.DARK_GRAY.brighter(), true);
+        edit.create(Obstacle.class);
+        edit.create(Pushable.class);
+        edit.create(Crushable.class);
 
         return id;
     }

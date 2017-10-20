@@ -48,13 +48,17 @@ public class PushSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
+            if (targets.size() != 1)
+                return false;
+
             return false;
         }
 
         @Override
         public void doAction()
         {
-
+            if (targets.size() != 1)
+                return;
         }
     }
 }

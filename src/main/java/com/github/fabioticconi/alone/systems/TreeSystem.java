@@ -61,7 +61,8 @@ public class TreeSystem extends PassiveSystem
         final CutAction c = new CutAction();
 
         c.actorId = entityId;
-        c.treeId = treeId;
+
+        c.targets.add(treeId);
 
         return c;
     }
@@ -72,7 +73,7 @@ public class TreeSystem extends PassiveSystem
 
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('T', Color.GREEN.brighter(), true);
+        edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
         edit.create(Obstacle.class);
         edit.create(Tree.class);
 
@@ -104,18 +105,18 @@ public class TreeSystem extends PassiveSystem
 
     public class CutAction extends ActionContext
     {
-        @EntityId
-        public int treeId = -1;
-        @EntityId
-        public int axeId  = -1;
-
         @Override
         public boolean tryAction()
         {
-            if (treeId < 0 || !mTree.has(treeId))
+            if (targets.size() != 1)
                 return false;
 
-            axeId = sItem.getWeapon(actorId, Weapon.Type.SLASH);
+            final int treeId = targets.get(0);
+
+            if (!mTree.has(treeId))
+                return false;
+
+            final int axeId = sItem.getWeapon(actorId, Weapon.Type.SLASH);
 
             if (axeId < 0)
             {
@@ -130,14 +131,17 @@ public class TreeSystem extends PassiveSystem
             delay = mSpeed.get(actorId).value;
             cost = delay / (mStrength.get(actorId).value + 3f);
 
+            targets.add(axeId);
+
             return true;
         }
 
         public void doAction()
         {
-            // something hijacked us and cut the tree beforehand, maybe
-            if (treeId < 0 || !mTree.has(treeId))
+            if (targets.size() != 2)
                 return;
+
+            final int treeId = targets.get(0);
 
             final Position p = mPosition.get(treeId);
 
@@ -151,17 +155,6 @@ public class TreeSystem extends PassiveSystem
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
-        }
-
-        @Override
-        public boolean equals(final Object o)
-        {
-            if (!super.equals(o))
-                return false;
-
-            final CutAction a = (CutAction) o;
-
-            return treeId == a.treeId && axeId == a.axeId;
         }
     }
 }

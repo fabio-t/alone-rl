@@ -71,13 +71,8 @@ public class AttackSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
-            final int targetId = targets.get(0);
-
-            if (targetId < 0)
-            {
-                log.info("target does not exist");
+            if (targets.size() != 1)
                 return false;
-            }
 
             // FIXME check the target is close by?
 
@@ -95,12 +90,6 @@ public class AttackSystem extends PassiveSystem
         public void doAction()
         {
             final int targetId = targets.get(0);
-
-            if (targetId < 0)
-            {
-                log.info("target does not exist anymore");
-                return;
-            }
 
             // FIXME check the target is still close by?
 

@@ -333,14 +333,7 @@ public class BootstrapSystem extends BaseSystem
                     if (!grid.isEmpty(x, y))
                         continue;
 
-                    id = world.create();
-                    edit = world.edit(id);
-
-                    edit.create(Position.class).set(x, y);
-                    edit.create(Sprite.class).set('#', Color.GRAY.darker(), true);
-                    edit.create(Obstacle.class);
-                    edit.create(Pushable.class);
-                    edit.create(Crushable.class);
+                    id = sCrush.makeBoulder(x, y);
 
                     grid.set(id, x, y);
                 }

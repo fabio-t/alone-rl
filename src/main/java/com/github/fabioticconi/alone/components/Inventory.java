@@ -20,6 +20,7 @@ package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
 import com.artemis.annotations.EntityId;
+import com.artemis.annotations.LinkPolicy;
 import com.artemis.utils.IntBag;
 
 /**
@@ -28,8 +29,8 @@ import com.artemis.utils.IntBag;
  */
 public class Inventory extends Component
 {
-    @EntityId
-    public IntBag items;
+    @EntityId @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
+    final public IntBag items;
 
     public Inventory()
     {

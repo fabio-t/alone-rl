@@ -20,6 +20,7 @@ package com.github.fabioticconi.alone.components.actions;
 
 import com.artemis.Component;
 import com.artemis.annotations.EntityId;
+import com.artemis.annotations.LinkPolicy;
 import com.artemis.utils.IntBag;
 
 /**
@@ -31,7 +32,8 @@ public class Action extends Component
     public ActionContext context;
     public float         cooldown;
 
-    @EntityId public IntBag targets;
+    @EntityId @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
+    public IntBag targets;
 
     public Action()
     {

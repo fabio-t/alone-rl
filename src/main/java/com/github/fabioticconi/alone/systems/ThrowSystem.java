@@ -30,12 +30,14 @@ import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point2I;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -119,20 +121,29 @@ public class ThrowSystem extends PassiveSystem
 
                 final Position targetPos = mPos.get(targetId);
 
-                path = map.getLineOfSight(p.x, p.y, targetPos.x, targetPos.y);
-
-                if (path == null || path.size() < 2)
+                // it's close enough to strike
+                if (Coords.distanceChebyshev(p.x, p.y, targetPos.x, targetPos.y) == 1)
                 {
-                    log.warn("path not found or empty");
+                    // it's only one step away, no point calculating line of sight
+                    path = new ArrayList<>(1);
+                }
+                else
+                {
+                    path = map.getLineOfSight(p.x, p.y, targetPos.x, targetPos.y);
 
-                    return false;
+                    // first index is the current position
+                    path.remove(0);
+
+                    if (path == null || path.size() < 2)
+                    {
+                        log.warn("path not found or empty");
+
+                        return false;
+                    }
                 }
 
                 // adding weapon
                 targets.add(itemId);
-
-                // first index is the current position
-                path.remove(0);
 
                 // target position is not included
                 path.add(new Point2I(targetPos.x, targetPos.y));
@@ -151,14 +162,10 @@ public class ThrowSystem extends PassiveSystem
         @Override
         public void doAction()
         {
-            final int weaponId = targets.get(0);
-
-            // something might have happened to the item..
-            if (weaponId < 0 || !mWeapon.has(weaponId))
-            {
-                log.warn("item being thrown by {} is invalid: {}", actorId, weaponId);
+            if (targets.size() != 1)
                 return;
-            }
+
+            final int weaponId = targets.get(0);
 
             final Point2I newP = path.get(0);
 

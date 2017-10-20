@@ -29,9 +29,9 @@ public enum Cell
     EMPTY(),
     DEEP_WATER('=', Color.BLUE.darker().darker()),
     WATER('~', Color.BLUE.brighter().brighter()),
-    SAND('.', Color.ORANGE.brighter()),
-    GROUND('.', Color.ORANGE.darker()),
-    GRASS(',', Color.GREEN.darker().darker()),
+    SAND((char)250, Color.ORANGE.brighter()),
+    GROUND((char)250, Color.ORANGE.darker()),
+    GRASS((char)250, Color.GREEN.darker().darker()),
     HILL_GRASS('^', Color.GREEN.darker().darker()),
     HILL('^', Util.BROWN.brighter()),
     MOUNTAIN('^', Util.BROWN),
@@ -58,7 +58,9 @@ public enum Cell
     Cell(final char c, final Color color)
     {
         this.c = c;
-        this.col = color;
-        this.bg = Color.BLACK;
+        // this.col = color;
+        // this.bg = Color.BLACK;
+        this.col = color.darker().darker();
+        this.bg = color.darker();
     }
 }

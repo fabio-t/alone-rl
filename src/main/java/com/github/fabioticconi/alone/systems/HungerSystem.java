@@ -124,6 +124,9 @@ public class HungerSystem extends IntervalIteratingSystem
         @Override
         public boolean tryAction()
         {
+            if (targets.size() != 1)
+                return false;
+
             final int targetId = targets.get(0);
 
             if (targetId < 0)
@@ -141,6 +144,9 @@ public class HungerSystem extends IntervalIteratingSystem
         @Override
         public void doAction()
         {
+            if (targets.size() != 1)
+                return;
+
             final Hunger h = mHunger.get(actorId);
 
             if (h == null)
