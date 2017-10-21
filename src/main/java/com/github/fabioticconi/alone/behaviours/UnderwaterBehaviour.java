@@ -24,10 +24,13 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Underwater;
+import com.github.fabioticconi.alone.components.attributes.Sight;
+import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -37,7 +40,6 @@ import java.util.Set;
  */
 public class UnderwaterBehaviour extends AbstractBehaviour
 {
-    ComponentMapper<Underwater> mWater;
     ComponentMapper<Position> mPos;
 
     MapSystem map;
@@ -45,6 +47,10 @@ public class UnderwaterBehaviour extends AbstractBehaviour
 
     @Wire
     Random r;
+
+    final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
+
+    private Position curPos;
 
     @Override
     protected void initialize()
@@ -60,15 +66,24 @@ public class UnderwaterBehaviour extends AbstractBehaviour
         if (!interested(entityId))
             return 0f;
 
-        return 1f;
+        curPos = mPos.get(entityId);
+
+        final Cell c = map.get(curPos.x, curPos.y);
+
+        if (c != Cell.DEEP_WATER && c != Cell.WATER)
+        {
+            // can't move at all if on solid ground
+
+            return 0f;
+        }
+
+        return 0.1f; // just baseline
     }
 
     @Override
     public float update()
     {
-        final Position pos = mPos.get(entityId);
-
-        final Set<Side> exits = map.getFreeExits(pos.x, pos.y);
+        final Set<Side> exits = map.getFreeExits(curPos.x, curPos.y, validCells);
 
         if (exits.isEmpty())
             return 0f;

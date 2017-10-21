@@ -159,6 +159,34 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     }
 
     /**
+     * Take a position and return all free exits in the surrounding "circle".
+     *
+     * @param x
+     * @param y
+     * @return A set of free exits, or HERE if none is available
+     */
+    public Set<Side> getFreeExits(final int x, final int y, final EnumSet<Cell> set)
+    {
+        int xn, yn;
+
+        final Set<Side> exits = new ObjectArraySet<>(8);
+
+        for (final Side side : Side.values())
+        {
+            if (side.equals(Side.HERE))
+                continue;
+
+            xn = x + side.x;
+            yn = y + side.y;
+
+            if (contains(xn, yn) && obstacles.get(xn, yn) < 0 && set.contains(terrain[x][y]))
+                exits.add(side);
+        }
+
+        return exits;
+    }
+
+    /**
      * Take a position and returns the first free exit (if any).
      *
      * @param x

@@ -22,44 +22,44 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.Dead;
-import com.github.fabioticconi.alone.components.Health;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Underwater;
+import com.github.fabioticconi.alone.constants.Cell;
+import com.github.fabioticconi.alone.map.MapSystem;
+
+import java.util.EnumSet;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/10/17
+ * Date: 21/10/17
  */
-public class HealthSystem extends IntervalIteratingSystem
+public class UnderwaterSystem extends IntervalIteratingSystem
 {
-    ComponentMapper<Health> mHealth;
-    ComponentMapper<Dead>   mDead;
+    ComponentMapper<Position> mPos;
 
-    public HealthSystem(final float interval)
+    HealthSystem sHealth;
+    MapSystem map;
+
+    private final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
+
+    public UnderwaterSystem(final float interval)
     {
-        super(Aspect.all(Health.class).exclude(Dead.class), interval);
+        super(Aspect.all(Underwater.class, Position.class).exclude(Dead.class), interval);
     }
 
     @Override
     protected void process(final int entityId)
     {
-        final Health health = mHealth.get(entityId);
+        final Position p = mPos.get(entityId);
 
-        health.value = health.value + getIntervalDelta() * 0.1f;
+        final Cell c = map.get(p.x, p.y);
 
-        health.value = Math.min(health.value, health.maxValue);
-    }
+        // if inside water, no problem
+        if (validCells.contains(c))
+            return;
 
-    public float damage(final int entityId, final float fraction)
-    {
-        final Health health = mHealth.get(entityId);
-
-        // reduce health by a certain amount
-        final float consumed = health.maxValue * fraction;
-
-        health.value -= consumed;
-
-        if (health.value <= 0f)
-            mDead.create(entityId);
-
-        return consumed;
+        // every time this ticks, 25% of the fish's life is gone.
+        // when life is zero, Dead is added
+        sHealth.damage(entityId, 0.25f);
     }
 }

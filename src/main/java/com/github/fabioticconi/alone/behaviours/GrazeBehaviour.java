@@ -53,6 +53,8 @@ public class GrazeBehaviour extends AbstractBehaviour
     // FIXME: this should be in a Context of sort
     private Hunger hunger;
 
+    private EnumSet<Cell> validCells = EnumSet.of(Cell.GRASS, Cell.HILL_GRASS);
+
     @Override
     protected void initialize()
     {
@@ -88,7 +90,7 @@ public class GrazeBehaviour extends AbstractBehaviour
         // FIXME: should differentiate on the "feeding capability"
         // and also, possibly, on the creature's preference (ie, the EnumSet
         // should be within a EatingPreference component of some kind)
-        final int[] coords = map.getFirstOfType(pos.x, pos.y, sight, EnumSet.of(Cell.GRASS, Cell.HILL_GRASS));
+        final int[] coords = map.getFirstOfType(pos.x, pos.y, sight, validCells);
 
         // TODO: the behaviour actually FAILED here, couldn't do anything:
         // should we somehow relay this information to the AISystem, so that

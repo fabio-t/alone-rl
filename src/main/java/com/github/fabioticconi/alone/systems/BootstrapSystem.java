@@ -136,7 +136,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Group.class).groupId = groupId;
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('b', Util.BROWN);
+            edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN);
             edit.create(Obstacle.class);
 
@@ -261,10 +261,10 @@ public class BootstrapSystem extends BaseSystem
             {
                 final Cell cell = sMap.get(x, y);
 
-                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
-                    // (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
-                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
-                    (cell.equals(Cell.WATER) && r.nextGaussian() > 4f))
+                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
+                    (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
+                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
+                //     (cell.equals(Cell.WATER) && r.nextGaussian() > 4f))
                 {
                     if (!grid.isEmpty(x, y))
                         continue;
@@ -283,6 +283,7 @@ public class BootstrapSystem extends BaseSystem
 
                     final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
                     ai.behaviours.add(world.getSystem(UnderwaterBehaviour.class));
+                    ai.behaviours.add(world.getSystem(FleeFromActionBehaviour.class));
                     edit.add(ai);
                     edit.create(Position.class).set(x, y);
                     edit.create(Alertness.class).value = 0.0f;
@@ -471,7 +472,7 @@ public class BootstrapSystem extends BaseSystem
         // Secondary Attributes
         final int size = Math.round((con - agi) / 2f);
         edit.create(Size.class).set(size);
-        edit.create(Stamina.class).set((5 + str + con) * 20);
+        edit.create(Stamina.class).set((5 + str + con) * 100); // FIXME for debug, reduce/tweak later
         edit.create(Speed.class).set((con - str - agi + 6) / 12f);
         edit.create(Health.class).set((con + 3) * 10);
 

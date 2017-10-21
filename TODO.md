@@ -28,3 +28,11 @@
 
 - Fish behaviour: swim around, flee from any creature in the field of view making an action but completely ignore
   still creatures, maybe eat when on shallow water and consume when on deep water?
+  Most of the above done, although fish don't eat for now. Maybe ever. Also to keep things generic, I don't check
+  in the FleeFromActionBehaviour if the creature is a fish or not. This makes it so that fishes escape from other
+  fishes too.. and end up dead on the seashore. That may be stupid (although it's kinda funny :P)
+  
+- Hunger effects: should we add them? eg, reducing stamina and health regeneration when severely hungry?
+  Possibly to do in a way that there are two bars overlapped: the first goes full without effect. When it's full, it starts again
+  to colour, more darkly, and there the reduction in regeneration progresses. A full doubly-coloured bar means zero
+  regen.

@@ -95,6 +95,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(new HealthSystem(5f));
         config.setSystem(new StaminaSystem(1f));
         config.setSystem(new HungerSystem(1f));
+        config.setSystem(new UnderwaterSystem(1f));
         config.setSystem(AISystem.class);
         config.setSystem(BumpSystem.class);
         config.setSystem(PathSystem.class);
@@ -113,6 +114,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(ScavengeBehaviour.class);
         config.setSystem(WanderBehaviour.class);
         config.setSystem(UnderwaterBehaviour.class);
+        config.setSystem(FleeFromActionBehaviour.class);
         // last systems
         config.setSystem(DeadSystem.class);
 

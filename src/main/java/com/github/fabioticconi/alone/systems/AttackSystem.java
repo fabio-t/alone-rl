@@ -54,6 +54,7 @@ public class AttackSystem extends PassiveSystem
     Random r;
 
     StaminaSystem sStamina;
+    HealthSystem sHealth;
 
     public AttackAction attack(final int entityId, final int targetId)
     {
@@ -89,6 +90,9 @@ public class AttackSystem extends PassiveSystem
         @Override
         public void doAction()
         {
+            if (targets.size() != 1)
+                return;
+
             final int targetId = targets.get(0);
 
             // FIXME check the target is still close by?
