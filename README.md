@@ -70,6 +70,8 @@ simple bark protection, a shelter, maybe rudimentary pit traps and extraction of
 
 # Screenshots
 
+This is how the game looks when run:
+
 ![alt tag](screenshots/screenshot.png)
 
 Plenty of trees and animals on the grassy hill, one fall tree trunk, a corpse in red.
@@ -78,10 +80,30 @@ One stone is visible, too (they can be used as weapons, or thrown).
 Higher up there's no proper grass, but it's still not mountain. Trees are sparse here, but some big boulders are visible (these
 are proper obstacles like trees: they block both light and movement).
 
-![alt tag](map_scripts/map.png)
+## Alternative colour scheme
+
+![alt tag](screenshots/full_colours.png)
+
+Not sure I'll use this or the other with black background.. but I kind of like it now. Some of the colours
+need to be adjusted to increase contrast.
+
+## Original Map
+
+![alt tag](screenshots/orig_map.png)
 
 Thanks to the map generator from [Red Blob Games](https://www.redblobgames.com/), I produced the map above. The one in
 the game is fundamentally based on this (eg, it uses this heightmap) but it then simplifies the terrains into less
 groups - so my map is much less coloured and it has less water mass.
 
-The rivers and lakes are also currently not present. The map is 2048x2048 pixels/cells, so it's pretty big.
+The rivers and lakes are also currently not present. The map is **2048x2048 pixels**, and it's pixel is one "cell" in
+game, so it's pretty big.
+
+## Map in-game
+
+![alt tag](screenshots/map.png)
+
+This is the map actually being used in the game, simplifying the elevation thresholds to reduce
+the amount of colours (and thus, terrains) shown. Later I might bring back the colour gradient of the original.
+
+You can also see some rivers (still in-progress, not in the game yet) flowing from high to low places.
+
