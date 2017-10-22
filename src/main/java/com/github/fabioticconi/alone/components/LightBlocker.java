@@ -24,6 +24,6 @@ import com.artemis.Component;
  * Author: Fabio Ticconi
  * Date: 10/09/17
  */
-public class Obstacle extends Component
+public class LightBlocker extends Component
 {
 }

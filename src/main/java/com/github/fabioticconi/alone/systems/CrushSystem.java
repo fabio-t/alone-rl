@@ -20,7 +20,6 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
@@ -138,7 +137,7 @@ public class CrushSystem extends PassiveSystem
 
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('#', Color.DARK_GRAY.brighter(), true);
-        edit.create(Obstacle.class);
+        edit.create(LightBlocker.class);
         edit.create(Pushable.class);
         edit.create(Crushable.class);
 

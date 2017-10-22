@@ -1,9 +1,10 @@
   
-- rlforj must be changed so that instead of isObstacle, it has two functions: blocksLight and blocksStep.
-  In this way we can have FOV algorithm only using blocksLight, pathfinding algorithms only using
-  blocksStep, and allow the use of both for special cases. Generally, creatures will block step while trees/walls
-  will block both step and light. In a more advanced game, we'd also have walls that don't stop light (windows),
-  and something like smoke that doesn't block stop but blocks light.
+- rlforj was changed to support blocksLight and blocksStep in addition to isObstacle. FoV/LoS algorithms by default
+  only care about "light-blocking" obstacles, while pathfinding uses isObstacle (which is true in case something
+  either blocks light, or it blocks movement, or both).
+  A component LightBlocker must now be added to become light-blocking entities (trees and boulders for now).
+  Now I need to used a modified AStar that takes only a subset of the map (eg, within the visible radius) otherwise
+  it's computationally too hard.
 
 - GUI needs to be redone (with Zircon?), to show a panel for inventory/crafting, the combat log, an input field maybe..
 
@@ -18,7 +19,8 @@
   The approach is simple: inside the ActionSystem get hold of the EntityLinkManager instance and register
   the Action component with a LinkAdapter instance overriding the onTargetDead function.
   This means that when a target dies, the corresponding action is interrupted. Right now the relevant field is
-  set to -1 but that's it.
+  set to -1 but that's it. In other words, the action still runs its course to the end, and silently fails at
+  the "do" stage if the targets have become invalid.
 
 - Data-driven via YAML:
   - Map thresholds for terrain (colours, character, elevation)

@@ -102,6 +102,134 @@ public class MultipleGrid
     }
 
     /**
+     * Puts the entity at the specified coordinates. Doesn't do anything if the
+     * entity is already there.
+     *
+     * @param id
+     * @param x
+     * @param y
+     */
+    public void add(final int id, final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        IntSet entities = grid.getOrDefault(pos, null);
+
+        if (entities == null)
+        {
+            entities = new IntLinkedOpenHashSet();
+
+            entities.add(id);
+
+            grid.put(pos, entities);
+        }
+        else if (!entities.contains(id))
+        {
+            // add it only if it wasn't already present
+
+            entities.add(id);
+        }
+        else
+        {
+            log.warn("item {} is already at ({},{})", id, x, y);
+        }
+    }
+
+    public boolean del(final int id, final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        final IntSet entities = grid.get(pos);
+
+        // TODO: just put the object at position "end"? (should we check there, too?)
+        if (entities.isEmpty())
+        {
+            log.warn("item {} was NOT at position ({},{})", id, x, y);
+
+            return false;
+        }
+
+        return entities.remove(id);
+    }
+
+    /**
+     * Removes the specified entity from one cell and puts it into another.
+     * Doesn't do anything if the the entity is NOT in the start cell. Equally,
+     * there isn't any change if the entity is already in the end cell.
+     *
+     * @param id
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @return
+     */
+    public boolean move(final int id, final int startX, final int startY, final int endX, final int endY)
+    {
+        final long pos = startX | ((long) startY << 32);
+
+        final IntSet entities = grid.get(pos);
+
+        // TODO: just put the object at position "end"? (should we check there, too?)
+        if (entities.isEmpty())
+        {
+            log.warn("item {} was NOT at position ({},{})", id, startX, startY);
+
+            return false;
+        }
+
+        final boolean found = entities.remove(id);
+
+        if (found)
+        {
+            add(id, endX, endY);
+
+            return true;
+        }
+
+        log.warn("item {} was NOT at position ({},{})", id, startX, startY);
+
+        return false;
+    }
+
+    public boolean has(final int id, final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        return has(id, pos);
+    }
+
+    public boolean has(final int id, final long pos)
+    {
+        return grid.get(pos).contains(id);
+    }
+
+    /**
+     * Returns the number of entities present at the specified position.
+     *
+     * @param pos
+     * @return
+     */
+    public int count(final long pos)
+    {
+        return grid.get(pos).size();
+    }
+
+    /**
+     * Returns the number of entities present at the specified position.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public int count(final int x, final int y)
+    {
+        final long pos = x | ((long) y << 32);
+
+        return count(pos);
+    }
+
+    /**
      * Moves concentrically from the specified cell, collecting entities. If
      * there are any entities in the same cell, returned those only. If there
      * are any entities in the first ring around the cell, returns those only.
@@ -394,121 +522,5 @@ public class MultipleGrid
         }
 
         return entities;
-    }
-
-    /**
-     * Puts the entity at the specified coordinates. Doesn't do anything if the
-     * entity is already there.
-     *
-     * @param id
-     * @param x
-     * @param y
-     */
-    public void add(final int id, final int x, final int y)
-    {
-        final long pos = x | ((long) y << 32);
-
-        IntSet entities = grid.getOrDefault(pos, null);
-
-        if (entities == null)
-        {
-            entities = new IntLinkedOpenHashSet();
-
-            entities.add(id);
-
-            grid.put(pos, entities);
-        }
-        else if (!entities.contains(id))
-        {
-            // add it only if it wasn't already present
-
-            entities.add(id);
-        }
-        else
-        {
-            log.warn("item {} is already at ({},{})", id, x, y);
-        }
-    }
-
-    public boolean del(final int id, final int x, final int y)
-    {
-        final long pos = x | ((long) y << 32);
-
-        final IntSet entities = grid.get(pos);
-
-        // TODO: just put the object at position "end"? (should we check there, too?)
-        if (entities.isEmpty())
-        {
-            log.warn("item {} was NOT at position ({},{})", id, x, y);
-
-            return false;
-        }
-
-        return entities.remove(id);
-    }
-
-    /**
-     * Removes the specified entity from one cell and puts it into another.
-     * Doesn't do anything if the the entity is NOT in the start cell. Equally,
-     * there isn't any change if the entity is already in the end cell.
-     *
-     * @param id
-     * @param startX
-     * @param startY
-     * @param endX
-     * @param endY
-     * @return
-     */
-    public boolean move(final int id, final int startX, final int startY, final int endX, final int endY)
-    {
-        final long pos = startX | ((long) startY << 32);
-
-        final IntSet entities = grid.get(pos);
-
-        // TODO: just put the object at position "end"? (should we check there, too?)
-        if (entities.isEmpty())
-        {
-            log.warn("item {} was NOT at position ({},{})", id, startX, startY);
-
-            return false;
-        }
-
-        final boolean found = entities.remove(id);
-
-        if (found)
-        {
-            add(id, endX, endY);
-
-            return true;
-        }
-
-        log.warn("item {} was NOT at position ({},{})", id, startX, startY);
-
-        return false;
-    }
-
-    /**
-     * Returns the number of entities present at the specified position.
-     *
-     * @param pos
-     * @return
-     */
-    public int count(final long pos)
-    {
-        return grid.get(pos).size();
-    }
-
-    /**
-     * Returns the number of entities present at the specified position.
-     *
-     * @param x
-     * @param y
-     * @return
-     */
-    public int count(final int x, final int y)
-    {
-        final long pos = x | ((long) y << 32);
-
-        return count(pos);
     }
 }

@@ -88,6 +88,9 @@ public class UnderwaterBehaviour extends AbstractBehaviour
         if (exits.isEmpty())
             return 0f;
 
+        if (exits.size() == 1)
+            return sBump.bumpAction(entityId, exits.iterator().next());
+
         // get one of the elements
         final int choice = r.nextInt(exits.size());
 

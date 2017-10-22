@@ -22,12 +22,15 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
+import com.github.fabioticconi.alone.components.attributes.Sight;
+import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import rlforj.math.Point2I;
+import rlforj.pathfinding.AStar;
 
 import java.util.List;
 
@@ -43,6 +46,7 @@ public class BumpSystem extends PassiveSystem
     ComponentMapper<Crushable> mCrushable;
     ComponentMapper<Position>  mPos;
     ComponentMapper<Player>    mPlayer;
+    ComponentMapper<Sight>     mSight;
 
     MapSystem map;
 
@@ -102,7 +106,8 @@ public class BumpSystem extends PassiveSystem
 
     public float bumpAction(final int entityId, final Position target)
     {
-        final Position pos = mPos.get(entityId);
+        final Position pos   = mPos.get(entityId);
+        final Sight    sight = mSight.get(entityId);
 
         if (pos.equals(target))
         {
@@ -116,9 +121,11 @@ public class BumpSystem extends PassiveSystem
             return bumpAction(entityId, Side.getSide(pos.x, pos.y, target.x, target.y));
         }
 
-        final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, target.x, target.y);
+        final Point2I[] path = map.getPath(pos.x, pos.y, target.x, target.y, sight.value);
 
-        if (path == null || path.size() < 2)
+        // final List<Point2I> path = map.getLineOfSight(pos.x, pos.y, target.x, target.y);
+
+        if (path == null || path.length < 2)
         {
             // the target position is the same as the entity's position,
             // or the target is not visible. Either way, we don't move.
@@ -127,7 +134,8 @@ public class BumpSystem extends PassiveSystem
         }
 
         // position 0 is "HERE"
-        final Point2I p = path.get(1);
+        final Point2I p = path[1];
+        // final Point2I p = path.get(1);
 
         return bumpAction(entityId, Side.getSide(pos.x, pos.y, p.x, p.y));
     }

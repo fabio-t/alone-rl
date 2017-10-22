@@ -99,7 +99,6 @@ public class BootstrapSystem extends BaseSystem
         grid.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
-        edit.create(Obstacle.class);
         edit.create(Inventory.class);
 
         // add a herd of buffalos
@@ -138,7 +137,6 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN);
-            edit.create(Obstacle.class);
 
             grid.set(id, x, y);
         }
@@ -173,7 +171,6 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
-            edit.create(Obstacle.class);
 
             grid.set(id, x, y);
         }
@@ -213,7 +210,6 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
-            edit.create(Obstacle.class);
 
             grid.set(id, x, y);
         }
@@ -249,7 +245,6 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
-            edit.create(Obstacle.class);
 
             grid.set(id, x, y);
         }
@@ -261,10 +256,10 @@ public class BootstrapSystem extends BaseSystem
             {
                 final Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
-                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
-                //     (cell.equals(Cell.WATER) && r.nextGaussian() > 4f))
+                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
+                //     (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
+                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 4f) ||
+                    (cell.equals(Cell.WATER) && r.nextGaussian() > 3f))
                 {
                     if (!grid.isEmpty(x, y))
                         continue;
@@ -289,7 +284,6 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Alertness.class).value = 0.0f;
                     edit.create(Sprite.class).set('f', Color.CYAN.darker());
                     // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
-                    edit.create(Obstacle.class);
 
                     grid.set(id, x, y);
                 }

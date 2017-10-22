@@ -47,7 +47,7 @@ public class PlayerInputSystem extends PassiveSystem
     PlayerManager pManager;
 
     // FIXME only for debug..
-    float savedSpeed;
+    float savedSpeed = -1f;
 
     public float handleKeys(final BitVector keys)
     {
@@ -169,14 +169,16 @@ public class PlayerInputSystem extends PassiveSystem
         else if (keys.get(KeyEvent.VK_F1))
         {
             keys.clear(KeyEvent.VK_F1);
-            if (savedSpeed == 0f)
+            if (savedSpeed == -1f)
                 savedSpeed = mSpeed.get(playerId).value;
             mSpeed.get(playerId).value = 0f; // FIXME to remove later, only for debug
         }
         else if (keys.get(KeyEvent.VK_F2))
         {
             keys.clear(KeyEvent.VK_F2);
-            mSpeed.create(playerId).value = savedSpeed; // FIXME to remove later, only for debug
+
+            if (savedSpeed >= 0f)
+                mSpeed.create(playerId).value = savedSpeed; // FIXME to remove later, only for debug
         }
         else if (keys.get(KeyEvent.VK_SPACE))
         {

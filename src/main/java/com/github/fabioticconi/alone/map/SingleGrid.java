@@ -60,6 +60,11 @@ public class SingleGrid
         return Util.inRange(x, 0, Options.MAP_SIZE_X-1) && Util.inRange(y, 0, Options.MAP_SIZE_Y-1);
     }
 
+    public boolean has(final int id, final int x, final int y)
+    {
+        return has(x, y) && grid[x][y] == id;
+    }
+
     public int get(final int x, final int y)
     {
         return grid[x][y];
@@ -79,12 +84,15 @@ public class SingleGrid
 
     public int move(final int oldX, final int oldY, final int x, final int y)
     {
-        final int id = del(oldX, oldY);
+        if (!has(oldX, oldY) || !has(x, y))
+            return -1;
 
-        // FIXME: throw error in case the source position was actually empty (so we are just moving
-        // -1 to another place)?
+        final int id = grid[oldX][oldY];
+        grid[oldX][oldY] = -1;
+        final int old = grid[x][y];
+        grid[x][y] = id;
 
-        return set(id, x, y);
+        return old;
     }
 
     public void clear()

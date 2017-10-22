@@ -20,7 +20,6 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
@@ -74,7 +73,7 @@ public class TreeSystem extends PassiveSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
-        edit.create(Obstacle.class);
+        edit.create(LightBlocker.class);
         edit.create(Tree.class);
 
         return id;

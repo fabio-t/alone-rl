@@ -78,7 +78,7 @@
         <dependency>
             <groupId>com.github.fabioticconi</groupId>
             <artifactId>rlforj</artifactId>
-            <version>ae50117c57</version>
+            <version>master-SNAPSHOT</version>
         </dependency>
 
         <dependency>

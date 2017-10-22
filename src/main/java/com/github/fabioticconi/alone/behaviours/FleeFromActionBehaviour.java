@@ -21,9 +21,9 @@ package com.github.fabioticconi.alone.behaviours;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.Carnivore;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
+import com.github.fabioticconi.alone.components.Underwater;
 import com.github.fabioticconi.alone.components.actions.Action;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
@@ -43,9 +43,10 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
 {
     static final Logger log = LoggerFactory.getLogger(FleeBehaviour.class);
 
-    ComponentMapper<Sight>    mSight;
-    ComponentMapper<Position> mPosition;
-    ComponentMapper<Action>   mAction;
+    ComponentMapper<Sight>      mSight;
+    ComponentMapper<Position>   mPosition;
+    ComponentMapper<Action>     mAction;
+    ComponentMapper<Underwater> mUnderWater;
 
     BumpSystem sBump;
 
@@ -60,7 +61,7 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
     @Override
     protected void initialize()
     {
-        aspect = Aspect.all(Position.class, Speed.class, Sight.class).build(world);
+        aspect = Aspect.all(Position.class, Speed.class, Sight.class, Underwater.class).build(world);
 
         fleeFrom = new Position(0, 0);
     }
@@ -88,7 +89,8 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
         Position tempPos;
         for (final int creatureId : creatures)
         {
-            if (mAction.has(creatureId))
+            // only avoid non-fish
+            if (mAction.has(creatureId) && !mUnderWater.has(creatureId))
             {
                 tempPos = mPosition.get(creatureId);
 
@@ -105,13 +107,13 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
         fleeFrom.x = Math.floorDiv(fleeFrom.x, count);
         fleeFrom.y = Math.floorDiv(fleeFrom.y, count);
 
-        return 1f - (float) Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
+        return 0.9f;
     }
 
     @Override
     public float update()
     {
-        Side direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
+        Side direction = Side.getSide(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y);
 
         if (!sMap.isFree(curPos.x, curPos.y, direction))
         {

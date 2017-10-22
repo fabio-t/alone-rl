@@ -19,7 +19,7 @@ package com.github.fabioticconi.alone.map;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.Obstacle;
+import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
 import rlforj.math.Point2I;
+import rlforj.pathfinding.AStar;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -57,7 +58,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
-    ComponentMapper<Obstacle> mObstacle;
+    ComponentMapper<LightBlocker> mLightBlocker;
+    final AStar astar;
 
     @Wire
     SingleGrid obstacles;
@@ -128,6 +130,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
                 }
             }
         }
+
+        astar = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
     }
 
     /**
@@ -159,7 +163,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     }
 
     /**
-     * Take a position and return all free exits in the surrounding "circle".
+     * Take a position and return all free exits in the surrounding "circle" that have a valid terrain
+     * type.
      *
      * @param x
      * @param y
@@ -258,7 +263,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     }
 
     /**
-     * It is NOT equivalent to !isObstacle(x,y). This function only returns true if the cell is within bounds
+     * This function only returns true if the cell is within bounds
      * and does not contain any creature, regardless of visibility status.
      *
      * @param x
@@ -278,25 +283,27 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     @Override
     public boolean contains(final int x, final int y)
     {
-        return Util.inRange(x, 0, Options.MAP_SIZE_X-1) && Util.inRange(y, 0, Options.MAP_SIZE_Y-1);
+        return Util.inRange(x, 0, Options.MAP_SIZE_X - 1) && Util.inRange(y, 0, Options.MAP_SIZE_Y - 1);
     }
 
     @Override
-    public boolean isObstacle(final int x, final int y)
+    public boolean blocksLight(final int x, final int y)
     {
-        // outside boundaries is "obstacle"
+        // outside boundaries is pitch black
         if (!contains(x, y))
             return true;
 
         final int entityId = obstacles.get(x, y);
 
-        // must check for -1
-        return entityId >= 0 && mObstacle.has(entityId);
+        // currently no tile blocks light by itself, so if there's no creature
+        // here we know that light passes.
+        return entityId >= 0 && mLightBlocker.has(entityId);
     }
 
-    public boolean isObstacle(final int x, final int y, final Side direction)
+    @Override
+    public boolean blocksStep(final int x, final int y)
     {
-        return isObstacle(x + direction.x, y + direction.y);
+        return !isFree(x, y);
     }
 
     @Override
@@ -322,5 +329,10 @@ public class MapSystem extends PassiveSystem implements ILosBoard
             return view.getProjectPath();
 
         return null;
+    }
+
+    public Point2I[] getPath(final int startX, final int startY, final int endX, final int endY, final int radius)
+    {
+        return astar.findPath(startX, startY, endX, endY, radius);
     }
 }

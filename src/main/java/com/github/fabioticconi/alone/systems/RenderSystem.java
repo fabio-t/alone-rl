@@ -79,6 +79,8 @@ public class RenderSystem extends PassiveSystem
 
         final LongSet cells = map.getVisibleCells(p.x, p.y, sight);
 
+        terminal.clear();
+
         for (int x = 0; x < xmax; x++)
         {
             for (int y = 0; y < ymax; y++)

@@ -19,9 +19,10 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.Obstacle;
+import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
+import com.github.fabioticconi.alone.components.Underwater;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
@@ -39,9 +40,10 @@ public class MovementSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
 
-    ComponentMapper<Position> mPosition;
-    ComponentMapper<Speed>    mSpeed;
-    ComponentMapper<Obstacle> mObstacle;
+    ComponentMapper<Position>     mPosition;
+    ComponentMapper<Speed>        mSpeed;
+    ComponentMapper<LightBlocker> mLightBlocker;
+    ComponentMapper<Underwater>   mUnderWater;
 
     MapSystem     sMap;
     StaminaSystem sStamina;
@@ -99,12 +101,21 @@ public class MovementSystem extends PassiveSystem
                     break;
 
                 case HIGH_MOUNTAIN:
-                case WATER:
                     cost = 3f;
                     break;
 
+                case WATER:
+                    if (mUnderWater.has(actorId))
+                        cost = 0.25f;
+                    else
+                        cost = 3f;
+                    break;
+
                 case DEEP_WATER:
-                    cost = 4f;
+                    if (mUnderWater.has(actorId))
+                        cost = 0.25f;
+                    else
+                        cost = 4f;
                     break;
 
                 default:
@@ -124,7 +135,7 @@ public class MovementSystem extends PassiveSystem
             final int newX = p.x + direction.x;
             final int newY = p.y + direction.y;
 
-            if (!mObstacle.has(actorId))
+            if (items.has(actorId, p.x, p.y))
             {
                 // it's a moving item
                 items.move(actorId, p.x, p.y, newX, newY);
@@ -134,7 +145,7 @@ public class MovementSystem extends PassiveSystem
 
                 // it doesn't have stamina
             }
-            else if (sMap.isFree(newX, newY))
+            else if (grid.has(actorId, p.x, p.y) && sMap.isFree(newX, newY))
             {
                 final int id = grid.move(p.x, p.y, newX, newY);
 

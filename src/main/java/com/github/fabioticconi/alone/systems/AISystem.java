@@ -90,6 +90,7 @@ public class AISystem extends DelayedIteratingSystem
 
         // Alertness can be modified by many things. It's net effect here is
         // as a "cooldown modifier", influencing how often a creature's AI ticks
+        // FIXME right now this is not used at all
         final float alertness = 1f - mAlert.get(entityId).value;
 
         final AI ai = mAI.get(entityId);
