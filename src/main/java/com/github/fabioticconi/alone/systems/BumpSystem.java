@@ -23,7 +23,6 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.SingleGrid;
@@ -31,11 +30,7 @@ import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point2I;
-import rlforj.pathfinding.AStar;
-
-import java.util.Arrays;
-import java.util.List;
+import rlforj.math.Point;
 
 /**
  * Author: Fabio Ticconi
@@ -128,7 +123,7 @@ public class BumpSystem extends PassiveSystem
 
         // let's give them the opportunity to plan a path even if the creature is at the border of the vision
         // but apparently "enclosed" - so we increase the radius of the grid to be explored by AStar
-        final Point2I[] path = map.getPath(pos.x, pos.y, target.x, target.y, sight.value+2);
+        final Point[] path = map.getPath(pos.x, pos.y, target.x, target.y, sight.value + 2);
 
         if (path == null || path.length < 2)
         {
@@ -141,7 +136,7 @@ public class BumpSystem extends PassiveSystem
         }
 
         // position 0 is "HERE"
-        final Point2I p = path[1];
+        final Point p = path[1];
 
         return bumpAction(entityId, Side.getSide(pos.x, pos.y, p.x, p.y));
     }

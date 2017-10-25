@@ -19,7 +19,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
-import rlforj.math.Point2I;
+import rlforj.math.Point;
 
 import java.util.List;
 
@@ -30,19 +30,19 @@ import java.util.List;
 public class Path extends Component
 {
     public float         cooldown;
-    public List<Point2I> steps;
+    public List<Point> steps;
 
     public Path()
     {
 
     }
 
-    public Path(final float cooldown, final List<Point2I> steps)
+    public Path(final float cooldown, final List<Point> steps)
     {
         set(cooldown, steps);
     }
 
-    public void set(final float cooldown, final List<Point2I> steps)
+    public void set(final float cooldown, final List<Point> steps)
     {
         this.cooldown = cooldown;
         this.steps = steps;

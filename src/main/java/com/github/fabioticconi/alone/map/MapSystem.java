@@ -35,7 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
-import rlforj.math.Point2I;
+import rlforj.math.Point;
+import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
 import javax.imageio.ImageIO;
@@ -321,7 +322,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         return LongSets.unmodifiable(lastVisited);
     }
 
-    public List<Point2I> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
+    public List<Point> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
         final boolean exists = view.existsLineOfSight(this, startX, startY, endX, endY, true);
 
@@ -331,7 +332,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         return null;
     }
 
-    public Point2I[] getPath(final int startX, final int startY, final int endX, final int endY, final int radius)
+    public Point[] getPath(final int startX, final int startY, final int endX, final int endY, final int radius)
     {
         return astar.findPath(startX, startY, endX, endY, radius);
     }

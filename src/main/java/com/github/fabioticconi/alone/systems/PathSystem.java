@@ -26,7 +26,7 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
-import rlforj.math.Point2I;
+import rlforj.math.Point;
 
 /**
  * Author: Fabio Ticconi
@@ -66,8 +66,8 @@ public class PathSystem extends DelayedIteratingSystem
         final Path     path = mPath.get(entityId);
         final Position p    = mPos.get(entityId);
 
-        final Point2I newP      = path.steps.remove(0);
-        final Side    direction = Side.getSide(p.x, p.y, newP.x, newP.y);
+        final Point newP      = path.steps.remove(0);
+        final Side  direction = Side.getSide(p.x, p.y, newP.x, newP.y);
 
         final float wait = sBump.bumpAction(entityId, direction);
 

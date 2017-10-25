@@ -19,7 +19,6 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
@@ -35,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point2I;
+import rlforj.math.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +78,7 @@ public class ThrowSystem extends PassiveSystem
 
     public class ThrowAction extends ActionContext
     {
-        public List<Point2I> path;
+        public List<Point> path;
 
         @Override
         public boolean tryAction()
@@ -146,7 +145,7 @@ public class ThrowSystem extends PassiveSystem
                 targets.add(itemId);
 
                 // target position is not included
-                path.add(new Point2I(targetPos.x, targetPos.y));
+                path.add(new Point(targetPos.x, targetPos.y));
 
                 delay = 1f;
                 cost = 1.5f;
@@ -167,7 +166,7 @@ public class ThrowSystem extends PassiveSystem
 
             final int weaponId = targets.get(0);
 
-            final Point2I newP = path.get(0);
+            final Point newP = path.get(0);
 
             if (map.isFree(newP.x, newP.y))
             {
