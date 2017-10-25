@@ -136,13 +136,13 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
-            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN);
+            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker().darker());
 
             grid.set(id, x, y);
         }
 
         // add small, independent rabbits/hares
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 7; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -178,7 +178,7 @@ public class BootstrapSystem extends BaseSystem
         // add a pack of wolves
         groupId = sGroup.createGroup();
         group = sGroup.getGroup(groupId);
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -210,12 +210,13 @@ public class BootstrapSystem extends BaseSystem
             group.add(id);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
+            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Color.DARK_GRAY);
 
             grid.set(id, x, y);
         }
 
         // add solitary pumas
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             // before doing anything, we must ensure the position is free!
             do
@@ -258,8 +259,8 @@ public class BootstrapSystem extends BaseSystem
 
                 // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
                 //     (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
-                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.WATER) && r.nextGaussian() > 3f))
+                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
+                    (cell.equals(Cell.WATER) && r.nextGaussian() > 5f))
                 {
                     if (!grid.isEmpty(x, y))
                         continue;
@@ -283,7 +284,6 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Position.class).set(x, y);
                     edit.create(Alertness.class).value = 0.0f;
                     edit.create(Sprite.class).set('f', Color.CYAN.darker());
-                    // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
 
                     grid.set(id, x, y);
                 }

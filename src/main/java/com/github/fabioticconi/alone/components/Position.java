@@ -52,7 +52,7 @@ public class Position extends Component
     @Override
     public String toString()
     {
-        return String.format("x: %d, y: %d", x, y);
+        return String.format("(%d,%d)", x, y);
     }
 
     @Override

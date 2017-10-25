@@ -120,6 +120,7 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
             // go to a random direction, whether free or not!
             // note how this could result in animals killing members of their own group and such,
             // which we take as simulating a stampede.
+            // for fish in particular this might cause
 
             direction = Side.getRandom();
         }

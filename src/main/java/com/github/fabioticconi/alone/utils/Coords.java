@@ -82,11 +82,6 @@ public class Coords
         }
     }
 
-    public static void visitMooreNeighbours(final int x, final int y, final int r)
-    {
-
-    }
-
     public static long packCoords(final int x, final int y)
     {
         return x | ((long) y << 32);

@@ -36,7 +36,7 @@ public class AISystem extends DelayedIteratingSystem
 {
     // time, in millis, around which a each creature should
     // be updated here
-    public static final float BASE_TICKTIME = 3.0f;
+    public static final float BASE_TICKTIME = 1.0f;
 
     @Wire
     Random r;
@@ -100,7 +100,7 @@ public class AISystem extends DelayedIteratingSystem
         // if we are exhausted, we'll skip this turn's AI
         if (stamina.exhausted)
         {
-            ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * alertness;
+            ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME*0.5f) * alertness;
 
             offerDelay(ai.cooldown);
 
@@ -131,9 +131,9 @@ public class AISystem extends DelayedIteratingSystem
             ai.activeBehaviour = bestBehaviour;
         }
 
-        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME) * alertness;
+        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME*0.5f) * alertness;
 
-        if (ai.cooldown < actionCooldown)
+        if (ai.cooldown <= actionCooldown)
         {
             ai.cooldown = actionCooldown * 1.5f;
         }
