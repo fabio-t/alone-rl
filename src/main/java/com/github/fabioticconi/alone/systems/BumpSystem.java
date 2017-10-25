@@ -126,7 +126,9 @@ public class BumpSystem extends PassiveSystem
             return bumpAction(entityId, Side.getSide(pos.x, pos.y, target.x, target.y));
         }
 
-        final Point2I[] path = map.getPath(pos.x, pos.y, target.x, target.y, sight.value*5);
+        // let's give them the opportunity to plan a path even if the creature is at the border of the vision
+        // but apparently "enclosed" - so we increase the radius of the grid to be explored by AStar
+        final Point2I[] path = map.getPath(pos.x, pos.y, target.x, target.y, sight.value+2);
 
         if (path == null || path.length < 2)
         {
