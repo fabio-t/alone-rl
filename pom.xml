@@ -158,9 +158,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:git@fabioticconi/alone-the-roguelite.git</connection>
-        <url>scm:git:git@fabioticconi/alone-the-roguelite.git</url>
-        <developerConnection>scm:git:git@fabioticconi/alone-the-roguelite.git</developerConnection>
+        <connection>scm:git:git@fabioticconi/alone-rl.git</connection>
+        <url>scm:git:git@fabioticconi/alone-rl.git</url>
+        <developerConnection>scm:git:git@fabioticconi/alone-rl.git</developerConnection>
     </scm>
 
     <repositories>
