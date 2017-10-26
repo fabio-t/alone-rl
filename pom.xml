@@ -21,11 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.fabioticconi</groupId>
-    <artifactId>alone</artifactId>
+    <artifactId>alone-rl</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>alone</name>
+    <name>alone-rl</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
