@@ -1,6 +1,4 @@
   
-- GUI needs to be redone (with Zircon?), to show a panel for inventory/crafting, the combat log, an input field maybe..
-
 - throwing must be improved: range should be based on strength, accuracy on agility.
   
 - Hide SingleGrid and MultipleGrid behind Map, so that I can generalise MovementSystem to move creatures and items,
@@ -14,12 +12,6 @@
   This means that when a target dies, the corresponding action is interrupted. Right now the relevant field is
   set to -1 but that's it. In other words, the action still runs its course to the end, and silently fails at
   the "do" stage if the targets have become invalid.
-
-- Data-driven via YAML:
-  - Map thresholds for terrain (colours, character, elevation)
-  - Item templates
-  - Game configuration (height and width of terminal, font..)
-  - Crafting recipes
   
 - Hunger effects: should we add them? eg, reducing stamina and health regeneration when severely hungry?
   Possibly to do in a way that there are two bars overlapped: the first goes full without effect. When it's full,

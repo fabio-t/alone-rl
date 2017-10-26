@@ -36,7 +36,7 @@ public class AISystem extends DelayedIteratingSystem
 {
     // time, in millis, around which a each creature should
     // be updated here
-    public static final float BASE_TICKTIME = 1.0f;
+    public static final float BASE_TICKTIME = 0.5f;
 
     @Wire
     Random r;
@@ -73,7 +73,9 @@ public class AISystem extends DelayedIteratingSystem
     @Override
     protected void processDelta(final int entityId, final float accumulatedDelta)
     {
-        mAI.get(entityId).cooldown -= accumulatedDelta;
+        final AI ai = mAI.get(entityId);
+        ai.cooldown -= accumulatedDelta;
+        ai.time -= accumulatedDelta; // time before the action is completed
     }
 
     /*
@@ -84,10 +86,6 @@ public class AISystem extends DelayedIteratingSystem
     @Override
     protected void processExpired(final int entityId)
     {
-        // System.out.println("eId: " + entityId);
-
-        float actionCooldown = 0.0f;
-
         // Alertness can be modified by many things. It's net effect here is
         // as a "cooldown modifier", influencing how often a creature's AI ticks
         // FIXME right now this is not used at all
@@ -95,26 +93,34 @@ public class AISystem extends DelayedIteratingSystem
 
         final AI ai = mAI.get(entityId);
 
+        if (ai.time <= 0f)
+        {
+            // whatever action had been issued before, it's definitely finished now,
+            // so we clean this up
+            ai.score = Float.MIN_VALUE;
+            ai.activeBehaviour = null;
+        }
+
         final Stamina stamina = mStamina.get(entityId);
 
         // if we are exhausted, we'll skip this turn's AI
         if (stamina.exhausted)
         {
-            ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME*0.5f) * alertness;
+            ai.cooldown = (r.nextFloat() * BASE_TICKTIME + 0.5f) * alertness;
 
             offerDelay(ai.cooldown);
 
             return;
         }
 
-        float     maxScore      = Float.MIN_VALUE;
+        // if any behaviour can beat the active score, it means it's urgent and we accept
+        // that we might be interrupting a currently-running action
+        float     maxScore      = ai.score;
         Behaviour bestBehaviour = null;
 
         for (final Behaviour behaviour : ai.behaviours)
         {
             final float temp = behaviour.evaluate(entityId);
-
-            // System.out.println(entityId + ": " + behaviour.getClass().getSimpleName() + " (" + temp + ")");
 
             if (temp > maxScore)
             {
@@ -123,20 +129,19 @@ public class AISystem extends DelayedIteratingSystem
             }
         }
 
+        // run the new behaviour and update the context
         if (bestBehaviour != null && maxScore > 0f)
         {
             System.out.println(entityId + ": " + bestBehaviour.getClass().getSimpleName() + " (" + maxScore + ")");
 
-            actionCooldown = bestBehaviour.update();
+            ai.time = bestBehaviour.update();
             ai.activeBehaviour = bestBehaviour;
+            ai.score = maxScore;
         }
 
-        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + BASE_TICKTIME*0.5f) * alertness;
+        // whatever the outcome of the above, the next tick is still randomised
 
-        if (ai.cooldown <= actionCooldown)
-        {
-            ai.cooldown = actionCooldown * 1.5f;
-        }
+        ai.cooldown = (r.nextFloat() * BASE_TICKTIME + 0.5f) * alertness;
 
         offerDelay(ai.cooldown);
     }
