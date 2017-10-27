@@ -95,7 +95,7 @@ public class ThrowSystem extends PassiveSystem
 
                 if (itemId < 0)
                 {
-                    // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+                    log.warn("empty item in the Inventory of {}", actorId);
 
                     continue;
                 }
@@ -109,6 +109,7 @@ public class ThrowSystem extends PassiveSystem
                 final Sight    sight = mSight.get(actorId);
 
                 // FIXME targeting should be decoupled
+
                 // among the visible creatures, only keep the closest one
                 final IntSet creatures = obstacles.getEntities(map.getVisibleCells(p.x, p.y, sight.value));
                 final IntSet closest   = obstacles.getClosestEntities(p.x, p.y, sight.value);

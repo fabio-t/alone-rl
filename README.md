@@ -51,7 +51,7 @@ This is how the game looks when run (**very** preliminary GUI):
 
 ![](screenshots/short.gif)
 
-A few wolves are chasing rabbits, while pumas manage to bring a buffalo.
+A few wolves are chasing rabbits, while pumas manage to bring a buffalo down.
 
 ### Original Map
 

@@ -1,6 +1,4 @@
-  
-- throwing must be improved: range should be based on strength, accuracy on agility.
-  
+
 - Hide SingleGrid and MultipleGrid behind Map, so that I can generalise MovementSystem to move creatures and items,
   without if-else.. maybe? We'll see if this happens more often, if it's only for the movement of
   thrown stuff than we can leave it like this.
