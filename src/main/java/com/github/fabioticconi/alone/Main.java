@@ -154,6 +154,8 @@ public class Main extends JFrame implements KeyListener
 
         float pActionTime = 0f;
 
+        float repaintCooldown = 0f;
+
         while (keepRunning)
         {
             currentTime = System.nanoTime();
@@ -198,7 +200,13 @@ public class Main extends JFrame implements KeyListener
             if (pActionTime <= 0f && !realtime)
                 Main.paused = true;
 
-            repaint();
+            if (repaintCooldown <= 0f)
+            {
+                repaint();
+                repaintCooldown = 0.25f;
+            }
+            else
+                repaintCooldown -= elapsed;
 
             // FIXME: to remove when actual rendering and input processing is implemented
             try
