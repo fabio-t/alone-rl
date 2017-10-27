@@ -244,7 +244,7 @@ public class BootstrapSystem extends BaseSystem
             edit.add(ai);
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('p', Util.BROWN.darker());
+            edit.create(Sprite.class).set('p', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
 
             grid.set(id, x, y);

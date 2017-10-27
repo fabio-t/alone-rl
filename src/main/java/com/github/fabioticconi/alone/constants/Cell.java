@@ -27,15 +27,15 @@ import java.awt.*;
 public enum Cell
 {
     EMPTY(),
-    DEEP_WATER('=', Color.BLUE.darker().darker()),
-    WATER('~', Color.BLUE.brighter().brighter()),
-    SAND((char)250, Color.ORANGE.brighter()),
-    GROUND((char)250, Color.ORANGE.darker()),
-    GRASS((char)250, Color.GREEN.darker().darker()),
-    HILL_GRASS('^', Color.GREEN.darker().darker()),
-    HILL('^', Util.BROWN.brighter()),
-    MOUNTAIN('^', Util.BROWN),
-    HIGH_MOUNTAIN('^', Color.GRAY.brighter());
+    DEEP_WATER('=', Color.BLUE.darker().darker().darker()),
+    WATER('~', Color.BLUE.brighter()),
+    SAND((char)250, Color.ORANGE),
+    GROUND((char)250, Color.ORANGE.darker().darker()),
+    GRASS((char)250, Color.GREEN.darker().darker().darker()),
+    HILL_GRASS('^', Color.GREEN.darker().darker().darker()),
+    HILL('^', Util.BROWN),
+    MOUNTAIN('^', Util.BROWN.darker()),
+    HIGH_MOUNTAIN('^', Color.GRAY);
 
     public final char  c;
     public final Color col;
@@ -60,7 +60,7 @@ public enum Cell
         this.c = c;
         // this.col = color;
         // this.bg = Color.BLACK;
-        this.col = color.darker().darker();
-        this.bg = color.darker();
+        this.col = color.darker();
+        this.bg = color;
     }
 }
