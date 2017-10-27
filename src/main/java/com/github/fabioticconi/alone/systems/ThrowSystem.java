@@ -108,10 +108,14 @@ public class ThrowSystem extends PassiveSystem
                 final Position p     = mPos.get(actorId);
                 final Sight    sight = mSight.get(actorId);
 
+                // FIXME targeting should be decoupled
                 // among the visible creatures, only keep the closest one
                 final IntSet creatures = obstacles.getEntities(map.getVisibleCells(p.x, p.y, sight.value));
                 final IntSet closest   = obstacles.getClosestEntities(p.x, p.y, sight.value);
                 creatures.retainAll(closest);
+
+                if (creatures.isEmpty())
+                    return false;
 
                 final int targetId = creatures.iterator().nextInt();
 
@@ -120,18 +124,16 @@ public class ThrowSystem extends PassiveSystem
 
                 final Position targetPos = mPos.get(targetId);
 
-                // it's close enough to strike
+                // it's close enough to strike, so we transform this in a bump action
                 if (Coords.distanceChebyshev(p.x, p.y, targetPos.x, targetPos.y) == 1)
                 {
-                    // it's only one step away, no point calculating line of sight
-                    path = new ArrayList<>(1);
+                    sBump.bumpAction(actorId, Side.getSide(p.x, p.y, targetPos.x, targetPos.y));
+
+                    return false;
                 }
                 else
                 {
                     path = map.getLineOfSight(p.x, p.y, targetPos.x, targetPos.y);
-
-                    // first index is the current position
-                    path.remove(0);
 
                     if (path == null || path.size() < 2)
                     {
@@ -139,6 +141,9 @@ public class ThrowSystem extends PassiveSystem
 
                         return false;
                     }
+
+                    // first index is the current position
+                    path.remove(0);
                 }
 
                 // adding weapon
@@ -147,7 +152,7 @@ public class ThrowSystem extends PassiveSystem
                 // target position is not included
                 path.add(new Point(targetPos.x, targetPos.y));
 
-                delay = 1f;
+                delay = 0.5f;
                 cost = 1.5f;
 
                 return true;
@@ -183,14 +188,13 @@ public class ThrowSystem extends PassiveSystem
                 mPath.create(weaponId).set(cooldown, path);
                 mPos.create(weaponId).set(newP.x, newP.y);
 
-                // Now, it's exactly as if we were wielding the object. Later it should be more complicated,
-                // eg reduce strength proportionally to length (eg, -1 each 3 or 4 steps) and set agility to
-                // 0, maybe, so the victim's agility counts more.
+                // strength and agility of thrower are passed on to the thrown weapon.
+                // effects: the weapon will hit more likely with high agility, and do more damage with high strength.
                 mStrength.create(weaponId).value = mStrength.get(actorId).value;
                 mAgility.create(weaponId).value = mAgility.get(actorId).value;
 
                 // at this point it really happened: the weapon is flying at its new position
-                // obstacles.set(targetId, newP.x, newP.y);
+                // (it's not an obstacle, so there's not risk of someone interrupting it in mid-air)
                 items.add(weaponId, newP.x, newP.y);
             }
             else
@@ -204,7 +208,7 @@ public class ThrowSystem extends PassiveSystem
                 sBump.bumpAction(actorId, Side.getSide(p.x, p.y, newP.x, newP.y));
             }
 
-            sStamina.consume(actorId, 1.5f);
+            sStamina.consume(actorId, cost);
         }
     }
 }

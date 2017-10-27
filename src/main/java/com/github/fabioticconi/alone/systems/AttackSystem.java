@@ -23,11 +23,14 @@ import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Health;
+import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.utils.Coords;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
@@ -49,6 +52,7 @@ public class AttackSystem extends PassiveSystem
     ComponentMapper<Skin>     mSkin;
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Dead>     mDead;
+    ComponentMapper<Position> mPos;
 
     @Wire
     Random r;
@@ -75,12 +79,24 @@ public class AttackSystem extends PassiveSystem
             if (targets.size() != 1)
                 return false;
 
+            final int targetId = targets.get(0);
+
+            final Position p = mPos.get(actorId);
+            final Position p2 = mPos.get(targetId);
+
+            if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
+            {
+                // can't strike if the target has moved away
+
+                return false;
+            }
+
             // FIXME check the target is close by?
 
             final float speed = mSpeed.get(actorId).value;
 
             // FIXME maybe dependent on strength and/or weight of weapon?
-            cost = 1.5f;
+            cost = 0.5f;
 
             delay = speed * cost;
 
@@ -95,7 +111,14 @@ public class AttackSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
-            // FIXME check the target is still close by?
+            final Position p = mPos.get(actorId);
+            final Position p2 = mPos.get(targetId);
+
+            if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
+            {
+                // can't strike if the target has moved away
+                return;
+            }
 
             final Strength cStrength = mStrength.get(actorId);
             final Agility  cAgility  = mAgility.get(actorId);

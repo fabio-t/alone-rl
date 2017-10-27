@@ -1,46 +1,93 @@
 # Alone
 
-Simple single-player ANSI roguelike/roguelite. It's intended as a toy project to learn a bit about single-player game
-programming (and also specifically to learn artemis-odb) without the hassle of game physics and most importantly
-graphics.
+Single-player ASCII roguelike/roguelite focused on surviving, alone, on an island inhabited by animals.
+The main inspiration is from [Unreal World](http://unrealworld.fi) and [Wayward](http://www.waywardgame.com),
+with a much simpler gameplay.
 
 It's a real-time game but it defaults to a turn-based modality where the world only advances during player actions,
 for as long as the player action runs. Pure real-time gameplay can be toggled.
 
-**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable, by far.
-Keep an eye on the [releases](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
+**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable,
+by far.
+Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
 
-# Controls
+## Controls
 
-* Move using the directional arrows (hold two together for diagonal movement, eg UP+RIGHT to go north-east)
+* **`directional arrows` to move** (hold two together for diagonal movement, eg UP+RIGHT to go north-east)
 
-* Move into creatures to attack them (message/combat log coming soon), trees to cut them, boulders to crush them.
+  Move into creatures to attack them (message/combat log coming soon), trees to cut them, boulders to crush them.
   For the last two you need proper tools (a cutting weapon for cutting three, not craftable yet, and a blunt weapon
   for crushing boulders: you can use a stone for that)
   
-* Type **g** to get the first item on the ground you are currently positioned on (stones, sticks, corpses, tree trunks..
+* **`g` to get the first item** on the ground you are currently positioned on (stones, sticks, corpses, tree trunks..
   there's no inventory limit for now).
-  Type **d** to drop the oldest item in your inventory. Inventory screen upcoming..
+  Type **`d` to drop the oldest item** in your inventory. Inventory screen upcoming..
   
-* Type **t** to throw a throwable weapon (only stones, for now). The targeting system is just a stub for now: it simply
-  targets the closest creature, tree or boulders in your view. Soon there'll be proper targeting.
+* **`t` to throw** a throwable weapon (only stones, for now - they must be in the inventory).
+  The targeting system is just a stub for now: it simply targets the closest creature, tree or boulders in your view.
+  Soon there'll be proper targeting.
   
-* Type **e** to eat if there's a corpse in the cell you are on or in any of the 8 neighbouring cells. If you got a corpse
+* **`e` to eat** if there's a corpse in the cell you are on or in any of the 8 neighbouring cells. If you got a corpse
   from the ground, you need to drop it before you can eat it. Quantities have to be optimised but generally even a rabbit
   corpse should be enough to empty your hunger bar.
+  
+There are also some special commands:
 
-# Features
+* **`Ctrl+SPACE`** to toggle real-time/turn-based behaviour
 
-## Field of view
+* **`SPACE`** to pause/unpause if you are on real-time mode; if you are on turn-based mode, keep `SPACE`
+  pressed to temporarily run the game in real-time (needed, for example, to recover stamina when you finish it,
+  or regenerate health).
+  
+* **`F1`** removes the speed delay of the player. Useful to test the game without having to suffer the movement delays.
+  Will be removed in the final version.
+  
+* **`F2`** restores the correct player speed.
+  Will be removed in the final version.
+  
+## Screenshots
 
-Thanks to [rlforj](https://github.com/kba/rlforj), we are now using "precise permissive FOV", providing with a nice shadowing/light casting.
+This is how the game looks when run (**very** preliminary GUI):
 
-Creatures and player alike have, thus, only a limited view of the world and can hide from indiscreet eyes.
+![](screenshots/short.gif)
 
-Right now, everything that is an obstacle blocks both light and movement, from rabbits to trees. Later some things
-will block movement but not light, so that you will be able to see behind most animals (minus the biggest ones).
+A few wolves are chasing rabbits, while pumas manage to bring a buffalo.
 
-## Simple Ecology
+### Original Map
+
+![](screenshots/orig_map.png)
+
+Thanks to the map generator from [Red Blob Games](https://www.redblobgames.com/), I produced the map above. The one in
+the game is fundamentally based on this (eg, it uses this heightmap) but it then simplifies the terrains into less
+groups - so my map is much less coloured and it has less water mass.
+
+The rivers and lakes are also currently not present. The map is **2048x2048 pixels**, and it's pixel is one "cell" in
+game, so it's pretty big.
+
+In game, if it could be zoomed out it would look more like this:
+
+![](screenshots/map.png)
+
+The elevation thresholds are simplified to reduce the amount of colours (and thus, terrains) shown.
+
+Later the terrain will be configurable by the user.
+
+You can also see some rivers (still in-progress, not in the game yet) flowing from high to low places.
+
+## Features
+
+### Field of view
+
+Powered by [`rlforj-alt`](http://github.com/fabioticconi/rlforj-alt), all creatures have their own field of view.
+Different species might have shorter or longer sight, but if you hide behind a tree you won't be seen.
+
+Pathfinding is both precise and efficient thanks to an AStar implementation that takes the sight into account
+to plan a course to a target position.
+
+What this means for the end user is that the game doesn't cheat. It doesn't magically make creatures see you
+if they shouldn't. The other creatures can only do what *you* also can.
+
+### Simple Ecology Simulation
 
 Creatures don't "pop" or "spawn", they don't just appear when needed but they keep going even when the
 player is not looking.
@@ -57,53 +104,17 @@ Different creatures have different set of behaviours:
 * Some types of herbivores are solitary, others live in packs/herds. Same for carnivores. Being far away from the
   other elements of the group might trigger a Flock behaviour, but it's unlikely to take precedence over seeking food
   or fleeing a predator.
+  
+* Fishes are abundant in the sea, but they are hard to catch. They swim quickly while you'll move slowly in the water.
+  However, they might not flee away if you stay still and don't move..
 
-## Survival
+### Survival
 
-The main goal of the game. You need to eat, drink and keep your health up. Escape predators, steal their carcasses if
-you can, or kill them and eat them.
+The main goal of the game. You need to eat, drink (*not yet*) and keep your health up.
 
-## Crafting
+Escape predators, steal their carcasses if you can, or kill any walking thing and eat it.
 
-Not implemented yet. It will cover the basic primitive technology of a Neolithic hunter, eg stone knives, spears and axes,
+### Crafting
+
+**Not implemented yet**. It will cover the basic primitive technology of a Neolithic hunter, eg stone knives, spears and axes,
 simple bark protection, a shelter, maybe rudimentary pit traps and extraction of parts from dead animals.
-
-# Screenshots
-
-This is how the game looks when run:
-
-![alt tag](screenshots/screenshot.png)
-
-Plenty of trees and animals on the grassy hill, one fall tree trunk, a corpse in red.
-One stone is visible, too (they can be used as weapons, or thrown).
-
-Higher up there's no proper grass, but it's still not mountain. Trees are sparse here, but some big boulders are visible (these
-are proper obstacles like trees: they block both light and movement).
-
-## Alternative colour scheme
-
-![alt tag](screenshots/full_colours.png)
-
-Not sure I'll use this or the other with black background.. but I kind of like it now. Some of the colours
-need to be adjusted to increase contrast.
-
-## Original Map
-
-![alt tag](screenshots/orig_map.png)
-
-Thanks to the map generator from [Red Blob Games](https://www.redblobgames.com/), I produced the map above. The one in
-the game is fundamentally based on this (eg, it uses this heightmap) but it then simplifies the terrains into less
-groups - so my map is much less coloured and it has less water mass.
-
-The rivers and lakes are also currently not present. The map is **2048x2048 pixels**, and it's pixel is one "cell" in
-game, so it's pretty big.
-
-## Map in-game
-
-![alt tag](screenshots/map.png)
-
-This is the map actually being used in the game, simplifying the elevation thresholds to reduce
-the amount of colours (and thus, terrains) shown. Later I might bring back the colour gradient of the original.
-
-You can also see some rivers (still in-progress, not in the game yet) flowing from high to low places.
-

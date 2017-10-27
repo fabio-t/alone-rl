@@ -58,4 +58,17 @@ public class Util
     {
         return (value > max) || (value < min);
     }
+
+    public static float bias(final float v, final float bias)
+    {
+        return (v / ((((1.0f / bias) - 2.0f) * (1.0f - v)) + 1.0f));
+    }
+
+    public static float gain(final float v, final float gain)
+    {
+        if (gain < 0.5f)
+            return bias(v * 2.0f, gain) / 2.0f;
+        else
+            return bias(v * 2.0f - 1.0f,1.0f - gain) / 2.0f + 0.5f;
+    }
 }
