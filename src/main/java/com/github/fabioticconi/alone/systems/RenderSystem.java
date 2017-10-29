@@ -33,6 +33,8 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.awt.*;
+import java.util.Stack;
+import java.util.Vector;
 
 /**
  * @author Fabio Ticconi
@@ -214,14 +216,15 @@ public class RenderSystem extends PassiveSystem
         }
         terminal.write('[', xmax-x-1, yoff, Color.ORANGE.darker());
 
-        // small panel
+        // small panel: combat log
+        final Stack<Message> messages = player.messages;
         for (int i = 1; i <= panelSize; i++)
         {
-            if (player.messages.size() < i)
+            if (messages.size() < i)
                 terminal.clear(' ', 0, ymax-i, xmax, 1, Color.WHITE, Color.BLACK);
             else
             {
-                final Message msg = player.messages.get(player.messages.size() - i);
+                final Message msg = messages.get(messages.size() - i);
                 String smsg = msg.format();
 
                 if (smsg.length() > xmax)
@@ -232,6 +235,12 @@ public class RenderSystem extends PassiveSystem
                 if (smsg.length() < xmax)
                     terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);
             }
+        }
+
+        // FIXME: this is crap, inefficient, horrible. Must change the Stack with a better data structure.
+        for (int i = 0; i < messages.size() - panelSize; i++)
+        {
+            messages.remove(i);
         }
 
         // player.messages.clear();
