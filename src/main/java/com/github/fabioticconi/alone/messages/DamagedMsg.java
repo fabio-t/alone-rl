@@ -15,22 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.github.fabioticconi.alone.components;
 
-import com.artemis.Component;
-import com.github.fabioticconi.alone.messages.Message;
-
-import java.util.Stack;
+package com.github.fabioticconi.alone.messages;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 29/10/17
  */
-public class Player extends Component
+public class DamagedMsg implements Message
 {
-    public final Stack<Message> messages;
+    final String attacker;
+    final float dmg;
+    final float remaining;
 
-    public Player()
+    public DamagedMsg(final String attacker, final float dmg, final float remaining)
     {
-        messages = new Stack<>();
+        this.attacker = attacker;
+        this.dmg = dmg;
+        this.remaining = remaining;
+    }
+
+    @Override
+    public String format()
+    {
+        return String.format("%s HITS you for %.2f hp (%.2f)", attacker, dmg, remaining);
     }
 }

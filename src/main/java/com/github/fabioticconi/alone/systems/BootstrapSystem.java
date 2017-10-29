@@ -100,6 +100,7 @@ public class BootstrapSystem extends BaseSystem
         pManager.setPlayer(world.getEntity(id), "player");
         System.out.println("setPlayer");
         edit.create(Inventory.class);
+        edit.add(new Name("You"));
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
@@ -137,6 +138,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker().darker());
+            edit.add(new Name("A buffalo"));
 
             grid.set(id, x, y);
         }
@@ -171,6 +173,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
+            edit.add(new Name("A rabbit"));
 
             grid.set(id, x, y);
         }
@@ -211,6 +214,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Color.DARK_GRAY);
+            edit.add(new Name("A wolf"));
 
             grid.set(id, x, y);
         }
@@ -246,6 +250,7 @@ public class BootstrapSystem extends BaseSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
+            edit.add(new Name("A puma"));
 
             grid.set(id, x, y);
         }
@@ -284,6 +289,7 @@ public class BootstrapSystem extends BaseSystem
                     edit.create(Position.class).set(x, y);
                     edit.create(Alertness.class).value = 0.0f;
                     edit.create(Sprite.class).set('f', Color.CYAN.darker());
+                    edit.add(new Name("A fish"));
 
                     grid.set(id, x, y);
                 }

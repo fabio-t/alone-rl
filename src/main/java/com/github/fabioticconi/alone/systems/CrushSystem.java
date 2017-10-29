@@ -126,6 +126,7 @@ public class CrushSystem extends PassiveSystem
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
         edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2, true);
+        edit.add(new Name("A stone"));
 
         return id;
     }
@@ -140,6 +141,7 @@ public class CrushSystem extends PassiveSystem
         edit.create(LightBlocker.class);
         edit.create(Pushable.class);
         edit.create(Crushable.class);
+        edit.add(new Name("A boulder"));
 
         return id;
     }

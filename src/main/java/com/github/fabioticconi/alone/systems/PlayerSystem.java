@@ -22,21 +22,24 @@ import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
+import com.github.fabioticconi.alone.components.Player;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Stamina;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.messages.Message;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 
-public class PlayerInputSystem extends PassiveSystem
+public class PlayerSystem extends PassiveSystem
 {
-    static final Logger log = LoggerFactory.getLogger(PlayerInputSystem.class);
+    static final Logger log = LoggerFactory.getLogger(PlayerSystem.class);
 
     ComponentMapper<Stamina> mStamina;
     ComponentMapper<Speed>   mSpeed;
+    ComponentMapper<Player>  mPlayer;
 
     ActionSystem sAction;
     BumpSystem   sBump;
@@ -47,7 +50,7 @@ public class PlayerInputSystem extends PassiveSystem
     PlayerManager pManager;
 
     // FIXME only for debug..
-    float savedSpeed = -1f;
+    private float savedSpeed = -1f;
 
     public float handleKeys(final BitVector keys)
     {
@@ -195,21 +198,26 @@ public class PlayerInputSystem extends PassiveSystem
             {
                 // Space alone has two meanings:
 
-                if (Main.realtime)
-                {
-                    // in real-time mode, space means pause/unpause the game
-                    Main.paused = !Main.paused;
-                }
-                else
-                {
-                    // in turn-based mode, space means unpause the game for this frame
-                    Main.paused = false;
-                }
+                // in real-time mode, space means pause/unpause the game, while
+                // in turn-based mode, space means unpause the game until SPACE is released
+                Main.paused = Main.realtime && !Main.paused;
             }
 
             keys.clear(KeyEvent.VK_SPACE);
         }
 
         return 0f;
+    }
+
+    public void message(final Message msg, final int actorId)
+    {
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+        if (actorId != playerId)
+            return;
+
+        final Player p = mPlayer.get(actorId);
+
+        p.messages.push(msg);
     }
 }

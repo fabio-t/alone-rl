@@ -27,6 +27,7 @@ import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.messages.Message;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -38,6 +39,7 @@ import java.awt.*;
  */
 public class RenderSystem extends PassiveSystem
 {
+    ComponentMapper<Player>   mPlayer;
     ComponentMapper<Position> mPosition;
     ComponentMapper<Sprite>   mSprite;
     ComponentMapper<Sight>    mSight;
@@ -58,10 +60,11 @@ public class RenderSystem extends PassiveSystem
     public void display(final AsciiPanel terminal)
     {
         // FIXME: hackish, very crappy
-        final int pID = pManager.getEntitiesOfPlayer("player").get(0).getId();
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final Position p     = mPosition.get(pID);
-        final int      sight = mSight.get(pID).value;
+        final Player player  = mPlayer.get(playerId);
+        final Position p     = mPosition.get(playerId);
+        final int      sight = mSight.get(playerId).value;
 
         final int xmax = terminal.getWidthInCharacters();
         final int ymax = terminal.getHeightInCharacters();
@@ -81,7 +84,7 @@ public class RenderSystem extends PassiveSystem
 
         for (int x = 0; x < xmax; x++)
         {
-            for (int y = 0; y < ymax; y++)
+            for (int y = 0; y < ymax-panelSize; y++)
             {
                 posX = p.x + x - halfcols;
                 posY = p.y + y - halfrows;
@@ -170,9 +173,9 @@ public class RenderSystem extends PassiveSystem
         // title:
         terminal.writeCenter("ALONE", 1);
 
-        final Hunger  hunger  = mHunger.get(pID);
-        final Health  health  = mHealth.get(pID);
-        final Stamina stamina = mStamina.get(pID);
+        final Hunger  hunger  = mHunger.get(playerId);
+        final Health  health  = mHealth.get(playerId);
+        final Stamina stamina = mStamina.get(playerId);
 
         int x;
 
@@ -212,6 +215,25 @@ public class RenderSystem extends PassiveSystem
         terminal.write('[', xmax-x-1, yoff, Color.ORANGE.darker());
 
         // small panel
-        terminal.clear(' ', 0, ymax-panelSize, xmax, panelSize, Color.WHITE, Color.BLACK);
+        for (int i = 1; i <= panelSize; i++)
+        {
+            if (player.messages.size() < i)
+                terminal.clear(' ', 0, ymax-i, xmax, 1, Color.WHITE, Color.BLACK);
+            else
+            {
+                final Message msg = player.messages.get(player.messages.size() - i);
+                String smsg = msg.format();
+
+                if (smsg.length() > xmax)
+                    smsg = smsg.substring(0, xmax);
+
+                terminal.write(smsg, 0, ymax-i, Color.WHITE, Color.BLACK);
+
+                if (smsg.length() < xmax)
+                    terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);
+            }
+        }
+
+        // player.messages.clear();
     }
 }

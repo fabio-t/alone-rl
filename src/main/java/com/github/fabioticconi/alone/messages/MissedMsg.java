@@ -15,22 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.github.fabioticconi.alone.components;
 
-import com.artemis.Component;
-import com.github.fabioticconi.alone.messages.Message;
-
-import java.util.Stack;
+package com.github.fabioticconi.alone.messages;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 29/10/17
  */
-public class Player extends Component
+public class MissedMsg implements Message
 {
-    public final Stack<Message> messages;
+    final String victim;
 
-    public Player()
+    public MissedMsg(final String victim)
     {
-        messages = new Stack<>();
+        this.victim = victim;
+    }
+
+    @Override
+    public String format()
+    {
+        return String.format("Your attack MISSES %s", victim.toLowerCase());
     }
 }

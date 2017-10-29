@@ -19,17 +19,13 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.Dead;
-import com.github.fabioticconi.alone.components.Health;
-import com.github.fabioticconi.alone.components.Position;
-import com.github.fabioticconi.alone.components.Speed;
+import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.messages.*;
 import com.github.fabioticconi.alone.utils.Coords;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -53,12 +49,14 @@ public class AttackSystem extends PassiveSystem
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Dead>     mDead;
     ComponentMapper<Position> mPos;
+    ComponentMapper<Name>     mName;
 
     @Wire
     Random r;
 
     StaminaSystem sStamina;
-    HealthSystem sHealth;
+    HealthSystem  sHealth;
+    PlayerSystem  sPlayer;
 
     public AttackAction attack(final int entityId, final int targetId)
     {
@@ -81,7 +79,7 @@ public class AttackSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
-            final Position p = mPos.get(actorId);
+            final Position p  = mPos.get(actorId);
             final Position p2 = mPos.get(targetId);
 
             if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
@@ -111,7 +109,7 @@ public class AttackSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
-            final Position p = mPos.get(actorId);
+            final Position p  = mPos.get(actorId);
             final Position p2 = mPos.get(targetId);
 
             if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
@@ -140,18 +138,21 @@ public class AttackSystem extends PassiveSystem
 
                 tHealth.value -= damage;
 
-                log.info("{} hits {} for D={} (H={})", actorId, targetId, damage, tHealth.value);
+                sPlayer.message(new DamageMsg(mName.get(targetId).name, damage, tHealth.value), actorId);
+                sPlayer.message(new DamagedMsg(mName.get(actorId).name, damage, tHealth.value), targetId);
 
                 if (tHealth.value <= 0)
                 {
-                    log.info("{} is killed by {}", targetId, actorId);
+                    sPlayer.message(new KillMsg(mName.get(targetId).name), actorId);
+                    sPlayer.message(new KilledMsg(mName.get(actorId).name), targetId);
 
                     mDead.create(targetId);
                 }
             }
             else
             {
-                log.info("{} misses {}", actorId, targetId);
+                sPlayer.message(new MissMsg(mName.get(actorId).name), targetId);
+                sPlayer.message(new MissedMsg(mName.get(targetId).name), actorId);
             }
         }
     }

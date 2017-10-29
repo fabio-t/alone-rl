@@ -75,6 +75,7 @@ public class TreeSystem extends PassiveSystem
         edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
         edit.create(LightBlocker.class);
         edit.create(Tree.class);
+        edit.add(new Name("A tree"));
 
         return id;
     }
@@ -86,6 +87,7 @@ public class TreeSystem extends PassiveSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('-', Util.BROWN.brighter());
+        edit.add(new Name("A tree trunk"));
 
         return id;
     }
@@ -98,6 +100,7 @@ public class TreeSystem extends PassiveSystem
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('/', Util.BROWN.brighter());
         edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
+        edit.add(new Name("A branch"));
 
         return id;
     }

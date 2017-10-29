@@ -50,12 +50,12 @@ public class Main extends JFrame implements KeyListener
     private final int     fps          = 25;
     private final long    deltaNanos   = Math.round(1000000000.0d / (double) fps);
     private final float   deltaSeconds = 1.0f / (float) fps;
-    private final AsciiPanel        terminal;
-    private final World             world;
-    private final PlayerInputSystem input;
-    private final RenderSystem      render;
+    private final AsciiPanel   terminal;
+    private final World        world;
+    private final PlayerSystem input;
+    private final RenderSystem render;
     // currently pressed keys
-    private final BitVector         pressed;
+    private final BitVector    pressed;
 
     public Main() throws IOException
     {
@@ -71,7 +71,7 @@ public class Main extends JFrame implements KeyListener
         // and converts it to artemis "things", then starts a player action. Should be pretty immediate.
         // The render system is called whenever the play screen is active and the map needs to be painted.
         // It needs to be a system for us to be able to leverage the components on the entities, of course.
-        input = new PlayerInputSystem();
+        input = new PlayerSystem();
         render = new RenderSystem();
 
         final WorldConfiguration config;
@@ -203,7 +203,7 @@ public class Main extends JFrame implements KeyListener
             if (repaintCooldown <= 0L)
             {
                 repaint();
-                repaintCooldown = 250000000L;
+                repaintCooldown = 200000000L;
             }
             else
                 repaintCooldown -= elapsed;
@@ -222,7 +222,7 @@ public class Main extends JFrame implements KeyListener
     @Override
     public void repaint()
     {
-        terminal.clear();
+        // terminal.clear();
         render.display(terminal);
         super.repaint();
     }

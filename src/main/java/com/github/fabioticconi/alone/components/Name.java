@@ -15,22 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
-import com.github.fabioticconi.alone.messages.Message;
-
-import java.util.Stack;
 
 /**
- * @author Fabio Ticconi
+ * Author: Fabio Ticconi
+ * Date: 29/10/17
  */
-public class Player extends Component
+public class Name extends Component
 {
-    public final Stack<Message> messages;
+    public final String name;
 
-    public Player()
+    public Name()
     {
-        messages = new Stack<>();
+        this.name = "";
+    }
+
+    public Name(final String name)
+    {
+        this.name = name;
     }
 }
