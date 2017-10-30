@@ -18,22 +18,26 @@
 
 package com.github.fabioticconi.alone.messages;
 
+import com.github.fabioticconi.alone.constants.Side;
+
 /**
  * Author: Fabio Ticconi
  * Date: 29/10/17
  */
-public class MissMsg implements Message
+public class MissMsg extends AbstractMessage
 {
-    final String attacker;
+    public final String victim;
 
-    public MissMsg(final String attacker)
+    public MissMsg(final String victim, final int distance, final Side direction)
     {
-        this.attacker = attacker;
+        super(distance, direction);
+
+        this.victim = victim;
     }
 
     @Override
     public String format()
     {
-        return String.format("%s attacks you but MISSES", attacker);
+        return String.format("You MISS %s (%s)", victim.toLowerCase(), direction.toString());
     }
 }

@@ -26,6 +26,7 @@ import com.github.fabioticconi.alone.components.Player;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Stamina;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.Message;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
@@ -209,7 +210,7 @@ public class PlayerSystem extends PassiveSystem
         return 0f;
     }
 
-    public void message(final Message msg, final int actorId)
+    public void message(final AbstractMessage msg, final int actorId)
     {
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 

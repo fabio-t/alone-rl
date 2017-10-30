@@ -27,6 +27,7 @@ import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.Message;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -217,24 +218,34 @@ public class RenderSystem extends PassiveSystem
         terminal.write('[', xmax-x-1, yoff, Color.ORANGE.darker());
 
         // small panel: combat log
-        final Stack<Message> messages = player.messages;
+        final Stack<AbstractMessage> messages = player.messages;
         for (int i = 1; i <= panelSize; i++)
         {
             if (messages.size() < i)
-                terminal.clear(' ', 0, ymax-i, xmax, 1, Color.WHITE, Color.BLACK);
-            else
             {
-                final Message msg = messages.get(messages.size() - i);
-                String smsg = msg.format();
+                terminal.clear(' ', 0, ymax - i, xmax, 1, Color.WHITE, Color.BLACK);
 
-                if (smsg.length() > xmax)
-                    smsg = smsg.substring(0, xmax);
-
-                terminal.write(smsg, 0, ymax-i, Color.WHITE, Color.BLACK);
-
-                if (smsg.length() < xmax)
-                    terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);
+                continue;
             }
+
+            final AbstractMessage msg = messages.get(messages.size() - i);
+
+            if (msg.distance > sight)
+            {
+                terminal.clear(' ', 0, ymax - i, xmax, 1, Color.WHITE, Color.BLACK);
+
+                continue;
+            }
+
+            String smsg = msg.format();
+
+            if (smsg.length() > xmax)
+                smsg = smsg.substring(0, xmax);
+
+            terminal.write(smsg, 0, ymax-i, Color.WHITE, Color.BLACK);
+
+            if (smsg.length() < xmax)
+                terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);
         }
 
         // FIXME: this is crap, inefficient, horrible. Must change the Stack with a better data structure.

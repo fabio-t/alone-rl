@@ -18,6 +18,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
+import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.Message;
 
 import java.util.Stack;
@@ -27,7 +28,7 @@ import java.util.Stack;
  */
 public class Player extends Component
 {
-    public final Stack<Message> messages;
+    public final Stack<AbstractMessage> messages;
 
     public Player()
     {

@@ -24,23 +24,25 @@ import java.util.Random;
  */
 public enum Side
 {
-    HERE(0, 0),
-    N(0, -1),
-    NE(1, -1),
-    E(1, 0),
-    SE(1, 1),
-    S(0, 1),
-    SW(-1, 1),
-    W(-1, 0),
-    NW(-1, -1);
+    HERE(0, 0, "here"),
+    N(0, -1, "north"),
+    NE(1, -1, "northeast"),
+    E(1, 0, "east"),
+    SE(1, 1, "southeast"),
+    S(0, 1, "south"),
+    SW(-1, 1, "southwest"),
+    W(-1, 0, "west"),
+    NW(-1, -1, "northwest");
 
     public final int x;
     public final int y;
+    public final String name;
 
-    Side(final int x, final int y)
+    Side(final int x, final int y, final String name)
     {
         this.x = x;
         this.y = y;
+        this.name = name;
     }
 
     public static Side getSide(final int fromX, final int fromY, final int toX, final int toY)

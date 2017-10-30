@@ -22,22 +22,16 @@ import com.github.fabioticconi.alone.constants.Side;
 
 /**
  * Author: Fabio Ticconi
- * Date: 29/10/17
+ * Date: 30/10/17
  */
-public class KilledMsg extends AbstractMessage
+public abstract class AbstractMessage implements Message
 {
-    public final String attacker;
+    public final int  distance;
+    public final Side direction;
 
-    public KilledMsg(final String attacker, final int distance, final Side direction)
+    public AbstractMessage(final int distance, final Side direction)
     {
-        super(distance, direction);
-
-        this.attacker = attacker;
-    }
-
-    @Override
-    public String format()
-    {
-        return String.format("You have been KILLED by %s (%s)!", attacker.toLowerCase(), direction.toString());
+        this.distance = distance;
+        this.direction = direction;
     }
 }

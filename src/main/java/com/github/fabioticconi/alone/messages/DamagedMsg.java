@@ -18,18 +18,22 @@
 
 package com.github.fabioticconi.alone.messages;
 
+import com.github.fabioticconi.alone.constants.Side;
+
 /**
  * Author: Fabio Ticconi
  * Date: 29/10/17
  */
-public class DamagedMsg implements Message
+public class DamagedMsg extends AbstractMessage
 {
-    final String attacker;
-    final float dmg;
-    final float remaining;
+    public final String attacker;
+    public final float  dmg;
+    public final float  remaining;
 
-    public DamagedMsg(final String attacker, final float dmg, final float remaining)
+    public DamagedMsg(final String attacker, final float dmg, final float remaining, final int distance, final Side direction)
     {
+        super(distance, direction);
+
         this.attacker = attacker;
         this.dmg = dmg;
         this.remaining = remaining;
@@ -38,6 +42,6 @@ public class DamagedMsg implements Message
     @Override
     public String format()
     {
-        return String.format("%s HITS you for %.2f hp (%.2f)", attacker, dmg, remaining);
+        return String.format("%s HITS you for %.2f (%.2f) (%s)", attacker, dmg, remaining, direction.toString());
     }
 }

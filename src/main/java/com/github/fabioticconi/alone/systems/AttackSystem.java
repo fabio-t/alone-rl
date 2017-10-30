@@ -25,6 +25,7 @@ import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.messages.*;
 import com.github.fabioticconi.alone.utils.Coords;
 import com.github.fabioticconi.alone.utils.Util;
@@ -112,7 +113,10 @@ public class AttackSystem extends PassiveSystem
             final Position p  = mPos.get(actorId);
             final Position p2 = mPos.get(targetId);
 
-            if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
+            final int  dist      = Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y);
+            final Side direction = Side.getSide(p.x, p.y, p2.x, p2.y);
+
+            if (dist != 1)
             {
                 // can't strike if the target has moved away
                 return;
@@ -138,21 +142,21 @@ public class AttackSystem extends PassiveSystem
 
                 tHealth.value -= damage;
 
-                sPlayer.message(new DamageMsg(mName.get(targetId).name, damage, tHealth.value), actorId);
-                sPlayer.message(new DamagedMsg(mName.get(actorId).name, damage, tHealth.value), targetId);
+                sPlayer.message(new DamageMsg(mName.get(targetId).name, damage, tHealth.value, dist, direction), actorId);
+                sPlayer.message(new DamagedMsg(mName.get(actorId).name, damage, tHealth.value, dist, direction), targetId);
 
                 if (tHealth.value <= 0)
                 {
-                    sPlayer.message(new KillMsg(mName.get(targetId).name), actorId);
-                    sPlayer.message(new KilledMsg(mName.get(actorId).name), targetId);
+                    sPlayer.message(new KillMsg(mName.get(targetId).name, dist, direction), actorId);
+                    sPlayer.message(new KilledMsg(mName.get(actorId).name, dist, direction), targetId);
 
                     mDead.create(targetId);
                 }
             }
             else
             {
-                sPlayer.message(new MissMsg(mName.get(actorId).name), targetId);
-                sPlayer.message(new MissedMsg(mName.get(targetId).name), actorId);
+                sPlayer.message(new MissMsg(mName.get(targetId).name, dist, direction), actorId);
+                sPlayer.message(new MissedMsg(mName.get(actorId).name, dist, direction), targetId);
             }
         }
     }

@@ -18,22 +18,26 @@
 
 package com.github.fabioticconi.alone.messages;
 
+import com.github.fabioticconi.alone.constants.Side;
+
 /**
  * Author: Fabio Ticconi
  * Date: 29/10/17
  */
-public class KillMsg implements Message
+public class KillMsg extends AbstractMessage
 {
     public final String victim;
 
-    public KillMsg(final String victim)
+    public KillMsg(final String victim, final int distance, final Side direction)
     {
+        super(distance, direction);
+
         this.victim = victim;
     }
 
     @Override
     public String format()
     {
-        return String.format("You KILL %s!", victim.toLowerCase());
+        return String.format("You KILL %s! (%s)", victim.toLowerCase(), direction.toString());
     }
 }

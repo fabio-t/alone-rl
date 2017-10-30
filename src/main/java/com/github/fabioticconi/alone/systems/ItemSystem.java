@@ -21,10 +21,13 @@ package com.github.fabioticconi.alone.systems;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.components.Name;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
+import com.github.fabioticconi.alone.messages.DropMsg;
+import com.github.fabioticconi.alone.messages.GetMsg;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
@@ -41,6 +44,9 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Position>  mPos;
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Weapon>    mWeapon;
+    ComponentMapper<Name>      mName;
+
+    PlayerSystem sPlayer;
 
     @Wire
     MultipleGrid items;
@@ -102,6 +108,8 @@ public class ItemSystem extends PassiveSystem
 
             items.del(itemId, p.x, p.y);
             i.items.add(itemId);
+
+            sPlayer.message(new GetMsg(mName.get(itemId).name), actorId);
         }
     }
 
@@ -135,6 +143,8 @@ public class ItemSystem extends PassiveSystem
             items.add(itemId, p.x, p.y);
 
             mPos.create(itemId).set(p.x, p.y);
+
+            sPlayer.message(new DropMsg(mName.get(itemId).name), actorId);
         }
     }
 

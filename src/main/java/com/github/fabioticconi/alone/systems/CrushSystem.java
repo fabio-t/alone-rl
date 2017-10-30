@@ -24,8 +24,10 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.messages.CrushMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +46,11 @@ public class CrushSystem extends PassiveSystem
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Position>  mPosition;
+    ComponentMapper<Name>      mName;
 
     StaminaSystem sStamina;
     ItemSystem    sItem;
+    PlayerSystem  sPlayer;
 
     @Wire
     SingleGrid obstacles;
@@ -115,6 +119,10 @@ public class CrushSystem extends PassiveSystem
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
+
+            final Position p2        = mPosition.get(actorId);
+            final Side     direction = Side.getSide(p2.x, p2.y, p.x, p.y);
+            sPlayer.message(new CrushMsg(direction, mName.get(targetId).name), actorId);
         }
     }
 
