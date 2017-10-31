@@ -49,11 +49,11 @@ There are also some special commands:
 
 This is how the game looks when run (**very** preliminary GUI):
 
-![](screenshots/short.gif)
+![](screenshots/gameplay.gif)
 
 A few wolves are chasing rabbits, while pumas manage to bring a buffalo down.
 
-### Original Map
+### Map
 
 ![](screenshots/orig_map.png)
 
