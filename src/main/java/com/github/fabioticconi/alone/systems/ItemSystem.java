@@ -46,7 +46,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Weapon>    mWeapon;
     ComponentMapper<Name>      mName;
 
-    PlayerSystem sPlayer;
+    MessageSystem msg;
 
     @Wire
     MultipleGrid items;
@@ -109,7 +109,9 @@ public class ItemSystem extends PassiveSystem
             items.del(itemId, p.x, p.y);
             i.items.add(itemId);
 
-            sPlayer.message(new GetMsg(mName.get(itemId).name), actorId);
+            mPos.remove(itemId);
+
+            msg.send(actorId, itemId, new GetMsg());
         }
     }
 
@@ -144,7 +146,7 @@ public class ItemSystem extends PassiveSystem
 
             mPos.create(itemId).set(p.x, p.y);
 
-            sPlayer.message(new DropMsg(mName.get(itemId).name), actorId);
+            msg.send(actorId, itemId, new DropMsg());
         }
     }
 

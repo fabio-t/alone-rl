@@ -18,26 +18,33 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
- * Date: 29/10/17
+ * Date: 31/10/17
  */
-public class MissedMsg extends AbstractMessage
+public class CannotMsg extends AbstractMessage
 {
-    public final String attacker;
+    public final String verb;
+    public final String reason;
 
-    public MissedMsg(final String attacker, final int distance, final Side direction)
+    public CannotMsg(final String verb, final String reason)
     {
-        super(distance, direction);
+        super();
 
-        this.attacker = attacker;
+        this.verb = verb;
+        this.reason = reason;
     }
 
     @Override
     public String format()
     {
-        return String.format("%s MISSES you (%s)", attacker, direction.toString());
+        fgCol = Color.YELLOW;
+        return String.format("%s cannot %s %s %s",
+                             actor,
+                             verb,
+                             target.toLowerCase(),
+                             reason);
     }
 }

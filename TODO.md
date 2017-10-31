@@ -15,5 +15,3 @@
   Possibly to do in a way that there are two bars overlapped: the first goes full without effect. When it's full,
   it starts again to colour, more darkly, and there the reduction in regeneration progresses.
   A full doubly-coloured bar means zero regen.
-
-- Combat log should not keep everything in memory.

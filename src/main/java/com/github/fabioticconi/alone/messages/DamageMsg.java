@@ -18,7 +18,7 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
@@ -26,15 +26,11 @@ import com.github.fabioticconi.alone.constants.Side;
  */
 public class DamageMsg extends AbstractMessage
 {
-    public final String victim;
     public final float dmg;
     public final float remaining;
 
-    public DamageMsg(final String victim, final float dmg, final float remaining, final int distance, final Side direction)
+    public DamageMsg(final float dmg, final float remaining)
     {
-        super(distance, direction);
-
-        this.victim = victim;
         this.dmg = dmg;
         this.remaining = remaining;
     }
@@ -42,6 +38,30 @@ public class DamageMsg extends AbstractMessage
     @Override
     public String format()
     {
-        return String.format("You HIT %s for %.2f (%.2f) (%s)", victim.toLowerCase(), dmg, remaining, direction.toString());
+        if ("You".equals(actor) || "You".equals(target))
+            return formatPlayer();
+
+        return formatOther();
+    }
+
+    String formatPlayer()
+    {
+        fgCol = Color.RED;
+        return String.format("%s %s %s for %.2f (%.2f) (%s)",
+                             actor,
+                             thirdPerson ? "HITS" : "HIT",
+                             target.toLowerCase(),
+                             dmg,
+                             remaining,
+                             direction.toString());
+    }
+
+    String formatOther()
+    {
+        fgCol = Color.GRAY;
+        return String.format("%s hits %s (%s)",
+                             actor,
+                             target.toLowerCase(),
+                             direction.toString());
     }
 }

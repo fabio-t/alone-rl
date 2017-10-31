@@ -25,6 +25,9 @@ import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
+import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.EatFinishMsg;
+import com.github.fabioticconi.alone.messages.EatMsg;
 import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -41,6 +44,8 @@ public class HungerSystem extends IntervalIteratingSystem
     ComponentMapper<Health>   mHealth;
     ComponentMapper<Position> mPosition;
     ComponentMapper<Corpse>   mCorpse;
+
+    MessageSystem msg;
 
     @Wire
     MultipleGrid items;
@@ -76,7 +81,8 @@ public class HungerSystem extends IntervalIteratingSystem
 
         a.targets.add(corpseId);
 
-        a.delay = 1f;
+        a.delay = 0.5f;
+        a.cost = 0.5f;
 
         return a;
     }
@@ -113,7 +119,7 @@ public class HungerSystem extends IntervalIteratingSystem
 
         a.actorId = entityId;
 
-        a.delay = 1f;
+        a.delay = 0.5f;
         a.cost = 0.5f;
 
         return a;
@@ -129,16 +135,24 @@ public class HungerSystem extends IntervalIteratingSystem
 
             final int targetId = targets.get(0);
 
-            if (targetId < 0)
+            final Hunger h = mHunger.get(actorId);
+
+            if (h == null)
+                return false;
+
+            if (h.value <= 0f)
+            {
+                msg.send(actorId, targetId, new CannotMsg("eat", "while full"));
+                return false;
+            }
+
+            if (targetId < 0 || !mCorpse.has(targetId))
                 return false;
 
             final Position p1 = mPosition.get(actorId);
             final Position p2 = mPosition.get(targetId);
 
-            if (Coords.distanceChebyshev(p1.x, p1.y, p2.x, p2.y) < 2 && mCorpse.has(targetId))
-                return true;
-
-            return false;
+            return Coords.distanceChebyshev(p1.x, p1.y, p2.x, p2.y) < 2;
         }
 
         @Override
@@ -166,11 +180,15 @@ public class HungerSystem extends IntervalIteratingSystem
             h.value -= food;
             health.value -= food;
 
+            msg.send(actorId, targetId, new EatMsg());
+
             if (health.value <= 0f)
             {
                 // destroy food item, but also recover the wrongly-reduced hunger
 
                 h.value -= health.value;
+
+                msg.send(actorId, targetId, new EatFinishMsg());
 
                 final Position p = mPosition.get(targetId);
                 items.del(targetId, p.x, p.y);

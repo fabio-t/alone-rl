@@ -18,26 +18,19 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
-
 /**
  * Author: Fabio Ticconi
- * Date: 29/10/17
+ * Date: 31/10/17
  */
-public class KilledMsg extends AbstractMessage
+public class EatFinishMsg extends AbstractMessage
 {
-    public final String attacker;
-
-    public KilledMsg(final String attacker, final int distance, final Side direction)
-    {
-        super(distance, direction);
-
-        this.attacker = attacker;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You have been KILLED by %s (%s)!", attacker.toLowerCase(), direction.toString());
+        return String.format("%s %s eating %s (%s)",
+                             actor,
+                             thirdPerson ? "finishes" : "finish",
+                             target.toLowerCase(),
+                             direction.toString());
     }
 }

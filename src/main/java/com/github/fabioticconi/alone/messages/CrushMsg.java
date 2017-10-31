@@ -18,26 +18,19 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
-
 /**
  * Author: Fabio Ticconi
  * Date: 30/10/17
  */
 public class CrushMsg extends AbstractMessage
 {
-    public String boulder;
-
-    public CrushMsg(final Side direction, final String boulder)
-    {
-        super(0, direction);
-
-        this.boulder = boulder;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You CRUSH %s (%s)", boulder.toLowerCase(), direction.toString());
+        return String.format("%s %s %s %s",
+                             actor,
+                             thirdPerson ? "crushes" : "crush",
+                             target.toLowerCase(),
+                             direction.name);
     }
 }

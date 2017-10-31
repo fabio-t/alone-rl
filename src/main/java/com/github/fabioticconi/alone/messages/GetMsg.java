@@ -18,26 +18,18 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
-
 /**
  * Author: Fabio Ticconi
  * Date: 30/10/17
  */
 public class GetMsg extends AbstractMessage
 {
-    public final String item;
-
-    public GetMsg(final String item)
-    {
-        super(0, Side.HERE);
-
-        this.item = item;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You take %s from the ground", item.toLowerCase());
+        return String.format("%s %s %s up",
+                             actor,
+                             thirdPerson ? "picks" : "pick",
+                             target.toLowerCase());
     }
 }

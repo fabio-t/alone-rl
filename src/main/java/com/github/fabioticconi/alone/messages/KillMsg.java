@@ -18,7 +18,7 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
@@ -26,18 +26,13 @@ import com.github.fabioticconi.alone.constants.Side;
  */
 public class KillMsg extends AbstractMessage
 {
-    public final String victim;
-
-    public KillMsg(final String victim, final int distance, final Side direction)
-    {
-        super(distance, direction);
-
-        this.victim = victim;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You KILL %s! (%s)", victim.toLowerCase(), direction.toString());
+        fgCol = Color.MAGENTA;
+        return String.format("%s %s %s! (%s)",
+                             actor,
+                             thirdPerson ? "KILLS" : "KILL",
+                             target.toLowerCase(), direction.toString());
     }
 }

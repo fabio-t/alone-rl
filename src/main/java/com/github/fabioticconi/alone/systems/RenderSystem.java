@@ -239,10 +239,10 @@ public class RenderSystem extends PassiveSystem
 
             String smsg = msg.format();
 
-            if (smsg.length() > xmax)
-                smsg = smsg.substring(0, xmax);
+            if (smsg.length() >= xmax)
+                smsg = smsg.substring(0, xmax-1);
 
-            terminal.write(smsg, 0, ymax-i, Color.WHITE, Color.BLACK);
+            terminal.write(smsg, 0, ymax-i, msg.fgCol, msg.bgCol);
 
             if (smsg.length() < xmax)
                 terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);

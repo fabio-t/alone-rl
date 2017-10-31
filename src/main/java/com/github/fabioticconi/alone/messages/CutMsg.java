@@ -18,26 +18,19 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
-
 /**
  * Author: Fabio Ticconi
  * Date: 30/10/17
  */
 public class CutMsg extends AbstractMessage
 {
-    public final String tree;
-
-    public CutMsg(final Side direction, final String tree)
-    {
-        super(0, direction);
-
-        this.tree = tree;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You CUT down %s (%s)", tree.toLowerCase(), direction.toString());
+        return String.format("%s %s %s %s",
+                             actor,
+                             thirdPerson ? "cuts down" : "cut down",
+                             target.toLowerCase(),
+                             direction.name);
     }
 }

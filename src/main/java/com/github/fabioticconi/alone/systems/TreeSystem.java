@@ -24,9 +24,9 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CutMsg;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -51,7 +51,7 @@ public class TreeSystem extends PassiveSystem
 
     StaminaSystem sStamina;
     ItemSystem    sItem;
-    PlayerSystem  sPlayer;
+    MessageSystem msg;
 
     @Wire
     SingleGrid obstacles;
@@ -126,7 +126,7 @@ public class TreeSystem extends PassiveSystem
 
             if (axeId < 0)
             {
-                log.info("{} cannot cut down tree {}: no suitable weapon", actorId, treeId);
+                msg.send(actorId, treeId, new CannotMsg("cut", "without a slashing weapon"));
 
                 return false;
             }
@@ -162,9 +162,7 @@ public class TreeSystem extends PassiveSystem
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
 
-            final Position p2 = mPosition.get(actorId);
-            final Side direction = Side.getSide(p2.x, p2.y, p.x, p.y);
-            sPlayer.message(new CutMsg(direction, mName.get(treeId).name), actorId);
+            msg.send(actorId, treeId, new CutMsg());
         }
     }
 }

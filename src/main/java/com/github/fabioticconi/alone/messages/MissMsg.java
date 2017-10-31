@@ -18,7 +18,7 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
@@ -26,18 +26,31 @@ import com.github.fabioticconi.alone.constants.Side;
  */
 public class MissMsg extends AbstractMessage
 {
-    public final String victim;
-
-    public MissMsg(final String victim, final int distance, final Side direction)
-    {
-        super(distance, direction);
-
-        this.victim = victim;
-    }
-
     @Override
     public String format()
     {
-        return String.format("You MISS %s (%s)", victim.toLowerCase(), direction.toString());
+        if ("You".equals(actor) || "You".equals(target))
+            return formatPlayer();
+
+        return formatOther();
+    }
+
+    String formatPlayer()
+    {
+        return String.format("%s %s %s (%s)",
+                             actor,
+                             thirdPerson ? "MISSES" : "MISS",
+                             target.toLowerCase(),
+                             direction.toString());
+    }
+
+    String formatOther()
+    {
+        fgCol = Color.GRAY;
+        return String.format("%s %s %s (%s)",
+                             actor,
+                             thirdPerson ? "MISSES" : "MISS",
+                             target.toLowerCase(),
+                             direction.toString());
     }
 }

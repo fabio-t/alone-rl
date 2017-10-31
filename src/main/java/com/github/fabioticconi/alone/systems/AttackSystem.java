@@ -56,8 +56,7 @@ public class AttackSystem extends PassiveSystem
     Random r;
 
     StaminaSystem sStamina;
-    HealthSystem  sHealth;
-    PlayerSystem  sPlayer;
+    MessageSystem msg;
 
     public AttackAction attack(final int entityId, final int targetId)
     {
@@ -113,8 +112,7 @@ public class AttackSystem extends PassiveSystem
             final Position p  = mPos.get(actorId);
             final Position p2 = mPos.get(targetId);
 
-            final int  dist      = Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y);
-            final Side direction = Side.getSide(p.x, p.y, p2.x, p2.y);
+            final int  dist = Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y);
 
             if (dist != 1)
             {
@@ -142,21 +140,18 @@ public class AttackSystem extends PassiveSystem
 
                 tHealth.value -= damage;
 
-                sPlayer.message(new DamageMsg(mName.get(targetId).name, damage, tHealth.value, dist, direction), actorId);
-                sPlayer.message(new DamagedMsg(mName.get(actorId).name, damage, tHealth.value, dist, direction), targetId);
+                msg.send(actorId, targetId, new DamageMsg(damage, tHealth.value));
 
                 if (tHealth.value <= 0)
                 {
-                    sPlayer.message(new KillMsg(mName.get(targetId).name, dist, direction), actorId);
-                    sPlayer.message(new KilledMsg(mName.get(actorId).name, dist, direction), targetId);
+                    msg.send(actorId, targetId, new KillMsg());
 
                     mDead.create(targetId);
                 }
             }
             else
             {
-                sPlayer.message(new MissMsg(mName.get(targetId).name, dist, direction), actorId);
-                sPlayer.message(new MissedMsg(mName.get(actorId).name, dist, direction), targetId);
+                msg.send(actorId, targetId, new MissMsg());
             }
         }
     }

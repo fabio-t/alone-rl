@@ -89,6 +89,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(GroupSystem.class);
         config.setSystem(WorldSerializationManager.class);
         config.setSystem(ActionSystem.class);
+        config.setSystem(MessageSystem.class);
         config.setSystem(input);
         config.setSystem(render);
         // actual game logic
@@ -155,6 +156,7 @@ public class Main extends JFrame implements KeyListener
         float pActionTime = 0f;
 
         long repaintCooldown = 0L;
+        long actionCooldown = 0L;
 
         while (keepRunning)
         {
@@ -170,7 +172,17 @@ public class Main extends JFrame implements KeyListener
 
             lag += elapsed;
 
-            final float curPActionTime = input.handleKeys(pressed);
+            final float curPActionTime;
+            if (actionCooldown <= 0L)
+            {
+                actionCooldown = 100000000L;
+                curPActionTime = input.handleKeys(pressed);
+            }
+            else
+            {
+                actionCooldown -= elapsed;
+                curPActionTime = 0L;
+            }
 
             // a new action was issued
             if (curPActionTime > 0f)

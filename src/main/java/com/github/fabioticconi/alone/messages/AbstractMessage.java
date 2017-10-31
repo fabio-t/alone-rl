@@ -20,18 +20,27 @@ package com.github.fabioticconi.alone.messages;
 
 import com.github.fabioticconi.alone.constants.Side;
 
+import java.awt.*;
+
 /**
  * Author: Fabio Ticconi
  * Date: 30/10/17
  */
 public abstract class AbstractMessage implements Message
 {
-    public final int  distance;
-    public final Side direction;
+    public String actor;
+    public String target;
+    public int  distance;
+    public Side direction;
 
-    public AbstractMessage(final int distance, final Side direction)
+    public Color fgCol;
+    public Color bgCol;
+
+    public boolean thirdPerson;
+
+    public AbstractMessage()
     {
-        this.distance = distance;
-        this.direction = direction;
+        this.fgCol = Color.WHITE;
+        this.bgCol = Color.BLACK;
     }
 }

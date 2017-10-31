@@ -37,6 +37,7 @@ public class DeadSystem extends IteratingSystem
 {
     ComponentMapper<Position> mPos;
     ComponentMapper<Size>     mSize;
+    ComponentMapper<Name>     mName;
 
     @Wire
     SingleGrid obstacles;
@@ -54,6 +55,7 @@ public class DeadSystem extends IteratingSystem
     {
         final Position p    = mPos.get(entityId);
         final Size     size = mSize.get(entityId);
+        final Name     name = mName.get(entityId);
 
         // remove dead creature from the world
         obstacles.del(p.x, p.y);
@@ -67,6 +69,7 @@ public class DeadSystem extends IteratingSystem
         edit.create(Sprite.class).set('$', Color.RED.darker().darker(), false);
         edit.create(Corpse.class);
         edit.create(Health.class).set(size.value + 3);
+        edit.add(new Name(name.name + "'s corpse"));
 
         items.add(corpseId, p.x, p.y);
     }
