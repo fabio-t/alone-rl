@@ -31,6 +31,8 @@ import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.screens.PlayScreen;
+import com.github.fabioticconi.alone.screens.ScreenSystem;
 import com.github.fabioticconi.alone.systems.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +54,7 @@ public class Main extends JFrame implements KeyListener
     private final float   deltaSeconds = 1.0f / (float) fps;
     private final AsciiPanel   terminal;
     private final World        world;
-    private final PlayerSystem input;
-    private final RenderSystem render;
+    private final ScreenSystem screen;
     // currently pressed keys
     private final BitVector    pressed;
 
@@ -66,13 +67,7 @@ public class Main extends JFrame implements KeyListener
 
         pressed = new BitVector(255);
 
-        // Input and render are sort of "binders" between the GUI and the logic.
-        // They are both passive: the input system receives raw player commands (when in "play screen")
-        // and converts it to artemis "things", then starts a player action. Should be pretty immediate.
-        // The render system is called whenever the play screen is active and the map needs to be painted.
-        // It needs to be a system for us to be able to leverage the components on the entities, of course.
-        input = new PlayerSystem();
-        render = new RenderSystem();
+        screen = new ScreenSystem();
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
@@ -90,8 +85,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(WorldSerializationManager.class);
         config.setSystem(ActionSystem.class);
         config.setSystem(MessageSystem.class);
-        config.setSystem(input);
-        config.setSystem(render);
+        config.setSystem(screen);
         // actual game logic
         config.setSystem(new HealthSystem(5f));
         config.setSystem(new StaminaSystem(1f));
@@ -116,6 +110,8 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(WanderBehaviour.class);
         config.setSystem(UnderwaterBehaviour.class);
         config.setSystem(FleeFromActionBehaviour.class);
+        // screens (passive)
+        config.setSystem(PlayScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
@@ -156,7 +152,7 @@ public class Main extends JFrame implements KeyListener
         float pActionTime = 0f;
 
         long repaintCooldown = 0L;
-        long actionCooldown = 0L;
+        long actionCooldown  = 0L;
 
         while (keepRunning)
         {
@@ -175,8 +171,8 @@ public class Main extends JFrame implements KeyListener
             final float curPActionTime;
             if (actionCooldown <= 0L)
             {
-                actionCooldown = 100000000L;
-                curPActionTime = input.handleKeys(pressed);
+                actionCooldown = 70000000L;
+                curPActionTime = screen.handleKeys(pressed);
             }
             else
             {
@@ -221,13 +217,13 @@ public class Main extends JFrame implements KeyListener
                 repaintCooldown -= elapsed;
 
             // FIXME: to remove when actual rendering and input processing is implemented
-            try
-            {
-                Thread.sleep(40);
-            } catch (final InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            // try
+            // {
+            //     Thread.sleep(40);
+            // } catch (final InterruptedException e)
+            // {
+            //     e.printStackTrace();
+            // }
         }
     }
 
@@ -235,7 +231,7 @@ public class Main extends JFrame implements KeyListener
     public void repaint()
     {
         // terminal.clear();
-        render.display(terminal);
+        screen.display(terminal);
         super.repaint();
     }
 

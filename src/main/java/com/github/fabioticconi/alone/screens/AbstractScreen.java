@@ -16,25 +16,14 @@
  *
  */
 
-package com.github.fabioticconi.alone.messages;
+package com.github.fabioticconi.alone.screens;
 
-import java.awt.*;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 /**
  * Author: Fabio Ticconi
- * Date: 31/10/17
+ * Date: 01/11/17
  */
-public class EatMsg extends AbstractMessage
+public abstract class AbstractScreen extends PassiveSystem implements Screen
 {
-    @Override
-    public String format()
-    {
-        if (!"You".equals(actor) && !"You".equals(target))
-            fgCol = Color.GRAY;
-
-        return String.format("%s %s from %s",
-                             actor,
-                             thirdPerson ? "eats" : "eat",
-                             target.toLowerCase());
-    }
 }

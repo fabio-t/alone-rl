@@ -41,10 +41,22 @@ public class CannotMsg extends AbstractMessage
     public String format()
     {
         fgCol = Color.YELLOW;
+
+        if (target == null)
+            return simpleFormat();
+
         return String.format("%s cannot %s %s %s",
                              actor,
                              verb,
                              target.toLowerCase(),
+                             reason);
+    }
+
+    private String simpleFormat()
+    {
+        return String.format("%s cannot %s %s",
+                             actor,
+                             verb,
                              reason);
     }
 }

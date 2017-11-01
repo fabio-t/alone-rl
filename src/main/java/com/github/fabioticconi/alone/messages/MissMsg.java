@@ -49,7 +49,7 @@ public class MissMsg extends AbstractMessage
         fgCol = Color.GRAY;
         return String.format("%s %s %s (%s)",
                              actor,
-                             thirdPerson ? "MISSES" : "MISS",
+                             thirdPerson ? "misses" : "miss",
                              target.toLowerCase(),
                              direction.toString());
     }

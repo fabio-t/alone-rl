@@ -22,19 +22,27 @@ import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
- * Date: 31/10/17
+ * Date: 01/11/17
  */
-public class EatMsg extends AbstractMessage
+public class ThrowMsg extends AbstractMessage
 {
+    public final String item;
+
+    public ThrowMsg(final String item)
+    {
+        this.item = item;
+    }
+
     @Override
     public String format()
     {
-        if (!"You".equals(actor) && !"You".equals(target))
-            fgCol = Color.GRAY;
+        fgCol = Color.RED;
 
-        return String.format("%s %s from %s",
+        return String.format("%s %s %s at %s (%s)",
                              actor,
-                             thirdPerson ? "eats" : "eat",
-                             target.toLowerCase());
+                             thirdPerson ? "throws" : "throw",
+                             item.toLowerCase(),
+                             target.toLowerCase(),
+                             direction.name);
     }
 }

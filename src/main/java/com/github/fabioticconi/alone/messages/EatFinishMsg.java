@@ -18,6 +18,8 @@
 
 package com.github.fabioticconi.alone.messages;
 
+import java.awt.*;
+
 /**
  * Author: Fabio Ticconi
  * Date: 31/10/17
@@ -27,6 +29,9 @@ public class EatFinishMsg extends AbstractMessage
     @Override
     public String format()
     {
+        if (!"You".equals(actor) && !"You".equals(target))
+            fgCol = Color.GRAY;
+
         return String.format("%s %s eating %s (%s)",
                              actor,
                              thirdPerson ? "finishes" : "finish",

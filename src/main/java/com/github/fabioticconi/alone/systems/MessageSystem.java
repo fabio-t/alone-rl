@@ -26,6 +26,7 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
+import com.github.fabioticconi.alone.screens.AbstractScreen;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
@@ -41,6 +42,52 @@ public class MessageSystem extends PassiveSystem
     ComponentMapper<Sight>    mSight;
 
     PlayerManager pManager;
+
+    public void send(final int actorId, final AbstractMessage msg)
+    {
+        if (actorId < 0)
+            return;
+
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+        final Sight sight = mSight.get(playerId);
+
+        final Player player;
+        if (playerId == actorId)
+        {
+            player = mPlayer.get(actorId);
+            msg.distance = 0;
+            msg.direction = Side.HERE;
+        }
+        else
+        {
+            player = mPlayer.get(playerId);
+            msg.thirdPerson = true;
+
+            final Position p1 = mPos.get(actorId);
+            final Position p2 = mPos.get(playerId);
+
+            if (p1 != null && p2 != null)
+            {
+                msg.distance = Coords.distanceChebyshev(p1.x, p1.y, p2.x, p2.y);
+
+                // only send events in a certain range of the player
+                if (msg.distance > sight.value)
+                    return;
+
+                msg.direction = Side.getSide(p1.x, p1.y, p2.x, p2.y);
+            }
+            else
+            {
+                msg.distance = 0;
+                msg.direction = Side.HERE;
+            }
+        }
+
+        msg.actor = mName.get(actorId).name;
+
+        player.messages.push(msg);
+    }
 
     public void send(final int actorId, final int targetId, final AbstractMessage msg)
     {
@@ -83,11 +130,11 @@ public class MessageSystem extends PassiveSystem
         msg.target = mName.get(targetId).name;
 
         final Player player;
-        if (mPlayer.has(actorId))
+        if (playerId == actorId)
         {
             player = mPlayer.get(actorId);
         }
-        else if (mPlayer.has(targetId))
+        else if (playerId == targetId)
         {
             player = mPlayer.get(targetId);
             msg.thirdPerson = true;

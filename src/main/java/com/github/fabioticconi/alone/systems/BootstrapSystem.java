@@ -98,7 +98,6 @@ public class BootstrapSystem extends BaseSystem
         edit.create(Sprite.class).set('@', Color.WHITE);
         grid.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
-        System.out.println("setPlayer");
         edit.create(Inventory.class);
         edit.add(new Name("You"));
 

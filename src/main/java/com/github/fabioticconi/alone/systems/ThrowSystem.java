@@ -29,6 +29,8 @@ import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -55,11 +57,13 @@ public class ThrowSystem extends PassiveSystem
     ComponentMapper<Path>      mPath;
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Agility>   mAgility;
+    ComponentMapper<Name>      mName;
 
     MapSystem map;
 
     StaminaSystem sStamina;
     BumpSystem    sBump;
+    MessageSystem msg;
 
     @Wire
     SingleGrid obstacles;
@@ -95,7 +99,7 @@ public class ThrowSystem extends PassiveSystem
 
                 if (itemId < 0)
                 {
-                    log.warn("empty item in the Inventory of {}", actorId);
+                    log.warn("itemId<0 in the Inventory of {}", actorId);
 
                     continue;
                 }
@@ -156,10 +160,12 @@ public class ThrowSystem extends PassiveSystem
                 delay = 0.5f;
                 cost = 1.5f;
 
+                msg.send(actorId, targetId, new ThrowMsg(mName.get(itemId).name));
+
                 return true;
             }
 
-            log.info("{} cannot throw: no suitable weapon", actorId);
+            msg.send(actorId, new CannotMsg("throw", "anything"));
 
             return false;
         }
