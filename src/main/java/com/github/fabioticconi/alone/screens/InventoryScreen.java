@@ -23,35 +23,41 @@ import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.artemis.utils.IntBag;
-import com.github.fabioticconi.alone.Main;
 import com.github.fabioticconi.alone.components.Inventory;
-import com.github.fabioticconi.alone.constants.Options;
+import com.github.fabioticconi.alone.components.Name;
+import com.github.fabioticconi.alone.systems.ActionSystem;
+import com.github.fabioticconi.alone.systems.ItemSystem;
+import com.github.fabioticconi.alone.systems.MessageSystem;
 
 import java.awt.event.KeyEvent;
+import java.util.Collections;
+
+import static java.awt.event.KeyEvent.VK_A;
+import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
  * Date: 02/11/17
  */
-public class InventoryScreen extends AbstractScreen
+public abstract class InventoryScreen extends AbstractScreen
 {
+    ComponentMapper<Name>      mName;
     ComponentMapper<Inventory> mInventory;
 
     ScreenSystem screen;
+    MessageSystem msg;
+    ActionSystem sAction;
+    ItemSystem sItems;
 
     PlayerManager pManager;
 
     @Override
     public float handleKeys(final BitVector keys)
     {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
         if (keys.get(KeyEvent.VK_ESCAPE))
-        {
-            keys.clear(KeyEvent.VK_ESCAPE);
-
             screen.select(PlayScreen.class);
-        }
+
+        keys.clear();
 
         return 0f;
     }
@@ -63,14 +69,46 @@ public class InventoryScreen extends AbstractScreen
 
         terminal.clear(' ');
 
+        terminal.writeCenter(header(), 2);
+        terminal.writeCenter(String.join("", Collections.nCopies(header().length(), "-")), 3);
+
         final Inventory inv = mInventory.get(playerId);
 
-        final IntBag items = inv.items;
-        for (int i = 0, size = inv.items.size(); i < size; i++)
-        {
-            final int itemId = inv.items.get(i);
+        final int maxSize = AbstractScreen.Letter.values().length;
 
-            terminal.writeCenter(Integer.toString(itemId), terminal.getHeightInCharacters()/2);
+        final IntBag items = inv.items;
+        for (int i = 0, size = items.size(), starty = terminal.getHeightInCharacters()/2 - size/2; i < size; i++)
+        {
+            final int itemId = items.get(i);
+
+            final String entry = Letter.values()[i] + " " + mName.get(itemId).name.toLowerCase();
+
+            terminal.writeCenter(entry, starty + (size < maxSize/2 ? i*2 : i));
         }
+    }
+
+    public abstract String header();
+
+    public int getTarget(final BitVector keys)
+    {
+        final int keyCode = keys.nextSetBit(VK_A);
+
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+        final Inventory i = mInventory.get(playerId);
+
+        if (keyCode >= VK_A && keyCode <= VK_Z)
+        {
+            keys.clear(keyCode);
+
+            final int pos = keyCode - VK_A;
+
+            if (pos <= i.items.size())
+            {
+                return i.items.get(pos);
+            }
+        }
+
+        return -1;
     }
 }

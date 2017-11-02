@@ -31,9 +31,7 @@ import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
-import com.github.fabioticconi.alone.screens.InventoryScreen;
-import com.github.fabioticconi.alone.screens.PlayScreen;
-import com.github.fabioticconi.alone.screens.ScreenSystem;
+import com.github.fabioticconi.alone.screens.*;
 import com.github.fabioticconi.alone.systems.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +111,9 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(FleeFromActionBehaviour.class);
         // screens (passive)
         config.setSystem(PlayScreen.class);
-        config.setSystem(InventoryScreen.class);
+        config.setSystem(DropScreen.class);
+        config.setSystem(ThrowScreen.class);
+        config.setSystem(EatScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
@@ -252,5 +252,14 @@ public class Main extends JFrame implements KeyListener
     @Override
     public void keyTyped(final KeyEvent e)
     {
+    }
+
+    /**
+     * In real-time mode, space means pause/unpause the game, while
+     * in turn-based mode, space means unpause the game until SPACE is released.
+     */
+    public static void pause()
+    {
+        Main.paused = Main.realtime && !Main.paused;
     }
 }

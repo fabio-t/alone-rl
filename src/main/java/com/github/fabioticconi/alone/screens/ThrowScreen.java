@@ -18,22 +18,39 @@
 
 package com.github.fabioticconi.alone.screens;
 
-import net.mostlyoriginal.api.system.core.PassiveSystem;
+import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.systems.ThrowSystem;
+
+import static java.awt.event.KeyEvent.VK_A;
+import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
- * Date: 01/11/17
+ * Date: 02/11/17
  */
-public abstract class AbstractScreen extends PassiveSystem implements Screen
+public class ThrowScreen extends InventoryScreen
 {
-    public enum Letter
-    {
-        a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z;
+    ThrowSystem sThrow;
 
-        @Override
-        public String toString()
-        {
-            return name() + ")";
-        }
+    @Override
+    public float handleKeys(final BitVector keys)
+    {
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+        final int targetId = getTarget(keys);
+
+        if (targetId < 0)
+            return super.handleKeys(keys);
+
+        screen.select(PlayScreen.class);
+
+        return sAction.act(sThrow.throwWeapon(playerId, targetId));
+    }
+
+    @Override
+    public String header()
+    {
+        return "Throw item:";
     }
 }

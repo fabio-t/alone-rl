@@ -71,11 +71,12 @@ public class ThrowSystem extends PassiveSystem
     @Wire
     MultipleGrid items;
 
-    public ThrowAction throwWeapon(final int entityId)
+    public ThrowAction throwWeapon(final int entityId, final int targetId)
     {
         final ThrowAction t = new ThrowAction();
 
         t.actorId = entityId;
+        t.targets.add(targetId);
 
         return t;
     }
@@ -87,6 +88,9 @@ public class ThrowSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
+            if (targets.size() != 1)
+                return false;
+
             final Inventory inventory = mInventory.get(actorId);
 
             if (inventory == null)

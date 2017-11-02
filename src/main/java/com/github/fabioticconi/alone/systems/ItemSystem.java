@@ -26,8 +26,10 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.map.MultipleGrid;
+import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
+import com.github.fabioticconi.alone.screens.AbstractScreen;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
@@ -44,7 +46,6 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Position>  mPos;
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Weapon>    mWeapon;
-    ComponentMapper<Name>      mName;
 
     MessageSystem msg;
 
@@ -60,11 +61,12 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
-    public DropAction drop(final int entityId)
+    public DropAction drop(final int entityId, final int targetId)
     {
         final DropAction a = new DropAction();
 
         a.actorId = entityId;
+        a.targets.add(targetId);
 
         return a;
     }
@@ -87,6 +89,12 @@ public class ItemSystem extends PassiveSystem
             {
                 log.warn("{} does not have the required composition", actorId);
 
+                return;
+            }
+
+            if (i.items.size() >= AbstractScreen.Letter.values().length)
+            {
+                msg.send(actorId, new CannotMsg("get", "anything, your hands are full"));
                 return;
             }
 
@@ -120,12 +128,15 @@ public class ItemSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
-            return true;
+            return targets.size() == 1;
         }
 
         @Override
         public void doAction()
         {
+            if (targets.size() != 1)
+                return;
+
             final Position  p = mPos.get(actorId);
             final Inventory i = mInventory.get(actorId);
 
@@ -136,17 +147,20 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            if (i.items.isEmpty())
-                return;
+            final int targetId = targets.get(0);
 
-            // remove the last element
-            final int itemId = i.items.remove(i.items.size() - 1);
+            if (i.items.removeValue(targetId))
+            {
+                items.add(targetId, p.x, p.y);
 
-            items.add(itemId, p.x, p.y);
+                mPos.create(targetId).set(p.x, p.y);
 
-            mPos.create(itemId).set(p.x, p.y);
-
-            msg.send(actorId, itemId, new DropMsg());
+                msg.send(actorId, targetId, new DropMsg());
+            }
+            else
+            {
+                msg.send(actorId, new CannotMsg("drop", "what you don't have"));
+            }
         }
     }
 

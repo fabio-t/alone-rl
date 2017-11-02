@@ -166,21 +166,33 @@ public class PlayScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_D))
         {
-            keys.clear(KeyEvent.VK_D);
+            keys.clear();
 
-            return sAction.act(sItems.drop(playerId));
+            Main.pause();
+
+            screen.select(DropScreen.class);
+
+            return 0f;
         }
         else if (keys.get(KeyEvent.VK_E))
         {
-            keys.clear(KeyEvent.VK_E);
+            keys.clear();
 
-            return sAction.act(sHunger.devourClosestCorpse(playerId));
+            Main.pause();
+
+            screen.select(EatScreen.class);
+
+            return 0f;
         }
         else if (keys.get(KeyEvent.VK_T))
         {
-            keys.clear(KeyEvent.VK_T);
+            keys.clear();
 
-            return sAction.act(sThrow.throwWeapon(playerId));
+            Main.pause();
+
+            screen.select(ThrowScreen.class);
+
+            return 0f;
         }
         else if (keys.get(KeyEvent.VK_L))
         {
@@ -192,18 +204,6 @@ public class PlayScreen extends AbstractScreen
             // - ESC exits looking-mode
             // - t throws if you have a throwable
             // - ENTER shows a short description of what's there
-
-            return 0f;
-        }
-        else if (keys.get(KeyEvent.VK_I))
-        {
-            // change of screen, open inventory
-
-            keys.clear(KeyEvent.VK_I);
-
-            screen.select(InventoryScreen.class);
-
-            Main.paused = Main.realtime && !Main.paused;
 
             return 0f;
         }
@@ -240,11 +240,7 @@ public class PlayScreen extends AbstractScreen
             }
             else
             {
-                // Space alone has two meanings:
-
-                // in real-time mode, space means pause/unpause the game, while
-                // in turn-based mode, space means unpause the game until SPACE is released
-                Main.paused = Main.realtime && !Main.paused;
+                Main.pause();
             }
 
             keys.clear(KeyEvent.VK_SPACE);

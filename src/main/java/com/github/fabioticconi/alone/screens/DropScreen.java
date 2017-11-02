@@ -16,24 +16,34 @@
  *
  */
 
-package com.github.fabioticconi.alone.components;
+package com.github.fabioticconi.alone.screens;
 
-import com.artemis.Component;
-import com.artemis.annotations.EntityId;
-import com.artemis.annotations.LinkPolicy;
-import com.artemis.utils.IntBag;
+import com.artemis.utils.BitVector;
 
 /**
  * Author: Fabio Ticconi
- * Date: 03/10/17
+ * Date: 02/11/17
  */
-public class Inventory extends Component
+public class DropScreen extends InventoryScreen
 {
-    @EntityId @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
-    final public IntBag items;
-
-    public Inventory()
+    @Override
+    public float handleKeys(final BitVector keys)
     {
-        items = new IntBag(26);
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+        final int targetId = getTarget(keys);
+
+        if (targetId < 0)
+            return super.handleKeys(keys);
+
+        screen.select(PlayScreen.class);
+
+        return sAction.act(sItems.drop(playerId, targetId));
+    }
+
+    @Override
+    public String header()
+    {
+        return "Drop item:";
     }
 }
