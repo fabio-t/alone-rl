@@ -50,7 +50,7 @@ public final class ScreenSystem extends PassiveSystem implements Screen
         selected.display(terminal);
     }
 
-    public void select(final Class<AbstractScreen> next)
+    public void select(final Class<? extends AbstractScreen> next)
     {
         this.selected = world.getSystem(next);
     }

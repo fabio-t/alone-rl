@@ -65,6 +65,7 @@ public class PlayScreen extends AbstractScreen
     ThrowSystem  sThrow;
     MapSystem    map;
     MessageSystem msg;
+    ScreenSystem screen;
 
     @Wire
     SingleGrid   grid;
@@ -185,8 +186,24 @@ public class PlayScreen extends AbstractScreen
         {
             keys.clear(KeyEvent.VK_L);
 
-            // TODO: this is targeting: it should be visible (eg, an overimposed X or border or something..)
-            // so that the player can either look (just press enter) or throw (press t)
+            // TODO: set a target. The cell will be blinking.
+            // when a player is in looking-mode:
+            // - moving should move this blinking cell
+            // - ESC exits looking-mode
+            // - t throws if you have a throwable
+            // - ENTER shows a short description of what's there
+
+            return 0f;
+        }
+        else if (keys.get(KeyEvent.VK_I))
+        {
+            // change of screen, open inventory
+
+            keys.clear(KeyEvent.VK_I);
+
+            screen.select(InventoryScreen.class);
+
+            Main.paused = Main.realtime && !Main.paused;
 
             return 0f;
         }

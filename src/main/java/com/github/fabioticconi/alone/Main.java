@@ -31,6 +31,7 @@ import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.screens.InventoryScreen;
 import com.github.fabioticconi.alone.screens.PlayScreen;
 import com.github.fabioticconi.alone.screens.ScreenSystem;
 import com.github.fabioticconi.alone.systems.*;
@@ -112,6 +113,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(FleeFromActionBehaviour.class);
         // screens (passive)
         config.setSystem(PlayScreen.class);
+        config.setSystem(InventoryScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
