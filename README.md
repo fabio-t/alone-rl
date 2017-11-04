@@ -21,15 +21,15 @@ Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite
   
 * **`g` to get the first item** on the ground you are currently positioned on (stones, sticks, corpses, tree trunks..
   there's no inventory limit for now).
-  Type **`d` to drop the oldest item** in your inventory. Inventory screen upcoming..
   
-* **`t` to throw** a throwable weapon (only stones, for now - they must be in the inventory).
-  The targeting system is just a stub for now: it simply targets the closest creature, tree or boulders in your view.
-  Soon there'll be proper targeting.
+* **`d` to open the Drop screen**. You will be able to choose which item to drop.
+
+* **`e` to open the Eat screen**. You can only eat corpses that you have taken from the ground, for now.
+
+* **`w` to wear or wield an object** via the Equip screen. Stones and branches will do nicely for now.
   
-* **`e` to eat** if there's a corpse in the cell you are on or in any of the 8 neighbouring cells. If you got a corpse
-  from the ground, you need to drop it before you can eat it. Quantities have to be optimised but generally even a rabbit
-  corpse should be enough to empty your hunger bar.
+* **`l` to open the Look screen**. Move around to choose a target (if you have Line of Sight) and press **`t`** to throw
+  an equipped weapon in that direction.
   
 There are also some special commands:
 

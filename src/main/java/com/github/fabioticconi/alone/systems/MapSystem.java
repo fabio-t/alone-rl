@@ -31,7 +31,6 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
@@ -75,7 +74,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
 
         final BufferedImage img       = ImageIO.read(mapStream);
-        final byte[]        elevation = IOUtils.toByteArray(elevationStream);
+        final byte[]        elevation = elevationStream.readAllBytes();
 
         Options.MAP_SIZE_X = img.getWidth();
         Options.MAP_SIZE_Y = img.getHeight();

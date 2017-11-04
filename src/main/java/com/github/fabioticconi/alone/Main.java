@@ -24,7 +24,6 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.link.EntityLinkManager;
 import com.artemis.managers.PlayerManager;
-import com.artemis.managers.WorldSerializationManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
@@ -85,7 +84,6 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(BootstrapSystem.class);
         config.setSystem(PlayerManager.class);
         config.setSystem(GroupSystem.class);
-        config.setSystem(WorldSerializationManager.class);
         config.setSystem(ActionSystem.class);
         config.setSystem(MessageSystem.class);
         config.setSystem(screen);
