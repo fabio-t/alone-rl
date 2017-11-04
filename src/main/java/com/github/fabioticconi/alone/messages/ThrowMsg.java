@@ -42,6 +42,10 @@ public class ThrowMsg extends AbstractMessage
     {
         fgCol = Color.RED;
 
-        return String.format("%s %s %s towards %s", actor, thirdPerson ? "throws" : "throw", item.toLowerCase(), at);
+        return String.format("%s %s %s towards %s",
+                             actor,
+                             thirdPerson ? "throws" : "throw",
+                             item.toLowerCase(),
+                             at.toString());
     }
 }

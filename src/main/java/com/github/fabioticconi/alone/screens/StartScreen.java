@@ -86,7 +86,7 @@ public class StartScreen extends AbstractScreen
 
     private String title()
     {
-        return String.format("%s %s",
+        return String.format("%s v%s",
                              properties.getProperty("name"),
                              properties.getProperty("version"));
     }

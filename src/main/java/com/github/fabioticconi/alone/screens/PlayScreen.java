@@ -159,7 +159,7 @@ public class PlayScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_G))
         {
-            keys.clear(KeyEvent.VK_G);
+            keys.clear();
 
             return sAction.act(sItems.get(playerId));
         }
@@ -213,14 +213,16 @@ public class PlayScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_F1))
         {
-            keys.clear(KeyEvent.VK_F1);
+            keys.clear();
+
             if (savedSpeed == -1f)
                 savedSpeed = mSpeed.get(playerId).value;
+
             mSpeed.get(playerId).value = 0f; // FIXME to remove later, only for debug
         }
         else if (keys.get(KeyEvent.VK_F2))
         {
-            keys.clear(KeyEvent.VK_F2);
+            keys.clear();
 
             if (savedSpeed >= 0f)
                 mSpeed.create(playerId).value = savedSpeed; // FIXME to remove later, only for debug
@@ -234,14 +236,16 @@ public class PlayScreen extends AbstractScreen
                 // as well as toggling the pause, of course
                 Main.paused = !Main.paused;
 
-                keys.clear(KeyEvent.VK_CONTROL);
+                keys.clear();
             }
             else
             {
-                Main.pause();
-            }
+                keys.clear();
 
-            keys.clear(KeyEvent.VK_SPACE);
+                Main.paused = Main.realtime && !Main.paused;
+
+                return world.delta;
+            }
         }
 
         return 0f;

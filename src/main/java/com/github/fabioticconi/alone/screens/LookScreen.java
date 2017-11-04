@@ -82,6 +82,8 @@ public class LookScreen extends PlayScreen
 
             screen.select(PlayScreen.class);
 
+            mTarget.remove(playerId);
+
             return 0f;
         }
         else
@@ -144,7 +146,7 @@ public class LookScreen extends PlayScreen
         final int playerX = xmax / 2;
         final int playerY = (ymax - panelSize) / 2;
 
-        terminal.write('@', playerX, playerY, Color.BLACK, Color.WHITE);
+        terminal.write('@', playerX, playerY, Color.BLACK, Color.LIGHT_GRAY);
 
         if (pos.equals(t.pos))
             return;
@@ -158,7 +160,7 @@ public class LookScreen extends PlayScreen
             final int x = playerX + (p.x - pos.x);
             final int y = playerY + (p.y - pos.y);
 
-            terminal.write(' ', x, y, Color.WHITE, Color.WHITE);
+            terminal.write(' ', x, y, Color.WHITE, Color.LIGHT_GRAY);
         }
     }
 }
