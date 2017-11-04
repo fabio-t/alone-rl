@@ -157,9 +157,6 @@ public class Main extends JFrame implements KeyListener
         long lag = 0L;
         long elapsed;
 
-        // FIXME: without this the first rendering happens before the first process
-        world.process();
-
         // FIXME: https://github.com/TomGrill/logic-render-game-loop
         // needs to modify that, so that I can divide systems in three groups:
         // input collection/processing, logic, output sending
@@ -168,7 +165,7 @@ public class Main extends JFrame implements KeyListener
 
         float pActionTime = 0f;
 
-        long repaintCooldown = 0L;
+        long repaintCooldown = 1L;
         long actionCooldown  = 0L;
 
         while (keepRunning)
@@ -233,7 +230,6 @@ public class Main extends JFrame implements KeyListener
             else
                 repaintCooldown -= elapsed;
 
-            // FIXME: to remove when actual rendering and input processing is implemented
             // try
             // {
             //     Thread.sleep(40);

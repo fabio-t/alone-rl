@@ -17,7 +17,6 @@
  */
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.BaseSystem;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -32,6 +31,7 @@ import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Util;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.awt.*;
 import java.io.FileInputStream;
@@ -42,7 +42,7 @@ import java.util.Random;
 /**
  * @author Fabio Ticconi
  */
-public class BootstrapSystem extends BaseSystem
+public class BootstrapSystem extends PassiveSystem
 {
     private final ClassLoader loader = getClass().getClassLoader();
 
@@ -62,16 +62,11 @@ public class BootstrapSystem extends BaseSystem
 
     PlayerManager pManager;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.artemis.BaseSystem#processSystem()
-     */
     @Override
-    protected void processSystem()
+    protected void initialize()
     {
         // this must be only run once
-        setEnabled(false);
+        // setEnabled(false);
 
         int x;
         int y;
