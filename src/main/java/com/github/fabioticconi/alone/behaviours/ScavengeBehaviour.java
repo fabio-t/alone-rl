@@ -110,9 +110,10 @@ public class ScavengeBehaviour extends AbstractBehaviour
         // just eat if the corpse is anywhere near us
         if (Coords.distanceChebyshev(pos.x, pos.y, corpsePos.x, corpsePos.y) < 2)
         {
-            return sAction.act(sHunger.devour(entityId, corpseId));
+            return sAction.act(sHunger.eat(entityId, corpseId));
         }
 
+        // this calculates a path
         return sBump.bumpAction(entityId, corpsePos);
     }
 }

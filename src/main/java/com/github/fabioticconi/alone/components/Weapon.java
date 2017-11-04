@@ -19,6 +19,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
+import com.github.fabioticconi.alone.constants.WeaponType;
 
 /**
  * Author: Fabio Ticconi
@@ -26,31 +27,22 @@ import com.artemis.Component;
  */
 public class Weapon extends Component
 {
-    public Type    damageType;
-    public float   damage;
-    public boolean canThrow;
+    public WeaponType damageType;
+    public float      damage;
 
     public Weapon()
     {
 
     }
 
-    public Weapon(final Type damageType, final float damage)
+    public Weapon(final WeaponType damageType, final float damage)
     {
-        set(damageType, damage, false);
+        set(damageType, damage);
     }
 
-    public void set(final Type damageType, final float damage, final boolean canThrow)
+    public void set(final WeaponType damageType, final float damage)
     {
         this.damageType = damageType;
         this.damage = damage;
-        this.canThrow = canThrow;
-    }
-
-    public enum Type
-    {
-        SLASH,
-        POINT,
-        BLUNT
     }
 }

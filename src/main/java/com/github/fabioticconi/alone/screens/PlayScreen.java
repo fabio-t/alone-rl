@@ -18,7 +18,9 @@
 
 package com.github.fabioticconi.alone.screens;
 
+import asciiPanel.AsciiCharacterData;
 import asciiPanel.AsciiPanel;
+import asciiPanel.TileTransformer;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -33,10 +35,12 @@ import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
-import com.github.fabioticconi.alone.systems.*;
+import com.github.fabioticconi.alone.systems.ActionSystem;
+import com.github.fabioticconi.alone.systems.BumpSystem;
+import com.github.fabioticconi.alone.systems.ItemSystem;
+import com.github.fabioticconi.alone.systems.MessageSystem;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +62,12 @@ public class PlayScreen extends AbstractScreen
     ComponentMapper<Health>   mHealth;
     ComponentMapper<Stamina>  mStamina;
 
-    ActionSystem sAction;
-    BumpSystem   sBump;
-    ItemSystem   sItems;
-    HungerSystem sHunger;
-    ThrowSystem  sThrow;
-    MapSystem    map;
+    ActionSystem  sAction;
+    BumpSystem    sBump;
+    ItemSystem    sItems;
+    MapSystem     map;
     MessageSystem msg;
-    ScreenSystem screen;
+    ScreenSystem  screen;
 
     @Wire
     SingleGrid   grid;
@@ -184,26 +186,13 @@ public class PlayScreen extends AbstractScreen
 
             return 0f;
         }
-        else if (keys.get(KeyEvent.VK_T))
+        else if (keys.get(KeyEvent.VK_L) || keys.get(KeyEvent.VK_T))
         {
             keys.clear();
 
             Main.pause();
 
-            screen.select(ThrowScreen.class);
-
-            return 0f;
-        }
-        else if (keys.get(KeyEvent.VK_L))
-        {
-            keys.clear(KeyEvent.VK_L);
-
-            // TODO: set a target. The cell will be blinking.
-            // when a player is in looking-mode:
-            // - moving should move this blinking cell
-            // - ESC exits looking-mode
-            // - t throws if you have a throwable
-            // - ENTER shows a short description of what's there
+            screen.select(LookScreen.class);
 
             return 0f;
         }
@@ -276,7 +265,7 @@ public class PlayScreen extends AbstractScreen
 
         for (int x = 0; x < xmax; x++)
         {
-            for (int y = 0; y < ymax-panelSize; y++)
+            for (int y = 0; y < ymax - panelSize; y++)
             {
                 posX = p.x + x - halfcols;
                 posY = p.y + y - halfrows;
@@ -385,26 +374,26 @@ public class PlayScreen extends AbstractScreen
         terminal.write(']', x, yoff, Color.RED);
 
         // stamina bar
-        terminal.write('[', 0, yoff+1, Color.YELLOW);
+        terminal.write('[', 0, yoff + 1, Color.YELLOW);
         for (x = 1; x < 11; x++)
         {
             if (x <= stamina.value * 10f / stamina.maxValue)
-                terminal.write('=', x, yoff+1, Color.YELLOW);
+                terminal.write('=', x, yoff + 1, Color.YELLOW);
             else
-                terminal.write(' ', x, yoff+1, Color.YELLOW);
+                terminal.write(' ', x, yoff + 1, Color.YELLOW);
         }
-        terminal.write(']', x, yoff+1, Color.YELLOW);
+        terminal.write(']', x, yoff + 1, Color.YELLOW);
 
         // hunger bar
-        terminal.write(']', xmax-1, yoff, Color.ORANGE.darker());
+        terminal.write(']', xmax - 1, yoff, Color.ORANGE.darker());
         for (x = 1; x < 11; x++)
         {
             if (x <= hunger.value * 10f / hunger.maxValue)
-                terminal.write('=', xmax-x-1, yoff, Color.ORANGE.darker());
+                terminal.write('=', xmax - x - 1, yoff, Color.ORANGE.darker());
             else
-                terminal.write(' ', xmax-x-1, yoff, Color.ORANGE.darker());
+                terminal.write(' ', xmax - x - 1, yoff, Color.ORANGE.darker());
         }
-        terminal.write('[', xmax-x-1, yoff, Color.ORANGE.darker());
+        terminal.write('[', xmax - x - 1, yoff, Color.ORANGE.darker());
 
         // small panel: combat log
         final Stack<AbstractMessage> messages = player.messages;
@@ -429,12 +418,12 @@ public class PlayScreen extends AbstractScreen
             String smsg = msg.format();
 
             if (smsg.length() >= xmax)
-                smsg = smsg.substring(0, xmax-1);
+                smsg = smsg.substring(0, xmax - 1);
 
-            terminal.write(smsg, 0, ymax-i, msg.fgCol, msg.bgCol);
+            terminal.write(smsg, 0, ymax - i, msg.fgCol, msg.bgCol);
 
             if (smsg.length() < xmax)
-                terminal.clear( ' ', smsg.length(), ymax-i, xmax-smsg.length(), 1, Color.WHITE, Color.BLACK);
+                terminal.clear(' ', smsg.length(), ymax - i, xmax - smsg.length(), 1, Color.WHITE, Color.BLACK);
         }
 
         // FIXME: this is crap, inefficient, horrible. Must change the Stack with a better data structure.

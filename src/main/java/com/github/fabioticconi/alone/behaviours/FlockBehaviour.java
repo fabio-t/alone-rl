@@ -91,7 +91,7 @@ public class FlockBehaviour extends AbstractBehaviour
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;
 
-        int minDistance = Integer.MAX_VALUE;
+        float minDistance = Float.MAX_VALUE;
 
         int      count = 0;
         Position temp;
@@ -111,7 +111,7 @@ public class FlockBehaviour extends AbstractBehaviour
 
                 // we keep track of the closest visible group member, in case the "center of group" approach
                 // fails
-                final int tempDistance = Coords.distanceChebyshev(curPos.x, curPos.y, temp.x, temp.y);
+                final float tempDistance = Coords.distancePseudoEuclidean(curPos.x, curPos.y, temp.x, temp.y);
 
                 if (tempDistance < minDistance)
                 {
@@ -135,23 +135,24 @@ public class FlockBehaviour extends AbstractBehaviour
 
         final long coord = Coords.packCoords(centerOfGroup.x, centerOfGroup.y);
 
-        // if the center is not currently visible, there's no point
+        // if the center is not currently visible, we just choose the closest
         if (!visibleCells.contains(coord))
         {
             centerOfGroup.set(closest);
         }
 
-        final int dist = Coords.distanceChebyshev(curPos.x, curPos.y, centerOfGroup.x, centerOfGroup.y);
+        final float dist = Coords.distancePseudoEuclidean(curPos.x, curPos.y, centerOfGroup.x, centerOfGroup.y);
 
-        if (dist < 2)
+        if (dist < 2f)
             return 0f;
 
-        return (float) dist / sight;
+        return dist / sight;
     }
 
     @Override
     public float update()
     {
+        // this calculates a path
         return sBump.bumpAction(entityId, centerOfGroup);
     }
 }

@@ -26,10 +26,12 @@ import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.Msg;
 import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -38,7 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
-import java.util.ArrayList;
+import java.awt.*;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -51,7 +54,7 @@ public class ThrowSystem extends PassiveSystem
 
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Weapon>    mWeapon;
+    ComponentMapper<Target>    mTarget;
     ComponentMapper<Position>  mPos;
     ComponentMapper<Sight>     mSight;
     ComponentMapper<Path>      mPath;
@@ -63,20 +66,17 @@ public class ThrowSystem extends PassiveSystem
 
     StaminaSystem sStamina;
     BumpSystem    sBump;
+    ItemSystem    sItem;
     MessageSystem msg;
-
-    @Wire
-    SingleGrid obstacles;
 
     @Wire
     MultipleGrid items;
 
-    public ThrowAction throwWeapon(final int entityId, final int targetId)
+    public ActionContext throwAt(final int actorId)
     {
         final ThrowAction t = new ThrowAction();
 
-        t.actorId = entityId;
-        t.targets.add(targetId);
+        t.actorId = actorId;
 
         return t;
     }
@@ -88,90 +88,72 @@ public class ThrowSystem extends PassiveSystem
         @Override
         public boolean tryAction()
         {
-            if (targets.size() != 1)
+            final Target t = mTarget.get(actorId);
+
+            if (t == null)
+            {
+                msg.send(actorId, new CannotMsg("throw", "without a target"));
+
                 return false;
+            }
+
+            final Position p = mPos.get(actorId);
+
+            if (p.equals(t.pos))
+            {
+                msg.send(actorId, new CannotMsg("throw", "here!"));
+
+                return false;
+            }
 
             final Inventory inventory = mInventory.get(actorId);
 
             if (inventory == null)
                 return false;
 
-            final int[] data = inventory.items.getData();
-            for (int i = 0; i < inventory.items.size(); i++)
+            final int weaponId = sItem.getWeapon(actorId, EnumSet.allOf(WeaponType.class), true);
+
+            if (weaponId < 0)
             {
-                final int itemId = data[i];
+                msg.send(actorId, new CannotMsg("throw", "without a weapon equipped"));
 
-                if (itemId < 0)
-                {
-                    log.warn("itemId<0 in the Inventory of {}", actorId);
-
-                    continue;
-                }
-
-                final Weapon weapon = mWeapon.get(itemId);
-
-                if (weapon == null || !weapon.canThrow)
-                    continue;
-
-                final Position p     = mPos.get(actorId);
-                final Sight    sight = mSight.get(actorId);
-
-                // FIXME targeting should be decoupled
-
-                // among the visible creatures, only keep the closest one
-                final IntSet creatures = obstacles.getEntities(map.getVisibleCells(p.x, p.y, sight.value));
-                final IntSet closest   = obstacles.getClosestEntities(p.x, p.y, sight.value);
-                creatures.retainAll(closest);
-
-                if (creatures.isEmpty())
-                    return false;
-
-                final int targetId = creatures.iterator().nextInt();
-
-                if (targetId < 0)
-                    return false;
-
-                final Position targetPos = mPos.get(targetId);
-
-                // it's close enough to strike, so we transform this in a bump action
-                if (Coords.distanceChebyshev(p.x, p.y, targetPos.x, targetPos.y) == 1)
-                {
-                    sBump.bumpAction(actorId, Side.getSide(p.x, p.y, targetPos.x, targetPos.y));
-
-                    return false;
-                }
-                else
-                {
-                    path = map.getLineOfSight(p.x, p.y, targetPos.x, targetPos.y);
-
-                    if (path == null || path.size() < 2)
-                    {
-                        log.warn("path not found or empty");
-
-                        return false;
-                    }
-
-                    // first index is the current position
-                    path.remove(0);
-                }
-
-                // adding weapon
-                targets.add(itemId);
-
-                // target position is not included
-                path.add(new Point(targetPos.x, targetPos.y));
-
-                delay = 0.5f;
-                cost = 1.5f;
-
-                msg.send(actorId, targetId, new ThrowMsg(mName.get(itemId).name));
-
-                return true;
+                return false;
             }
 
-            msg.send(actorId, new CannotMsg("throw", "anything"));
+            // it's close enough to strike, so we transform this in a bump action
+            if (Coords.distanceChebyshev(p.x, p.y, t.pos.x, t.pos.y) == 1)
+            {
+                sBump.bumpAction(actorId, Side.getSide(p.x, p.y, t.pos.x, t.pos.y));
 
-            return false;
+                return false;
+            }
+            else
+            {
+                path = map.getLineOfSight(p.x, p.y, t.pos.x, t.pos.y);
+
+                if (path == null || path.size() < 2)
+                {
+                    log.warn("path not found or empty");
+
+                    return false;
+                }
+
+                // first index is the current position
+                path.remove(0);
+            }
+
+            // adding weapon
+            targets.add(weaponId);
+
+            // target position is not included
+            path.add(new Point(t.pos.x, t.pos.y));
+
+            delay = 0.5f;
+            cost = 1.5f;
+
+            msg.send(actorId, new ThrowMsg(mName.get(weaponId).name, Side.getSide(p.x, p.y, t.pos.x, t.pos.y)));
+
+            return true;
         }
 
         @Override

@@ -15,9 +15,3 @@
   Possibly to do in a way that there are two bars overlapped: the first goes full without effect. When it's full,
   it starts again to colour, more darkly, and there the reduction in regeneration progresses.
   A full doubly-coloured bar means zero regen.
-
-- need to show proper messages when a weapon is thrown (both at start and at stone arrival, since it's still an attack)
-
-- also throwing might need to be tweaked so that the target position is taken at the *end*, not the start of the throwing
- act. This should reduce complete aiming failures.
- Of course this is all secondary to the bloody TARGETING..

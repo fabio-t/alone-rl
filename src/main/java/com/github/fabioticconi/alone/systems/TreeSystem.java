@@ -24,6 +24,7 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.EnumSet;
 
 /**
  * Author: Fabio Ticconi
@@ -103,7 +105,7 @@ public class TreeSystem extends PassiveSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('/', Util.BROWN.brighter());
-        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 1, false);
+        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
         edit.add(new Name("A branch"));
 
         return id;
@@ -122,7 +124,7 @@ public class TreeSystem extends PassiveSystem
             if (!mTree.has(treeId))
                 return false;
 
-            final int axeId = sItem.getWeapon(actorId, Weapon.Type.SLASH);
+            final int axeId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.SLASH), false);
 
             if (axeId < 0)
             {

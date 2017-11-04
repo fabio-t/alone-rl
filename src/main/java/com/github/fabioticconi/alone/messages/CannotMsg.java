@@ -29,10 +29,14 @@ public class CannotMsg extends AbstractMessage
     public final String verb;
     public final String reason;
 
+    public CannotMsg(final String verb)
+    {
+        this.verb = verb;
+        this.reason = "";
+    }
+
     public CannotMsg(final String verb, final String reason)
     {
-        super();
-
         this.verb = verb;
         this.reason = reason;
     }

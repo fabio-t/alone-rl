@@ -24,6 +24,7 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.EnumSet;
 
 /**
  * Author: Fabio Ticconi
@@ -81,7 +83,7 @@ public class CrushSystem extends PassiveSystem
             if (targetId < 0 || !mCrushable.has(targetId))
                 return false;
 
-            final int hammerId = sItem.getWeapon(actorId, Weapon.Type.BLUNT);
+            final int hammerId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.BLUNT), false);
 
             if (hammerId < 0)
             {
@@ -130,7 +132,7 @@ public class CrushSystem extends PassiveSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
-        edit.create(Weapon.class).set(Weapon.Type.BLUNT, 2, true);
+        edit.create(Weapon.class).set(WeaponType.BLUNT, 2);
         edit.add(new Name("A stone"));
 
         return id;

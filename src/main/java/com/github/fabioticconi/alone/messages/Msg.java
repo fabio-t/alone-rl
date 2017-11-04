@@ -18,34 +18,27 @@
 
 package com.github.fabioticconi.alone.messages;
 
-import com.github.fabioticconi.alone.constants.Side;
-
 import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
- * Date: 01/11/17
+ * Date: 04/11/17
  */
-public class ThrowMsg extends AbstractMessage
+public class Msg extends AbstractMessage
 {
-    public final String item;
-    public final Side   at;
+    final String msg;
 
-    public ThrowMsg(final String item, final Side at)
+    public Msg(final String msg)
     {
-        this.item = item;
-        this.at = at;
+        this.msg = msg;
     }
 
     @Override
     public String format()
     {
-        fgCol = Color.RED;
+        if (!"You".equals(actor))
+            fgCol = Color.GRAY;
 
-        return String.format("%s %s %s towards %s",
-                             actor,
-                             thirdPerson ? "throws" : "throw",
-                             item.toLowerCase(),
-                             at);
+        return String.format("%s %s", actor, msg);
     }
 }

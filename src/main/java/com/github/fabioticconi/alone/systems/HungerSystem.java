@@ -66,11 +66,11 @@ public class HungerSystem extends IntervalIteratingSystem
         h.value = Math.min(h.value, h.maxValue);
     }
 
-    public EatAction devour(final int entityId, final int corpseId)
+    public EatAction eat(final int entityId, final int corpseId)
     {
         if (!mCorpse.has(corpseId))
         {
-            log.warn("{} is trying to eat a not-corpse, {}", entityId, corpseId);
+            msg.send(entityId, corpseId, new CannotMsg("eat"));
 
             return null;
         }
@@ -135,6 +135,9 @@ public class HungerSystem extends IntervalIteratingSystem
 
             final int targetId = targets.get(0);
 
+            if (targetId < 0 || !mCorpse.has(targetId))
+                return false;
+
             final Hunger h = mHunger.get(actorId);
 
             if (h == null)
@@ -146,13 +149,7 @@ public class HungerSystem extends IntervalIteratingSystem
                 return false;
             }
 
-            if (targetId < 0 || !mCorpse.has(targetId))
-                return false;
-
-            final Position p1 = mPosition.get(actorId);
-            final Position p2 = mPosition.get(targetId);
-
-            return Coords.distanceChebyshev(p1.x, p1.y, p2.x, p2.y) < 2;
+            return true;
         }
 
         @Override

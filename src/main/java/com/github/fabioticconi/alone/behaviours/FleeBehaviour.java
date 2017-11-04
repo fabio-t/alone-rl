@@ -104,13 +104,14 @@ public class FleeBehaviour extends AbstractBehaviour
         fleeFrom.x = Math.floorDiv(fleeFrom.x, count);
         fleeFrom.y = Math.floorDiv(fleeFrom.y, count);
 
-        return 1f - (float) Coords.distanceChebyshev(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
+        return 1f - Coords.distancePseudoEuclidean(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y) / sight;
     }
 
     @Override
     public float update()
     {
-        Side direction = Side.getSideAt(curPos.x - fleeFrom.x, curPos.y - fleeFrom.y);
+        // get the side directly opposite to the one the danger is from
+        Side direction = Side.getSide(fleeFrom.x, fleeFrom.y, curPos.x, curPos.y);
 
         if (!sMap.isFree(curPos.x, curPos.y, direction))
         {

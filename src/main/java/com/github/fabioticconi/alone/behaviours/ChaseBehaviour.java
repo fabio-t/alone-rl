@@ -88,7 +88,7 @@ public class ChaseBehaviour extends AbstractBehaviour
             {
                 temp = mPosition.get(creatureId);
 
-                final float distance = (float) Coords.distanceChebyshev(pos.x, pos.y, temp.x, temp.y);
+                final float distance = Coords.distancePseudoEuclidean(pos.x, pos.y, temp.x, temp.y);
 
                 // we want the closest prey
                 if (distance < minDistance)
@@ -110,6 +110,7 @@ public class ChaseBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
+        // this calculates a path
         return sBump.bumpAction(entityId, chasePos);
     }
 }

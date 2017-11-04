@@ -18,6 +18,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
+import com.github.fabioticconi.alone.constants.Side;
 
 /**
  * @author Fabio Ticconi
@@ -38,15 +39,40 @@ public class Position extends Component
         this.y = y;
     }
 
-    public void set(final int x, final int y)
+    public Position set(final int x, final int y)
     {
         this.x = x;
         this.y = y;
+
+        return this;
     }
 
-    public void set(final Position p)
+    public Position set(final Side side)
     {
-        set(p.x, p.y);
+        return set(side.x, side.y);
+    }
+
+    public Position set(final Position p)
+    {
+        return set(p.x, p.y);
+    }
+
+    public Position add(final int x, final int y)
+    {
+        this.x += x;
+        this.y += y;
+
+        return this;
+    }
+
+    public Position add(final Side side)
+    {
+        return add(side.x, side.y);
+    }
+
+    public Position add(final Position p)
+    {
+        return add(p.x, p.y);
     }
 
     @Override

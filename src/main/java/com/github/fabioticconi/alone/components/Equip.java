@@ -16,36 +16,14 @@
  *
  */
 
-package com.github.fabioticconi.alone.messages;
+package com.github.fabioticconi.alone.components;
 
-import com.github.fabioticconi.alone.constants.Side;
-
-import java.awt.*;
+import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 01/11/17
+ * Date: 04/11/17
  */
-public class ThrowMsg extends AbstractMessage
+public class Equip extends Component
 {
-    public final String item;
-    public final Side   at;
-
-    public ThrowMsg(final String item, final Side at)
-    {
-        this.item = item;
-        this.at = at;
-    }
-
-    @Override
-    public String format()
-    {
-        fgCol = Color.RED;
-
-        return String.format("%s %s %s towards %s",
-                             actor,
-                             thirdPerson ? "throws" : "throw",
-                             item.toLowerCase(),
-                             at);
-    }
 }

@@ -112,9 +112,7 @@ public class AttackSystem extends PassiveSystem
             final Position p  = mPos.get(actorId);
             final Position p2 = mPos.get(targetId);
 
-            final int  dist = Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y);
-
-            if (dist != 1)
+            if (Coords.distanceChebyshev(p.x, p.y, p2.x, p2.y) != 1)
             {
                 // can't strike if the target has moved away
                 return;

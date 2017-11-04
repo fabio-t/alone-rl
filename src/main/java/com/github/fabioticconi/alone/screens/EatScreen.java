@@ -19,11 +19,7 @@
 package com.github.fabioticconi.alone.screens;
 
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.systems.HungerSystem;
-
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
@@ -45,7 +41,7 @@ public class EatScreen extends InventoryScreen
 
         screen.select(PlayScreen.class);
 
-        return sAction.act(sHunger.devour(playerId, targetId));
+        return sAction.act(sHunger.eat(playerId, targetId));
     }
 
     @Override

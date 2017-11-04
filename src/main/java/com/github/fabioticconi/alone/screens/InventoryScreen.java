@@ -45,7 +45,6 @@ public abstract class InventoryScreen extends AbstractScreen
     ComponentMapper<Inventory> mInventory;
 
     ScreenSystem screen;
-    MessageSystem msg;
     ActionSystem sAction;
     ItemSystem sItems;
 

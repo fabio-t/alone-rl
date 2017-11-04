@@ -112,8 +112,8 @@ public class Main extends JFrame implements KeyListener
         // screens (passive)
         config.setSystem(PlayScreen.class);
         config.setSystem(DropScreen.class);
-        config.setSystem(ThrowScreen.class);
         config.setSystem(EatScreen.class);
+        config.setSystem(LookScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
