@@ -18,14 +18,18 @@
 
 package com.github.fabioticconi.alone.screens;
 
+import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.Wearable;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 04/11/17
  */
-public class DropScreen extends InventoryScreen
+public class EquipScreen extends InventoryScreen
 {
+    ComponentMapper<Wearable> mWearable;
+
     @Override
     public float handleKeys(final BitVector keys)
     {
@@ -38,18 +42,18 @@ public class DropScreen extends InventoryScreen
 
         screen.select(PlayScreen.class);
 
-        return sAction.act(sItems.drop(playerId, targetId));
+        return sAction.act(sItems.equip(playerId, targetId));
     }
 
     @Override
     public String header()
     {
-        return "Drop item:";
+        return "Equip item:";
     }
 
     @Override
     public boolean canDraw(final int entityId)
     {
-        return true;
+        return mWearable.has(entityId);
     }
 }

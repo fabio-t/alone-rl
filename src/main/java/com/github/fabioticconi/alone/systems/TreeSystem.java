@@ -106,6 +106,7 @@ public class TreeSystem extends PassiveSystem
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('/', Util.BROWN.brighter());
         edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
+        edit.create(Wearable.class);
         edit.add(new Name("A branch"));
 
         return id;

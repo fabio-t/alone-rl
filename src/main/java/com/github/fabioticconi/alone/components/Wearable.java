@@ -16,40 +16,14 @@
  *
  */
 
-package com.github.fabioticconi.alone.screens;
+package com.github.fabioticconi.alone.components;
 
-import com.artemis.utils.BitVector;
+import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 04/11/17
  */
-public class DropScreen extends InventoryScreen
+public class Wearable extends Component
 {
-    @Override
-    public float handleKeys(final BitVector keys)
-    {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        final int targetId = getTarget(keys);
-
-        if (targetId < 0)
-            return super.handleKeys(keys);
-
-        screen.select(PlayScreen.class);
-
-        return sAction.act(sItems.drop(playerId, targetId));
-    }
-
-    @Override
-    public String header()
-    {
-        return "Drop item:";
-    }
-
-    @Override
-    public boolean canDraw(final int entityId)
-    {
-        return true;
-    }
 }

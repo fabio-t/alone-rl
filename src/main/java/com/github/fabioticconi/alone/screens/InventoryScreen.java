@@ -23,6 +23,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.artemis.utils.IntBag;
+import com.github.fabioticconi.alone.components.Equip;
 import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Name;
 import com.github.fabioticconi.alone.systems.ActionSystem;
@@ -43,6 +44,7 @@ public abstract class InventoryScreen extends AbstractScreen
 {
     ComponentMapper<Name>      mName;
     ComponentMapper<Inventory> mInventory;
+    ComponentMapper<Equip>     mEquip;
 
     ScreenSystem screen;
     ActionSystem sAction;
@@ -80,13 +82,20 @@ public abstract class InventoryScreen extends AbstractScreen
         {
             final int itemId = items.get(i);
 
-            final String entry = Letter.values()[i] + " " + mName.get(itemId).name.toLowerCase();
+            if (!canDraw(itemId))
+                continue;
+
+            final String entry = String.format("%s %s %s",
+                                               Letter.values()[i],
+                                               mName.get(itemId).name.toLowerCase(),
+                                               mEquip.has(itemId) ? " [WORN]" : "");
 
             terminal.writeCenter(entry, starty + (size < maxSize/2 ? i*2 : i));
         }
     }
 
     public abstract String header();
+    public abstract boolean canDraw(final int entityId);
 
     public int getTarget(final BitVector keys)
     {

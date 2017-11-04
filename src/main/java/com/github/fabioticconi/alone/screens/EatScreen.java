@@ -18,7 +18,9 @@
 
 package com.github.fabioticconi.alone.screens;
 
+import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.Corpse;
 import com.github.fabioticconi.alone.systems.HungerSystem;
 
 /**
@@ -28,6 +30,8 @@ import com.github.fabioticconi.alone.systems.HungerSystem;
 public class EatScreen extends InventoryScreen
 {
     HungerSystem sHunger;
+
+    ComponentMapper<Corpse> mCorpse;
 
     @Override
     public float handleKeys(final BitVector keys)
@@ -48,5 +52,11 @@ public class EatScreen extends InventoryScreen
     public String header()
     {
         return "Eat item:";
+    }
+
+    @Override
+    public boolean canDraw(final int entityId)
+    {
+        return mCorpse.has(entityId);
     }
 }

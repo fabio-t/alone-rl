@@ -16,40 +16,38 @@
  *
  */
 
-package com.github.fabioticconi.alone.screens;
-
-import com.artemis.utils.BitVector;
+package com.github.fabioticconi.alone.messages;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 04/11/17
  */
-public class DropScreen extends InventoryScreen
+public class EquipMsg extends AbstractMessage
 {
-    @Override
-    public float handleKeys(final BitVector keys)
+    private final boolean remove;
+
+    public EquipMsg(final boolean remove)
     {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        final int targetId = getTarget(keys);
-
-        if (targetId < 0)
-            return super.handleKeys(keys);
-
-        screen.select(PlayScreen.class);
-
-        return sAction.act(sItems.drop(playerId, targetId));
+        this.remove = remove;
     }
 
     @Override
-    public String header()
+    public String format()
     {
-        return "Drop item:";
+        if (remove)
+            return formatUnequip();
+
+        return String.format("%s %s %s",
+                             actor,
+                             thirdPerson ? "equips" : "equip",
+                             target.toLowerCase());
     }
 
-    @Override
-    public boolean canDraw(final int entityId)
+    private String formatUnequip()
     {
-        return true;
+        return String.format("%s %s %s",
+                             actor,
+                             thirdPerson ? "removes" : "remove",
+                             target.toLowerCase());
     }
 }

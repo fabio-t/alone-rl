@@ -196,6 +196,16 @@ public class PlayScreen extends AbstractScreen
 
             return 0f;
         }
+        else if (keys.get(KeyEvent.VK_W))
+        {
+            keys.clear();
+
+            Main.pause();
+
+            screen.select(EquipScreen.class);
+
+            return 0f;
+        }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
             // TODO should probably return the menu instead?

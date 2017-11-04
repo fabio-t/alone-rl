@@ -114,6 +114,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(DropScreen.class);
         config.setSystem(EatScreen.class);
         config.setSystem(LookScreen.class);
+        config.setSystem(EquipScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 

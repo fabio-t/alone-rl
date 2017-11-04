@@ -48,6 +48,7 @@ public class CrushSystem extends PassiveSystem
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Position>  mPosition;
+    ComponentMapper<Weapon>    mWeapon;
 
     StaminaSystem sStamina;
     ItemSystem    sItem;
@@ -83,11 +84,20 @@ public class CrushSystem extends PassiveSystem
             if (targetId < 0 || !mCrushable.has(targetId))
                 return false;
 
-            final int hammerId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.BLUNT), false);
+            final int hammerId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.BLUNT), true);
 
             if (hammerId < 0)
             {
                 msg.send(actorId, targetId, new CannotMsg("crush", "without a blunt weapon"));
+
+                return false;
+            }
+
+            final Weapon weapon = mWeapon.get(hammerId);
+
+            if (weapon.damage < 3)
+            {
+                msg.send(actorId, targetId, new CannotMsg("crush", "with such a weak weapon"));
 
                 return false;
             }
@@ -132,7 +142,8 @@ public class CrushSystem extends PassiveSystem
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 2);
+        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
+        edit.create(Wearable.class);
         edit.add(new Name("A stone"));
 
         return id;

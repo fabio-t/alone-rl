@@ -26,6 +26,7 @@ import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
+import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
 import com.github.fabioticconi.alone.screens.AbstractScreen;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -47,26 +48,37 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Weapon>    mWeapon;
     ComponentMapper<Equip>     mEquip;
+    ComponentMapper<Wearable>  mWearable;
 
     MessageSystem msg;
 
     @Wire
     MultipleGrid items;
 
-    public GetAction get(final int entityId)
+    public GetAction get(final int actorId)
     {
         final GetAction a = new GetAction();
 
-        a.actorId = entityId;
+        a.actorId = actorId;
 
         return a;
     }
 
-    public DropAction drop(final int entityId, final int targetId)
+    public DropAction drop(final int actorId, final int targetId)
     {
         final DropAction a = new DropAction();
 
-        a.actorId = entityId;
+        a.actorId = actorId;
+        a.targets.add(targetId);
+
+        return a;
+    }
+
+    public EquipAction equip(final int actorId, final int targetId)
+    {
+        final EquipAction a = new EquipAction();
+
+        a.actorId = actorId;
         a.targets.add(targetId);
 
         return a;
@@ -165,7 +177,56 @@ public class ItemSystem extends PassiveSystem
         }
     }
 
-    public int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    private class EquipAction extends ActionContext
+    {
+        @Override
+        public boolean tryAction()
+        {
+            return targets.size() == 1;
+        }
+
+        @Override
+        public void doAction()
+        {
+            if (targets.size() != 1)
+                return;
+
+            final Position  p = mPos.get(actorId);
+            final Inventory i = mInventory.get(actorId);
+
+            if (p == null || i == null)
+            {
+                log.warn("{} does not have the required composition", actorId);
+
+                return;
+            }
+
+            final int targetId = targets.get(0);
+
+            if(!i.items.contains(targetId))
+            {
+                msg.send(actorId, new CannotMsg("equip", "what you don't have"));
+            }
+            else if (!mWearable.has(targetId))
+            {
+                msg.send(actorId, targetId, new CannotMsg("equip", ""));
+            }
+            else if (mEquip.has(targetId))
+            {
+                mEquip.remove(targetId);
+
+                msg.send(actorId, targetId, new EquipMsg(true));
+            }
+            else
+            {
+                mEquip.create(targetId);
+
+                msg.send(actorId, targetId, new EquipMsg(false));
+            }
+        }
+    }
+
+    int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
