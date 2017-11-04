@@ -27,20 +27,15 @@ import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
-import com.github.fabioticconi.alone.messages.Msg;
 import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 

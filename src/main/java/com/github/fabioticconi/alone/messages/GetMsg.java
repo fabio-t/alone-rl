@@ -27,9 +27,6 @@ public class GetMsg extends AbstractMessage
     @Override
     public String format()
     {
-        return String.format("%s %s %s up",
-                             actor,
-                             thirdPerson ? "picks" : "pick",
-                             target.toLowerCase());
+        return String.format("%s %s %s up", actor, thirdPerson ? "picks" : "pick", target.toLowerCase());
     }
 }

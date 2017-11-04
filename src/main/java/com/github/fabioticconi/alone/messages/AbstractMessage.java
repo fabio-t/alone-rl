@@ -30,8 +30,8 @@ public abstract class AbstractMessage implements Message
 {
     public String actor;
     public String target;
-    public int  distance;
-    public Side direction;
+    public int    distance;
+    public Side   direction;
 
     public Color fgCol;
     public Color bgCol;

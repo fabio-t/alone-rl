@@ -24,7 +24,6 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;

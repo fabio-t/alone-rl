@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.github.fabioticconi.alone.map;
+package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
@@ -23,6 +23,7 @@ import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
 import com.github.fabioticconi.alone.utils.Util;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.los.ILosBoard;
 import rlforj.los.PrecisePermissive;
-import rlforj.math.Point;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
@@ -59,9 +59,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
     /* FOV/LOS stuff */
     final LongSet lastVisited;
-    ComponentMapper<LightBlocker> mLightBlocker;
     final AStar astar;
-
+    ComponentMapper<LightBlocker> mLightBlocker;
     @Wire
     SingleGrid obstacles;
 

@@ -18,9 +18,7 @@
 
 package com.github.fabioticconi.alone.screens;
 
-import asciiPanel.AsciiCharacterData;
 import asciiPanel.AsciiPanel;
-import asciiPanel.TileTransformer;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -30,15 +28,11 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
-import com.github.fabioticconi.alone.systems.ActionSystem;
-import com.github.fabioticconi.alone.systems.BumpSystem;
-import com.github.fabioticconi.alone.systems.ItemSystem;
-import com.github.fabioticconi.alone.systems.MessageSystem;
+import com.github.fabioticconi.alone.systems.*;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.slf4j.Logger;
@@ -46,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Properties;
 import java.util.Stack;
 
 public class PlayScreen extends AbstractScreen
@@ -73,6 +68,8 @@ public class PlayScreen extends AbstractScreen
     SingleGrid   grid;
     @Wire
     MultipleGrid items;
+    @Wire
+    Properties properties;
 
     PlayerManager pManager;
 
@@ -208,9 +205,11 @@ public class PlayScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
-            // TODO should probably return the menu instead?
+            keys.clear();
 
-            Main.keepRunning = false;
+            Main.pause();
+
+            screen.select(StartScreen.class);
         }
         else if (keys.get(KeyEvent.VK_F1))
         {
@@ -362,7 +361,7 @@ public class PlayScreen extends AbstractScreen
         }
 
         // title:
-        terminal.writeCenter("ALONE", 1);
+        terminal.writeCenter(properties.getProperty("name"), 1);
 
         final Hunger  hunger  = mHunger.get(playerId);
         final Health  health  = mHealth.get(playerId);

@@ -49,18 +49,11 @@ public class CannotMsg extends AbstractMessage
         if (target == null)
             return simpleFormat();
 
-        return String.format("%s cannot %s %s %s",
-                             actor,
-                             verb,
-                             target.toLowerCase(),
-                             reason);
+        return String.format("%s cannot %s %s %s", actor, verb, target.toLowerCase(), reason);
     }
 
     private String simpleFormat()
     {
-        return String.format("%s cannot %s %s",
-                             actor,
-                             verb,
-                             reason);
+        return String.format("%s cannot %s %s", actor, verb, reason);
     }
 }

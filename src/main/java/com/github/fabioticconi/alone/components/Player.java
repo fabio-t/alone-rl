@@ -19,7 +19,6 @@ package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
-import com.github.fabioticconi.alone.messages.Message;
 
 import java.util.Stack;
 

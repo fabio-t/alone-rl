@@ -27,9 +27,6 @@ public class DropMsg extends AbstractMessage
     @Override
     public String format()
     {
-        return String.format("%s %s %s",
-                             actor,
-                             thirdPerson ? "drops" : "drop",
-                             target.toLowerCase());
+        return String.format("%s %s %s", actor, thirdPerson ? "drops" : "drop", target.toLowerCase());
     }
 }

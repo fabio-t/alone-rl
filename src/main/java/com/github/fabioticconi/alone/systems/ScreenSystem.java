@@ -16,11 +16,13 @@
  *
  */
 
-package com.github.fabioticconi.alone.screens;
+package com.github.fabioticconi.alone.systems;
 
 import asciiPanel.AsciiPanel;
-import com.artemis.BaseSystem;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.screens.AbstractScreen;
+import com.github.fabioticconi.alone.screens.Screen;
+import com.github.fabioticconi.alone.screens.StartScreen;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 /**
@@ -35,7 +37,7 @@ public final class ScreenSystem extends PassiveSystem implements Screen
     protected void initialize()
     {
         super.initialize();
-        this.selected = world.getSystem(PlayScreen.class);
+        this.selected = world.getSystem(StartScreen.class);
     }
 
     @Override

@@ -37,17 +37,11 @@ public class EquipMsg extends AbstractMessage
         if (remove)
             return formatUnequip();
 
-        return String.format("%s %s %s",
-                             actor,
-                             thirdPerson ? "equips" : "equip",
-                             target.toLowerCase());
+        return String.format("%s %s %s", actor, thirdPerson ? "equips" : "equip", target.toLowerCase());
     }
 
     private String formatUnequip()
     {
-        return String.format("%s %s %s",
-                             actor,
-                             thirdPerson ? "removes" : "remove",
-                             target.toLowerCase());
+        return String.format("%s %s %s", actor, thirdPerson ? "removes" : "remove", target.toLowerCase());
     }
 }

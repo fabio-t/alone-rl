@@ -28,7 +28,6 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Util;

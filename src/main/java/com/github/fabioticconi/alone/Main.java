@@ -28,7 +28,6 @@ import com.artemis.managers.WorldSerializationManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.screens.*;
@@ -40,6 +39,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Random;
 
 public class Main extends JFrame implements KeyListener
@@ -68,6 +68,9 @@ public class Main extends JFrame implements KeyListener
 
         screen = new ScreenSystem();
 
+        final Properties properties = new Properties();
+        properties.load(this.getClass().getResourceAsStream("/project.properties"));
+
         final WorldConfiguration config;
         config = new WorldConfiguration();
         // first thing to be loaded
@@ -76,6 +79,7 @@ public class Main extends JFrame implements KeyListener
         config.register(new SingleGrid());
         config.register(new MultipleGrid());
         config.register(new Random());
+        config.register(properties);
         // passive systems, one-timers, managers etc
         config.setSystem(EntityLinkManager.class);
         config.setSystem(BootstrapSystem.class);
@@ -110,6 +114,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(UnderwaterBehaviour.class);
         config.setSystem(FleeFromActionBehaviour.class);
         // screens (passive)
+        config.setSystem(StartScreen.class);
         config.setSystem(PlayScreen.class);
         config.setSystem(DropScreen.class);
         config.setSystem(EatScreen.class);
@@ -133,6 +138,15 @@ public class Main extends JFrame implements KeyListener
         app.loop();
 
         app.dispose();
+    }
+
+    /**
+     * In real-time mode, space means pause/unpause the game, while
+     * in turn-based mode, space means unpause the game until SPACE is released.
+     */
+    public static void pause()
+    {
+        Main.paused = Main.realtime && !Main.paused;
     }
 
     public void loop()
@@ -174,7 +188,7 @@ public class Main extends JFrame implements KeyListener
             final float curPActionTime;
             if (actionCooldown <= 0L)
             {
-                actionCooldown = 70000000L;
+                actionCooldown = 60000000L;
                 curPActionTime = screen.handleKeys(pressed);
             }
             else
@@ -253,14 +267,5 @@ public class Main extends JFrame implements KeyListener
     @Override
     public void keyTyped(final KeyEvent e)
     {
-    }
-
-    /**
-     * In real-time mode, space means pause/unpause the game, while
-     * in turn-based mode, space means unpause the game until SPACE is released.
-     */
-    public static void pause()
-    {
-        Main.paused = Main.realtime && !Main.paused;
     }
 }

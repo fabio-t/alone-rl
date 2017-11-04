@@ -84,6 +84,38 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
+    int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            if (itemId < 0)
+            {
+                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+
+                continue;
+            }
+
+            // we might only want an equipped weapon
+            if (!mWeapon.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
+                continue;
+
+            final Weapon weapon = mWeapon.get(itemId);
+
+            if (weaponTypes.contains(weapon.damageType))
+                return itemId;
+        }
+
+        return -1;
+    }
+
     public class GetAction extends ActionContext
     {
         @Override
@@ -203,7 +235,7 @@ public class ItemSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
-            if(!i.items.contains(targetId))
+            if (!i.items.contains(targetId))
             {
                 msg.send(actorId, new CannotMsg("equip", "what you don't have"));
             }
@@ -224,37 +256,5 @@ public class ItemSystem extends PassiveSystem
                 msg.send(actorId, targetId, new EquipMsg(false));
             }
         }
-    }
-
-    int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
-    {
-        final Inventory items = mInventory.get(entityId);
-
-        if (items == null)
-            return -1;
-
-        final int[] data = items.items.getData();
-        for (int i = 0, size = items.items.size(); i < size; i++)
-        {
-            final int itemId = data[i];
-
-            if (itemId < 0)
-            {
-                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
-
-                continue;
-            }
-
-            // we might only want an equipped weapon
-            if (!mWeapon.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
-                continue;
-
-            final Weapon weapon = mWeapon.get(itemId);
-
-            if (weaponTypes.contains(weapon.damageType))
-                return itemId;
-        }
-
-        return -1;
     }
 }

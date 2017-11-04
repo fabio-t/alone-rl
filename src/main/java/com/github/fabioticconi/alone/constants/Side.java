@@ -34,8 +34,8 @@ public enum Side
     W(-1, 0, "west"),
     NW(-1, -1, "northwest");
 
-    public final int x;
-    public final int y;
+    public final int    x;
+    public final int    y;
     public final String name;
 
     Side(final int x, final int y, final String name)

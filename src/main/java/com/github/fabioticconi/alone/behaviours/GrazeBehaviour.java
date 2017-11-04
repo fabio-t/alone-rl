@@ -24,10 +24,10 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Cell;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.systems.ActionSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.HungerSystem;
+import com.github.fabioticconi.alone.systems.MapSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,5 +28,6 @@ import com.artemis.utils.BitVector;
 public interface Screen
 {
     float handleKeys(final BitVector keys);
+
     void display(final AsciiPanel terminal);
 }

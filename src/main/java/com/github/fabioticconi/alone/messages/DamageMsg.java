@@ -59,9 +59,6 @@ public class DamageMsg extends AbstractMessage
     String formatOther()
     {
         fgCol = Color.GRAY;
-        return String.format("%s hits %s (%s)",
-                             actor,
-                             target.toLowerCase(),
-                             direction.toString());
+        return String.format("%s hits %s (%s)", actor, target.toLowerCase(), direction.toString());
     }
 }

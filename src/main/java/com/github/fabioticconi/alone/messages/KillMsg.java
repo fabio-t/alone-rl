@@ -33,6 +33,7 @@ public class KillMsg extends AbstractMessage
         return String.format("%s %s %s! (%s)",
                              actor,
                              thirdPerson ? "KILLS" : "KILL",
-                             target.toLowerCase(), direction.toString());
+                             target.toLowerCase(),
+                             direction.toString());
     }
 }

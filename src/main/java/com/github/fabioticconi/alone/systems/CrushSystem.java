@@ -71,6 +71,35 @@ public class CrushSystem extends PassiveSystem
         return c;
     }
 
+    public int makeStone(final int x, final int y)
+    {
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
+        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
+        edit.create(Wearable.class);
+        edit.add(new Name("A stone"));
+
+        return id;
+    }
+
+    public int makeBoulder(final int x, final int y)
+    {
+        final int        id   = world.create();
+        final EntityEdit edit = world.edit(id);
+
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set('#', Color.DARK_GRAY.brighter(), true);
+        edit.create(LightBlocker.class);
+        edit.create(Pushable.class);
+        edit.create(Crushable.class);
+        edit.add(new Name("A boulder"));
+
+        return id;
+    }
+
     public class CrushAction extends ActionContext
     {
         @Override
@@ -133,34 +162,5 @@ public class CrushSystem extends PassiveSystem
 
             msg.send(actorId, targetId, new CrushMsg());
         }
-    }
-
-    public int makeStone(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
-        edit.create(Wearable.class);
-        edit.add(new Name("A stone"));
-
-        return id;
-    }
-
-    public int makeBoulder(final int x, final int y)
-    {
-        final int id = world.create();
-        final EntityEdit edit = world.edit(id);
-
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('#', Color.DARK_GRAY.brighter(), true);
-        edit.create(LightBlocker.class);
-        edit.create(Pushable.class);
-        edit.create(Crushable.class);
-        edit.add(new Name("A boulder"));
-
-        return id;
     }
 }

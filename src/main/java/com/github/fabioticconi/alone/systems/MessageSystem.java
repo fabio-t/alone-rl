@@ -26,7 +26,6 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
-import com.github.fabioticconi.alone.screens.AbstractScreen;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
@@ -102,7 +101,7 @@ public class MessageSystem extends PassiveSystem
         final Position p2 = mPos.get(targetId);
         final Position p3 = mPos.get(playerId);
 
-        final int distance;
+        final int  distance;
         final Side direction;
         if (p1 != null && p2 != null)
         {

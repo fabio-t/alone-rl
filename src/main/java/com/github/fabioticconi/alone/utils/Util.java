@@ -69,6 +69,6 @@ public class Util
         if (gain < 0.5f)
             return bias(v * 2.0f, gain) / 2.0f;
         else
-            return bias(v * 2.0f - 1.0f,1.0f - gain) / 2.0f + 0.5f;
+            return bias(v * 2.0f - 1.0f, 1.0f - gain) / 2.0f + 0.5f;
     }
 }

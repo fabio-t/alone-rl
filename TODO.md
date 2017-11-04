@@ -16,9 +16,6 @@
   it starts again to colour, more darkly, and there the reduction in regeneration progresses.
   A full doubly-coloured bar means zero regen.
 
-- add an EquipAction that must also work for unequip (or make another one); then EquipScreen to actually equip/unequip;
-  then test Throwing with equipped weapon
-
 - LookScreen must show a message when moving around; the white colour of the targeting it's also horrible. It would be
   nice to make it better, eg a darker shade of whatever background colour there is? (a TileTransformer would work nicely
   maybe)

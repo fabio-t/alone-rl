@@ -32,12 +32,13 @@ public class Action extends Component
     public ActionContext context;
     public float         cooldown;
 
-    @EntityId @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
+    @EntityId
+    @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
     public IntBag targets;
 
     public Action()
     {
-        
+
     }
 
     public Action(final ActionContext context, final float cooldown)

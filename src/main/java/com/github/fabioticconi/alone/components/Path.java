@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class Path extends Component
 {
-    public float         cooldown;
+    public float       cooldown;
     public List<Point> steps;
 
     public Path()

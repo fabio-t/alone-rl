@@ -19,7 +19,6 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.EntityId;
 import com.github.fabioticconi.alone.components.Pushable;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import net.mostlyoriginal.api.system.core.PassiveSystem;

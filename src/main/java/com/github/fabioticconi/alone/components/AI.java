@@ -33,8 +33,8 @@ public class AI extends Component
     public List<Behaviour> behaviours;
 
     public Behaviour activeBehaviour;
-    public float score;
-    public float time;
+    public float     score;
+    public float     time;
 
     public AI()
     {

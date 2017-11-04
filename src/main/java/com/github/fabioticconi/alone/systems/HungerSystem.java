@@ -19,7 +19,6 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
@@ -28,7 +27,6 @@ import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.EatFinishMsg;
 import com.github.fabioticconi.alone.messages.EatMsg;
-import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

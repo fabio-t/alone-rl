@@ -28,7 +28,7 @@ import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Name;
 import com.github.fabioticconi.alone.systems.ActionSystem;
 import com.github.fabioticconi.alone.systems.ItemSystem;
-import com.github.fabioticconi.alone.systems.MessageSystem;
+import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public abstract class InventoryScreen extends AbstractScreen
 
     ScreenSystem screen;
     ActionSystem sAction;
-    ItemSystem sItems;
+    ItemSystem   sItems;
 
     PlayerManager pManager;
 
@@ -78,7 +78,7 @@ public abstract class InventoryScreen extends AbstractScreen
         final int maxSize = AbstractScreen.Letter.values().length;
 
         final IntBag items = inv.items;
-        for (int i = 0, size = items.size(), starty = terminal.getHeightInCharacters()/2 - size/2; i < size; i++)
+        for (int i = 0, size = items.size(), starty = terminal.getHeightInCharacters() / 2 - size / 2; i < size; i++)
         {
             final int itemId = items.get(i);
 
@@ -90,11 +90,12 @@ public abstract class InventoryScreen extends AbstractScreen
                                                mName.get(itemId).name.toLowerCase(),
                                                mEquip.has(itemId) ? " [WORN]" : "");
 
-            terminal.writeCenter(entry, starty + (size < maxSize/2 ? i*2 : i));
+            terminal.writeCenter(entry, starty + (size < maxSize / 2 ? i * 2 : i));
         }
     }
 
     public abstract String header();
+
     public abstract boolean canDraw(final int entityId);
 
     public int getTarget(final BitVector keys)

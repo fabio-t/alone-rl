@@ -45,11 +45,11 @@ public class TreeSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(TreeSystem.class);
 
-    ComponentMapper<Tree>      mTree;
-    ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Strength>  mStrength;
-    ComponentMapper<Position>  mPosition;
-    ComponentMapper<Name>      mName;
+    ComponentMapper<Tree>     mTree;
+    ComponentMapper<Speed>    mSpeed;
+    ComponentMapper<Strength> mStrength;
+    ComponentMapper<Position> mPosition;
+    ComponentMapper<Name>     mName;
 
     StaminaSystem sStamina;
     ItemSystem    sItem;

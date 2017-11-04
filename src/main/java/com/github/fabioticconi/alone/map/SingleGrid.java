@@ -57,7 +57,7 @@ public class SingleGrid
      */
     public boolean has(final int x, final int y)
     {
-        return Util.inRange(x, 0, Options.MAP_SIZE_X-1) && Util.inRange(y, 0, Options.MAP_SIZE_Y-1);
+        return Util.inRange(x, 0, Options.MAP_SIZE_X - 1) && Util.inRange(y, 0, Options.MAP_SIZE_Y - 1);
     }
 
     public boolean has(final int id, final int x, final int y)

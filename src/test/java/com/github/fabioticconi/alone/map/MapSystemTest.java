@@ -18,6 +18,7 @@
 
 package com.github.fabioticconi.alone.map;
 
+import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.junit.Before;

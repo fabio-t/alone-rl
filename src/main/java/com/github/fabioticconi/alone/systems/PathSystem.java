@@ -25,7 +25,6 @@ import com.github.fabioticconi.alone.components.Path;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MapSystem;
 import rlforj.math.Point;
 
 /**

@@ -21,13 +21,10 @@ package com.github.fabioticconi.alone.screens;
 import asciiPanel.AsciiPanel;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.components.Player;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Target;
-
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.map.MapSystem;
-import com.github.fabioticconi.alone.messages.Msg;
+import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.systems.ThrowSystem;
 import com.github.fabioticconi.alone.utils.Coords;
 import rlforj.math.Point;
@@ -56,8 +53,7 @@ public class LookScreen extends PlayScreen
     {
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final Player   player = mPlayer.get(playerId);
-        final Position p      = mPos.get(playerId);
+        final Position p = mPos.get(playerId);
 
         Target t = mTarget.get(playerId);
 
@@ -92,10 +88,14 @@ public class LookScreen extends PlayScreen
         {
             final Position backup = new Position().set(t.pos);
 
-            if (keys.get(KeyEvent.VK_UP))    t.pos.add(N);
-            if (keys.get(KeyEvent.VK_DOWN))  t.pos.add(S);
-            if (keys.get(KeyEvent.VK_LEFT))  t.pos.add(W);
-            if (keys.get(KeyEvent.VK_RIGHT)) t.pos.add(E);
+            if (keys.get(KeyEvent.VK_UP))
+                t.pos.add(N);
+            if (keys.get(KeyEvent.VK_DOWN))
+                t.pos.add(S);
+            if (keys.get(KeyEvent.VK_LEFT))
+                t.pos.add(W);
+            if (keys.get(KeyEvent.VK_RIGHT))
+                t.pos.add(E);
 
             final Sight sight = mSight.get(playerId);
 
@@ -131,27 +131,27 @@ public class LookScreen extends PlayScreen
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Position pos = mPos.get(playerId);
-        final Target t = mTarget.get(playerId);
+        final Target   t   = mTarget.get(playerId);
 
         // the first time it displays, handleKeys probably hasn't been called yet
         if (t == null)
             return;
 
-        final int xmax = terminal.getWidthInCharacters();
-        final int ymax = terminal.getHeightInCharacters();
+        final int xmax      = terminal.getWidthInCharacters();
+        final int ymax      = terminal.getHeightInCharacters();
         final int panelSize = 8;
 
         final int playerX = xmax / 2;
         final int playerY = (ymax - panelSize) / 2;
 
-        if (pos.equals(t.pos))
-        {
-            terminal.setCursorPosition(playerX, playerY);
+        terminal.write('@', playerX, playerY, Color.BLACK, Color.WHITE);
 
+        if (pos.equals(t.pos))
             return;
-        }
 
         final List<Point> los = map.getLineOfSight(pos.x, pos.y, t.pos.x, t.pos.y);
+
+        los.remove(0);
 
         for (final Point p : los)
         {

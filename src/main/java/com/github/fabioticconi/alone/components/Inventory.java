@@ -29,7 +29,8 @@ import com.artemis.utils.IntBag;
  */
 public class Inventory extends Component
 {
-    @EntityId @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
+    @EntityId
+    @LinkPolicy(LinkPolicy.Policy.CHECK_SOURCE_AND_TARGETS)
     final public IntBag items;
 
     public Inventory()

@@ -25,7 +25,6 @@ import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Underwater;
 import com.github.fabioticconi.alone.constants.Cell;
-import com.github.fabioticconi.alone.map.MapSystem;
 
 import java.util.EnumSet;
 
@@ -35,12 +34,10 @@ import java.util.EnumSet;
  */
 public class UnderwaterSystem extends IntervalIteratingSystem
 {
-    ComponentMapper<Position> mPos;
-
-    HealthSystem sHealth;
-    MapSystem map;
-
     private final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
+    ComponentMapper<Position> mPos;
+    HealthSystem sHealth;
+    MapSystem    map;
 
     public UnderwaterSystem(final float interval)
     {

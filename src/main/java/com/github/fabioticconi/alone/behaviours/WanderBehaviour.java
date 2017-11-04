@@ -24,8 +24,8 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MapSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
+import com.github.fabioticconi.alone.systems.MapSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
