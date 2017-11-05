@@ -361,7 +361,7 @@ public class PlayScreen extends AbstractScreen
         }
 
         // title:
-        terminal.writeCenter(properties.getProperty("name"), 1);
+        drawHeader(terminal);
 
         final Hunger  hunger  = mHunger.get(playerId);
         final Health  health  = mHealth.get(playerId);
@@ -442,5 +442,11 @@ public class PlayScreen extends AbstractScreen
         }
 
         // player.messages.clear();
+    }
+
+    @Override
+    public String header()
+    {
+        return properties.getProperty("name");
     }
 }

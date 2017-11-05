@@ -23,6 +23,7 @@ import com.artemis.managers.PlayerManager;
 import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
@@ -385,7 +386,7 @@ public class BootstrapSystem extends PassiveSystem
         final InputStream fileStream = new FileInputStream(filename);
 
         final YAMLFactory factory = new YAMLFactory();
-        final JsonParser  parser  = factory.createParser(fileStream);
+        final YAMLParser  parser  = factory.createParser(fileStream);
 
         int     str       = 0, agi = 0, con = 0, skin = 0, sight = 0;
         boolean herbivore = false, carnivore = false;
@@ -399,50 +400,45 @@ public class BootstrapSystem extends PassiveSystem
             if (name == null)
                 break;
 
-            parser.nextToken(); // get in value
+            parser.nextToken(); // get value for this "name"
 
-            if (name.equals("strength"))
+            switch (name)
             {
-                str = parser.getIntValue();
-                edit.create(Strength.class).value = Util.clamp(str, -2, 2);
-            }
-            else if (name.equals("agility"))
-            {
-                agi = parser.getIntValue();
-                edit.create(Agility.class).value = Util.clamp(agi, -2, 2);
-            }
-            else if (name.equals("constitution"))
-            {
-                con = parser.getIntValue();
-                edit.create(Constitution.class).value = Util.clamp(con, -2, 2);
-            }
-            else if (name.equals("skin"))
-            {
-                skin = parser.getIntValue();
-                edit.create(Skin.class).value = Util.clamp(skin, -2, 2);
-            }
-            else if (name.equals("sight"))
-            {
-                sight = parser.getIntValue();
-                edit.create(Sight.class).value = Util.clamp(sight, 1, 18);
-            }
-            else if (name.equals("herbivore"))
-            {
-                herbivore = parser.getBooleanValue();
+                case "strength":
+                    str = parser.getIntValue();
+                    edit.create(Strength.class).value = Util.clamp(str, -2, 2);
+                    break;
+                case "agility":
+                    agi = parser.getIntValue();
+                    edit.create(Agility.class).value = Util.clamp(agi, -2, 2);
+                    break;
+                case "constitution":
+                    con = parser.getIntValue();
+                    edit.create(Constitution.class).value = Util.clamp(con, -2, 2);
+                    break;
+                case "skin":
+                    skin = parser.getIntValue();
+                    edit.create(Skin.class).value = Util.clamp(skin, -2, 2);
+                    break;
+                case "sight":
+                    sight = parser.getIntValue();
+                    edit.create(Sight.class).value = Util.clamp(sight, 1, 18);
+                    break;
+                case "herbivore":
+                    herbivore = parser.getBooleanValue();
 
-                if (herbivore)
-                    edit.create(Herbivore.class);
-            }
-            else if (name.equals("carnivore"))
-            {
-                carnivore = parser.getBooleanValue();
+                    if (herbivore)
+                        edit.create(Herbivore.class);
+                    break;
+                case "carnivore":
+                    carnivore = parser.getBooleanValue();
 
-                if (carnivore)
-                    edit.create(Carnivore.class);
-            }
-            else if (name.equals("underwater"))
-            {
-                edit.create(Underwater.class);
+                    if (carnivore)
+                        edit.create(Carnivore.class);
+                    break;
+                case "underwater":
+                    edit.create(Underwater.class);
+                    break;
             }
         }
 

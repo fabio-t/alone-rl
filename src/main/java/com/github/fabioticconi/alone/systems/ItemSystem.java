@@ -178,12 +178,6 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            if (i.items.size() >= AbstractScreen.Letter.values().length)
-            {
-                msg.send(actorId, new CannotMsg("get", "anything, your hands are full"));
-                return;
-            }
-
             if (map.items.isEmpty(p.x, p.y))
             {
                 msg.send(actorId, new CannotMsg("get", "anything here"));

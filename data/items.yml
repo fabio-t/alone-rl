@@ -1,0 +1,12 @@
+
+stone:
+  name: a stone
+
+branch:
+  name: a branch
+
+trunk:
+  name: a tree trunk
+
+boulder:
+  name: a boulder

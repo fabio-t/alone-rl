@@ -20,27 +20,23 @@ package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
 import com.artemis.ComponentMapper;
+import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
-import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.components.Equip;
 import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Name;
 import com.github.fabioticconi.alone.systems.ActionSystem;
+import com.github.fabioticconi.alone.systems.CraftSystem;
 import com.github.fabioticconi.alone.systems.ItemSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 05/11/17
  */
-public abstract class InventoryScreen extends AbstractScreen
+public class CraftScreen extends AbstractScreen
 {
     ComponentMapper<Name>      mName;
     ComponentMapper<Inventory> mInventory;
@@ -49,12 +45,24 @@ public abstract class InventoryScreen extends AbstractScreen
     ScreenSystem screen;
     ActionSystem sAction;
     ItemSystem   sItems;
+    CraftSystem  sCraft;
+
+    PlayerManager pManager;
+
+    String craftItem = "Test";
 
     @Override
     public float handleKeys(final BitVector keys)
     {
         if (keys.get(KeyEvent.VK_ESCAPE))
             screen.select(PlayScreen.class);
+        else
+        {
+            final int pos = getTargetIndex(keys);
+
+            if (pos >= 0)
+                screen.select(CraftItemScreen.class);
+        }
 
         keys.clear();
 
@@ -64,49 +72,14 @@ public abstract class InventoryScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        terminal.clear(' ');
-
         drawHeader(terminal);
 
-        final Inventory inv = mInventory.get(playerId);
-
-        final ArrayList<String> elements = new ArrayList<>();
-        final IntBag            items    = inv.items;
-        for (int i = 0, size = items.size(); i < size; i++)
-        {
-            final int itemId = items.get(i);
-
-            if (!canDraw(itemId))
-                continue;
-
-            elements.add(String.format("%s %s %s",
-                                       Letter.values()[i],
-                                       mName.get(itemId).name.toLowerCase(),
-                                       mEquip.has(itemId) ? " [WORN]" : ""));
-        }
-
-        drawList(terminal, elements);
+        drawList(terminal, sCraft.getRecipeNames());
     }
 
-    public abstract String header();
-
-    public abstract boolean canDraw(final int entityId);
-
-    int getItem(final BitVector keys)
+    @Override
+    public String header()
     {
-        final int pos = getTargetIndex(keys);
-
-        if (pos < 0)
-            return -1;
-
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-        final Inventory i = mInventory.get(playerId);
-
-        if (pos < i.items.size())
-            return i.items.get(pos);
-
-        return -1;
+        return "Craft item:";
     }
 }

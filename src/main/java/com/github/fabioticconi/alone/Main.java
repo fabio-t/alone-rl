@@ -98,6 +98,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(PushSystem.class);
         config.setSystem(CrushSystem.class);
         config.setSystem(ThrowSystem.class);
+        config.setSystem(CraftSystem.class);
         // ai behaviours (passive)
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);
@@ -115,6 +116,8 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(EatScreen.class);
         config.setSystem(LookScreen.class);
         config.setSystem(EquipScreen.class);
+        config.setSystem(CraftScreen.class);
+        config.setSystem(CraftItemScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 

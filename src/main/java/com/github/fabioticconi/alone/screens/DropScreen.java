@@ -31,7 +31,7 @@ public class DropScreen extends InventoryScreen
     {
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
-        final int targetId = getTarget(keys);
+        final int targetId = getItem(keys);
 
         if (targetId < 0)
             return super.handleKeys(keys);
