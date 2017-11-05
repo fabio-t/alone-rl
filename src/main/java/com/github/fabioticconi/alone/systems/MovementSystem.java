@@ -18,16 +18,12 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
-import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Underwater;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,17 +37,10 @@ public class MovementSystem extends PassiveSystem
 
     ComponentMapper<Position>     mPosition;
     ComponentMapper<Speed>        mSpeed;
-    ComponentMapper<LightBlocker> mLightBlocker;
     ComponentMapper<Underwater>   mUnderWater;
 
-    MapSystem     sMap;
     StaminaSystem sStamina;
-
-    @Wire
-    SingleGrid grid;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem     map;
 
     public MoveAction move(final int entityId, final Side direction)
     {
@@ -79,13 +68,13 @@ public class MovementSystem extends PassiveSystem
             final Position p     = mPosition.get(actorId);
             final Speed    speed = mSpeed.get(actorId);
 
-            final int newX = p.x + direction.x;
-            final int newY = p.y + direction.y;
+            final int x2 = p.x + direction.x;
+            final int y2 = p.y + direction.y;
 
-            if (!sMap.isFree(newX, newY))
+            if (!map.isFree(x2, y2))
                 return false;
 
-            final Cell cell = sMap.get(newX, newY);
+            final Cell cell = map.get(x2, y2);
 
             switch (cell)
             {
@@ -131,22 +120,22 @@ public class MovementSystem extends PassiveSystem
         {
             final Position p = mPosition.get(actorId);
 
-            final int newX = p.x + direction.x;
-            final int newY = p.y + direction.y;
+            final int x2 = p.x + direction.x;
+            final int y2 = p.y + direction.y;
 
-            if (items.has(actorId, p.x, p.y))
+            if (map.items.has(actorId, p.x, p.y))
             {
                 // it's a moving item
-                items.move(actorId, p.x, p.y, newX, newY);
+                map.items.move(p.x, p.y, x2, y2);
 
-                p.x = newX;
-                p.y = newY;
+                p.x = x2;
+                p.y = y2;
 
                 // it doesn't have stamina
             }
-            else if (grid.has(actorId, p.x, p.y) && sMap.isFree(newX, newY))
+            else if (map.obstacles.has(actorId, p.x, p.y) && map.isFree(x2, y2))
             {
-                final int id = grid.move(p.x, p.y, newX, newY);
+                final int id = map.obstacles.move(p.x, p.y, x2, y2);
 
                 if (id >= 0)
                 {
@@ -155,8 +144,8 @@ public class MovementSystem extends PassiveSystem
                     return;
                 }
 
-                p.x = newX;
-                p.y = newY;
+                p.x = x2;
+                p.y = y2;
 
                 sStamina.consume(actorId, cost);
             }

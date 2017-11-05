@@ -18,13 +18,10 @@
 
 package com.github.fabioticconi.alone.map;
 
-import com.github.fabioticconi.alone.constants.Options;
+import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.utils.Coords;
+import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.Util;
-import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 
 import java.util.Arrays;
 
@@ -39,11 +36,16 @@ import java.util.Arrays;
  */
 public class SingleGrid
 {
+    final int width;
+    final int height;
     final int[][] grid;
 
-    public SingleGrid()
+    public SingleGrid(final int width, final int height)
     {
-        grid = new int[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        this.width = width;
+        this.height = height;
+
+        grid = new int[width][height];
 
         clear();
     }
@@ -57,7 +59,7 @@ public class SingleGrid
      */
     public boolean has(final int x, final int y)
     {
-        return Util.inRange(x, 0, Options.MAP_SIZE_X - 1) && Util.inRange(y, 0, Options.MAP_SIZE_Y - 1);
+        return Util.inRange(x, 0, width - 1) && Util.inRange(y, 0, height - 1);
     }
 
     public boolean has(final int id, final int x, final int y)
@@ -109,23 +111,136 @@ public class SingleGrid
         return grid[x][y] < 0;
     }
 
+    public boolean setFirstFree(final int id, final int x, final int y)
+    {
+        return setFirstFree(id, x, y, -1);
+    }
+
+    public boolean setFirstFree(final int id, final int x, final int y, final int maxRadius)
+    {
+        if (!has(x, y))
+            return false;
+
+        if (maxRadius == 0)
+        {
+            if (grid[x][y] < 0)
+            {
+                grid[x][y] = id;
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        final int r = maxRadius < 0 ? Math.max(width, height) : maxRadius;
+
+        int cur_y = y - 1;
+        int cur_x = x;
+        for (int d = 1; d <= r; d++)
+        {
+            // FIXME what do we do if the north row is "out of bound" already?
+            // we should skip the next for and position ourselves immediately to
+            // the correct east-side column, at the same y position as we are
+
+            final int max_x = x + d;
+            final int max_y = y + d;
+            final int min_x = x - d;
+            final int min_y = y - d;
+
+            // continue east, through the north row
+            for (; cur_x < max_x; cur_x++)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= width)
+                {
+                    continue;
+                }
+
+                if (grid[cur_x][cur_y] < 0)
+                {
+                    grid[x][y] = id;
+
+                    return true;
+                }
+            }
+
+            // continue south, through the east column
+            for (; cur_y < max_y; cur_y++)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= height)
+                {
+                    continue;
+                }
+
+                if (grid[cur_x][cur_y] < 0)
+                {
+                    grid[x][y] = id;
+
+                    return true;
+                }
+            }
+
+            // continue west, through the south row
+            for (; cur_x > min_x; cur_x--)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= width)
+                {
+                    continue;
+                }
+
+                if (grid[cur_x][cur_y] < 0)
+                {
+                    grid[x][y] = id;
+
+                    return true;
+                }
+            }
+
+            // continue north, through the west column of this circle
+            for (; cur_y >= min_y; cur_y--)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= height)
+                {
+                    continue;
+                }
+
+                if (grid[cur_x][cur_y] < 0)
+                {
+                    grid[x][y] = id;
+
+                    return true;
+                }
+            }
+
+            // at this point we are positioned WITHIN the north row of the next
+            // cycle
+        }
+
+        // if we are here, we haven't found any free cells
+
+        return false;
+    }
+
     /**
      * Returns all entities in the specified cells.
-     * <p>
-     * NB: the returned set is <b>UNMODIFIABLE</b> to avoid allocating a new set
-     * for each call.
      *
      * @param cells set of packed coordinates of entities
      * @return
      */
-    public IntSet getEntities(final LongSet cells)
+    public IntBag getEntities(final LongBag cells)
     {
-        final IntSet entities = new IntOpenHashSet();
+        final IntBag entities = new IntBag(8);
 
         final int[] coords = new int[2];
 
-        for (final long pos : cells)
+        for (int i = 0, size = cells.size(); i < size; i++)
         {
+            final long pos = cells.get(i);
+
             Coords.unpackCoords(pos, coords);
 
             final int id = grid[coords[0]][coords[1]];
@@ -149,11 +264,11 @@ public class SingleGrid
      * @param maxRadius
      * @return
      */
-    public IntSet getClosestEntities(final int x, final int y, int maxRadius)
+    public IntBag getClosestEntities(final int x, final int y, int maxRadius)
     {
-        final IntSet entities = new IntOpenHashSet();
+        final IntBag entities = new IntBag(maxRadius*maxRadius*4);
 
-        if (grid[x][y] > 0)
+        if (grid[x][y] >= 0)
         {
             entities.add(grid[x][y]);
 
@@ -180,12 +295,12 @@ public class SingleGrid
             for (; cur_x < max_x; cur_x++)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                if (cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -194,12 +309,12 @@ public class SingleGrid
             // continue south, through the east column
             for (; cur_y < max_y; cur_y++)
             {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                if (cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -209,12 +324,12 @@ public class SingleGrid
             for (; cur_x > min_x; cur_x--)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                if (cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -223,12 +338,12 @@ public class SingleGrid
             // continue north, through the west column of this circle
             for (; cur_y >= min_y; cur_y--)
             {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                if (cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -257,18 +372,21 @@ public class SingleGrid
      * @param r
      * @return
      */
-    public IntSet getEntitiesAtRadius(final int x, final int y, final int r)
+    public IntBag getEntitiesAtRadius(final int x, final int y, final int r)
     {
-        final IntSet entities = new IntOpenHashSet();
+        if (r < 0)
+            return new IntBag(0);
 
-        if (r <= 0)
+        final IntBag entities = new IntBag(r*8);
+
+        if (r == 0)
         {
-            if (grid[x][y] > 0)
-            {
-                entities.add(grid[x][y]);
+            if (grid[x][y] < 0)
+                return new IntBag(0);
 
-                return entities;
-            }
+            entities.add(grid[x][y]);
+
+            return entities;
         }
 
         // we put the cursor where it would have been if we were in one
@@ -289,12 +407,12 @@ public class SingleGrid
         for (; cur_x < max_x; cur_x++)
         {
             // if we are out of bounds
-            if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+            if (cur_x < 0 || cur_x >= width)
             {
                 continue;
             }
 
-            if (grid[cur_x][cur_y] > 0)
+            if (grid[cur_x][cur_y] >= 0)
             {
                 entities.add(grid[cur_x][cur_y]);
             }
@@ -303,12 +421,12 @@ public class SingleGrid
         // continue south, through the east column
         for (; cur_y < max_y; cur_y++)
         {
-            if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+            if (cur_y < 0 || cur_y >= height)
             {
                 continue;
             }
 
-            if (grid[cur_x][cur_y] > 0)
+            if (grid[cur_x][cur_y] >= 0)
             {
                 entities.add(grid[cur_x][cur_y]);
             }
@@ -318,12 +436,12 @@ public class SingleGrid
         for (; cur_x > min_x; cur_x--)
         {
             // if we are out of bounds
-            if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+            if (cur_x < 0 || cur_x >= width)
             {
                 continue;
             }
 
-            if (grid[cur_x][cur_y] > 0)
+            if (grid[cur_x][cur_y] >= 0)
             {
                 entities.add(grid[cur_x][cur_y]);
             }
@@ -332,12 +450,12 @@ public class SingleGrid
         // continue north, through the west column of this circle
         for (; cur_y >= min_y; cur_y--)
         {
-            if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+            if (cur_y < 0 || cur_y >= height)
             {
                 continue;
             }
 
-            if (grid[cur_x][cur_y] > 0)
+            if (grid[cur_x][cur_y] >= 0)
             {
                 entities.add(grid[cur_x][cur_y]);
             }
@@ -356,11 +474,11 @@ public class SingleGrid
      * @param r
      * @return
      */
-    public IntSet getEntitiesWithinRadius(final int x, final int y, final int r)
+    public IntBag getEntitiesWithinRadius(final int x, final int y, final int r)
     {
-        final IntSet entities = new IntLinkedOpenHashSet();
+        final IntBag entities = new IntBag(r*r*8);
 
-        if (grid[x][y] > 0)
+        if (grid[x][y] >= 0)
         {
             entities.add(grid[x][y]);
 
@@ -385,12 +503,12 @@ public class SingleGrid
             for (; cur_x < max_x; cur_x++)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                if (cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -399,12 +517,12 @@ public class SingleGrid
             // continue south, through the east column
             for (; cur_y < max_y; cur_y++)
             {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                if (cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -414,12 +532,12 @@ public class SingleGrid
             for (; cur_x > min_x; cur_x--)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                if (cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }
@@ -428,12 +546,12 @@ public class SingleGrid
             // continue north, through the west column of this circle
             for (; cur_y >= min_y; cur_y--)
             {
-                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                if (cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
 
-                if (grid[cur_x][cur_y] > 0)
+                if (grid[cur_x][cur_y] >= 0)
                 {
                     entities.add(grid[cur_x][cur_y]);
                 }

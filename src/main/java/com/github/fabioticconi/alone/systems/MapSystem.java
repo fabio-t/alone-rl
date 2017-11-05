@@ -18,18 +18,14 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
+import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.Util;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.LongSets;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -57,17 +54,18 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     final Cell terrain[][];
 
     /* FOV/LOS stuff */
-    final LongSet lastVisited;
-    final AStar astar;
+    final LongBag lastVisited;
+    final AStar   astar;
     ComponentMapper<LightBlocker> mLightBlocker;
-    @Wire
-    SingleGrid obstacles;
+
+    final SingleGrid obstacles;
+    final SingleGrid items;
 
     PrecisePermissive view;
 
     public MapSystem() throws IOException
     {
-        lastVisited = new LongOpenHashSet();
+        lastVisited = new LongBag(256);
         view = new PrecisePermissive();
 
         final InputStream mapStream       = new FileInputStream("data/map/map.png");
@@ -80,6 +78,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         Options.MAP_SIZE_Y = img.getHeight();
 
         terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+        items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
         float value;
 
@@ -144,7 +144,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     {
         int xn, yn;
 
-        final Set<Side> exits = new ObjectArraySet<>(8);
+        final Set<Side> exits = new LinkedHashSet<>(8);
 
         for (final Side side : Side.values())
         {
@@ -173,7 +173,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     {
         int xn, yn;
 
-        final Set<Side> exits = new ObjectArraySet<>(8);
+        final Set<Side> exits = new LinkedHashSet<>(8);
 
         for (final Side side : Side.values())
         {
@@ -233,8 +233,10 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
         int[] coords;
         Cell  cell;
-        for (final long key : lastVisited)
+        for (int i = 0, size = lastVisited.size(); i < size; i++)
         {
+            final long key = lastVisited.get(i);
+
             coords = Coords.unpackCoords(key);
             cell = terrain[coords[0]][coords[1]];
 
@@ -259,6 +261,16 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         {
             terrain[x][y] = type;
         }
+    }
+
+    public SingleGrid getObstacles()
+    {
+        return obstacles;
+    }
+
+    public SingleGrid getItems()
+    {
+        return items;
     }
 
     /**
@@ -311,18 +323,20 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         lastVisited.add(Coords.packCoords(x, y));
     }
 
-    public LongSet getVisibleCells(final int x, final int y, final int r)
+    public LongBag getVisibleCells(final int x, final int y, final int r)
     {
         lastVisited.clear();
 
         view.visitFieldOfView(this, x, y, r);
 
-        return LongSets.unmodifiable(lastVisited);
+        return lastVisited;
     }
 
     public List<Point> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
         final boolean exists = view.existsLineOfSight(this, startX, startY, endX, endY, true);
+
+        // FIXME: rlforj-alt should either always return a list, or always an array
 
         if (exists)
             return view.getProjectPath();

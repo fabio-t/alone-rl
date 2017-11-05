@@ -19,12 +19,10 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
@@ -47,17 +45,13 @@ public class BumpSystem extends PassiveSystem
     ComponentMapper<Player>    mPlayer;
     ComponentMapper<Sight>     mSight;
 
-    MapSystem map;
-
     ActionSystem   sAction;
     AttackSystem   sAttack;
     TreeSystem     sTree;
     PushSystem     sPush;
     CrushSystem    sCrush;
     MovementSystem sMove;
-
-    @Wire
-    SingleGrid grid;
+    MapSystem map;
 
     public float bumpAction(final int entityId, final Side direction)
     {
@@ -74,7 +68,7 @@ public class BumpSystem extends PassiveSystem
 
         ActionContext c = null;
 
-        final int targetId = grid.get(newX, newY);
+        final int targetId = map.obstacles.get(newX, newY);
 
         if (targetId < 0)
         {

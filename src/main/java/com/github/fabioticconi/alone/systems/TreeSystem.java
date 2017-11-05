@@ -20,13 +20,10 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CutMsg;
 import com.github.fabioticconi.alone.utils.Util;
@@ -54,12 +51,7 @@ public class TreeSystem extends PassiveSystem
     StaminaSystem sStamina;
     ItemSystem    sItem;
     MessageSystem msg;
-
-    @Wire
-    SingleGrid obstacles;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem     map;
 
     public CutAction cut(final int entityId, final int treeId)
     {
@@ -155,12 +147,12 @@ public class TreeSystem extends PassiveSystem
             final Position p = mPosition.get(treeId);
 
             // from a tree we get a trunk and two branches
-            obstacles.del(p.x, p.y);
+            map.obstacles.del(p.x, p.y);
             world.delete(treeId);
 
-            items.add(makeTrunk(p.x, p.y), p.x, p.y);
-            items.add(makeBranch(p.x, p.y), p.x, p.y);
-            items.add(makeBranch(p.x, p.y), p.x, p.y);
+            map.items.setFirstFree(makeTrunk(p.x, p.y), p.x, p.y);
+            map.items.setFirstFree(makeBranch(p.x, p.y), p.x, p.y);
+            map.items.setFirstFree(makeBranch(p.x, p.y), p.x, p.y);
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);

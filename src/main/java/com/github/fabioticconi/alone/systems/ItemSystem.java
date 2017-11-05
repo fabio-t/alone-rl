@@ -19,17 +19,14 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
 import com.github.fabioticconi.alone.screens.AbstractScreen;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +48,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Wearable>  mWearable;
 
     MessageSystem msg;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem map;
 
     public GetAction get(final int actorId)
     {
@@ -143,12 +138,13 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            final IntSet itemsHere = items.get(p.x, p.y);
-
-            if (itemsHere.isEmpty())
+            if (map.items.isEmpty(p.x, p.y))
+            {
+                msg.send(actorId, new CannotMsg("get", "anything here"));
                 return;
+            }
 
-            final int itemId = itemsHere.iterator().nextInt();
+            final int itemId = map.items.get(p.x, p.y);
 
             if (itemId < 0)
             {
@@ -157,9 +153,7 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            mPos.remove(itemId);
-
-            items.del(itemId, p.x, p.y);
+            map.items.del(p.x, p.y);
             i.items.add(itemId);
 
             mPos.remove(itemId);
@@ -192,15 +186,20 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            final int targetId = targets.get(0);
+            final int itemId = targets.get(0);
 
-            if (i.items.removeValue(targetId))
+            if (i.items.removeValue(itemId))
             {
-                items.add(targetId, p.x, p.y);
+                if (!map.items.setFirstFree(itemId, p.x, p.y))
+                {
+                    msg.send(actorId, itemId, new CannotMsg("drop", "there is no free space!"));
 
-                mPos.create(targetId).set(p.x, p.y);
+                    return;
+                }
 
-                msg.send(actorId, targetId, new DropMsg());
+                mPos.create(itemId).set(p.x, p.y);
+
+                msg.send(actorId, itemId, new DropMsg());
             }
             else
             {

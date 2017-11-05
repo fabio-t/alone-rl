@@ -19,17 +19,15 @@ package com.github.fabioticconi.alone.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
+import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.components.Herbivore;
 import com.github.fabioticconi.alone.components.Hunger;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +45,6 @@ public class ChaseBehaviour extends AbstractBehaviour
 
     BumpSystem sBump;
     MapSystem  sMap;
-
-    @Wire
-    SingleGrid grid;
 
     private Position chasePos;
 
@@ -73,17 +68,17 @@ public class ChaseBehaviour extends AbstractBehaviour
         final Hunger cHunger = mHunger.get(entityId);
         final float  hunger  = cHunger.value / cHunger.maxValue; // need a value between 0 and 1
 
-        // System.out.println(entityId + " " + curPos);
-
         // all creatures in the visible area for this predator
-        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(pos.x, pos.y, sight));
+        final IntBag creatures = sMap.getObstacles().getEntities(sMap.getVisibleCells(pos.x, pos.y, sight));
 
         float minDistance = Float.MAX_VALUE;
         chasePos = null;
 
         Position temp;
-        for (final int creatureId : creatures)
+        for (int i = 0, size = creatures.size(); i < size; i++)
         {
+            final int creatureId = creatures.get(i);
+
             if (mHerbivore.has(creatureId))
             {
                 temp = mPosition.get(creatureId);

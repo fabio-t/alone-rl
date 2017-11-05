@@ -19,15 +19,12 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
-import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
@@ -37,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -51,21 +49,16 @@ public class ThrowSystem extends PassiveSystem
     ComponentMapper<Speed>     mSpeed;
     ComponentMapper<Target>    mTarget;
     ComponentMapper<Position>  mPos;
-    ComponentMapper<Sight>     mSight;
     ComponentMapper<Path>      mPath;
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Agility>   mAgility;
     ComponentMapper<Name>      mName;
 
-    MapSystem map;
-
     StaminaSystem sStamina;
     BumpSystem    sBump;
     ItemSystem    sItem;
     MessageSystem msg;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem     map;
 
     public ActionContext throwAt(final int actorId)
     {
@@ -183,7 +176,7 @@ public class ThrowSystem extends PassiveSystem
 
                 // at this point it really happened: the weapon is flying at its new position
                 // (it's not an obstacle, so there's not risk of someone interrupting it in mid-air)
-                items.add(weaponId, newP.x, newP.y);
+                map.items.setFirstFree(weaponId, newP.x, newP.y);
             }
             else
             {

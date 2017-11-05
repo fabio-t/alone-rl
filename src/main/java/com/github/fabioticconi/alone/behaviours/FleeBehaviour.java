@@ -19,17 +19,15 @@ package com.github.fabioticconi.alone.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
+import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.components.Carnivore;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +45,6 @@ public class FleeBehaviour extends AbstractBehaviour
     BumpSystem sBump;
 
     MapSystem sMap;
-
-    @Wire
-    SingleGrid grid;
 
     Position curPos;
     Position fleeFrom;
@@ -73,9 +68,7 @@ public class FleeBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
         final int sight = mSight.get(entityId).value;
 
-        // System.out.println(entityId + " " + curPos);
-
-        final IntSet creatures = grid.getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
+        final IntBag creatures = sMap.getObstacles().getEntities(sMap.getVisibleCells(curPos.x, curPos.y, sight));
 
         if (creatures.isEmpty())
             return 0f;
@@ -85,8 +78,10 @@ public class FleeBehaviour extends AbstractBehaviour
 
         int      count = 0;
         Position tempPos;
-        for (final int creatureId : creatures)
+        for (int i = 0, size = creatures.size(); i < size; i++)
         {
+            final int creatureId = creatures.get(i);
+
             if (mCarnivore.has(creatureId))
             {
                 tempPos = mPosition.get(creatureId);

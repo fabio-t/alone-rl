@@ -20,6 +20,7 @@ package com.github.fabioticconi.alone.systems;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
+import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.fabioticconi.alone.behaviours.*;
@@ -27,10 +28,7 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
-import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Util;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.awt.*;
@@ -47,18 +45,13 @@ public class BootstrapSystem extends PassiveSystem
     private final ClassLoader loader = getClass().getClassLoader();
 
     @Wire
-    SingleGrid grid;
-
-    @Wire
-    MultipleGrid items;
-
-    @Wire
     Random r;
 
     GroupSystem sGroup;
     MapSystem   sMap;
     TreeSystem  sTree;
     CrushSystem sCrush;
+    MapSystem   map;
 
     PlayerManager pManager;
 
@@ -90,14 +83,14 @@ public class BootstrapSystem extends PassiveSystem
         y = Options.MAP_SIZE_Y / 2;
         edit.create(Position.class).set(x, y);
         edit.create(Sprite.class).set('@', Color.WHITE);
-        grid.set(id, x, y);
+        map.obstacles.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         edit.create(Inventory.class);
         edit.add(new Name("You"));
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
-        IntSet group   = sGroup.getGroup(groupId);
+        IntBag group   = sGroup.getGroup(groupId);
         for (int i = 0; i < 4; i++)
         {
             // before doing anything, we must ensure the position is free!
@@ -105,7 +98,7 @@ public class BootstrapSystem extends PassiveSystem
             {
                 x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
                 y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!grid.isEmpty(x, y));
+            } while (!map.obstacles.isEmpty(x, y));
 
             id = world.create();
             edit = world.edit(id);
@@ -133,7 +126,7 @@ public class BootstrapSystem extends PassiveSystem
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker().darker());
             edit.add(new Name("A buffalo"));
 
-            grid.set(id, x, y);
+            map.obstacles.set(id, x, y);
         }
 
         // add small, independent rabbits/hares
@@ -144,7 +137,7 @@ public class BootstrapSystem extends PassiveSystem
             {
                 x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
                 y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!grid.isEmpty(x, y));
+            } while (!map.obstacles.isEmpty(x, y));
 
             id = world.create();
             edit = world.edit(id);
@@ -168,7 +161,7 @@ public class BootstrapSystem extends PassiveSystem
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
             edit.add(new Name("A rabbit"));
 
-            grid.set(id, x, y);
+            map.obstacles.set(id, x, y);
         }
 
         // add a pack of wolves
@@ -181,7 +174,7 @@ public class BootstrapSystem extends PassiveSystem
             {
                 x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
                 y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!grid.isEmpty(x, y));
+            } while (!map.obstacles.isEmpty(x, y));
 
             id = world.create();
             edit = world.edit(id);
@@ -209,7 +202,7 @@ public class BootstrapSystem extends PassiveSystem
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Color.DARK_GRAY);
             edit.add(new Name("A wolf"));
 
-            grid.set(id, x, y);
+            map.obstacles.set(id, x, y);
         }
 
         // add solitary pumas
@@ -220,7 +213,7 @@ public class BootstrapSystem extends PassiveSystem
             {
                 x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
                 y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!grid.isEmpty(x, y));
+            } while (!map.obstacles.isEmpty(x, y));
 
             id = world.create();
             edit = world.edit(id);
@@ -245,7 +238,7 @@ public class BootstrapSystem extends PassiveSystem
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
             edit.add(new Name("A puma"));
 
-            grid.set(id, x, y);
+            map.obstacles.set(id, x, y);
         }
 
         // add fish in the sea
@@ -260,7 +253,7 @@ public class BootstrapSystem extends PassiveSystem
                 if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
                     (cell.equals(Cell.WATER) && r.nextGaussian() > 5f))
                 {
-                    if (!grid.isEmpty(x, y))
+                    if (!map.obstacles.isEmpty(x, y))
                         continue;
 
                     id = world.create();
@@ -284,7 +277,7 @@ public class BootstrapSystem extends PassiveSystem
                     edit.create(Sprite.class).set('f', Color.CYAN.darker());
                     edit.add(new Name("A fish"));
 
-                    grid.set(id, x, y);
+                    map.obstacles.set(id, x, y);
                 }
             }
         }
@@ -300,12 +293,12 @@ public class BootstrapSystem extends PassiveSystem
                     (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
                     (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
                 {
-                    if (!grid.isEmpty(x, y))
+                    if (!map.obstacles.isEmpty(x, y))
                         continue;
 
                     id = sTree.makeTree(x, y);
 
-                    grid.set(id, x, y);
+                    map.obstacles.set(id, x, y);
                 }
             }
         }
@@ -324,12 +317,12 @@ public class BootstrapSystem extends PassiveSystem
                     (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
                     (cell.equals(Cell.GROUND) && r.nextGaussian() > 4f))
                 {
-                    if (!grid.isEmpty(x, y))
+                    if (!map.obstacles.isEmpty(x, y))
                         continue;
 
                     id = sCrush.makeBoulder(x, y);
 
-                    grid.set(id, x, y);
+                    map.obstacles.set(id, x, y);
                 }
             }
         }
@@ -348,11 +341,11 @@ public class BootstrapSystem extends PassiveSystem
                     (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
                     (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
                 {
-                    if (!grid.isEmpty(x, y))
+                    if (!map.items.isEmpty(x, y))
                         continue;
 
                     id = sCrush.makeStone(x, y);
-                    items.add(id, x, y);
+                    map.items.set(id, x, y);
                 }
             }
         }
@@ -368,24 +361,20 @@ public class BootstrapSystem extends PassiveSystem
                     (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3f) ||
                     (cell.equals(Cell.HILL) && r.nextGaussian() > 4f))
                 {
-                    if (!grid.isEmpty(x, y))
+                    if (!map.items.isEmpty(x, y))
                         continue;
 
                     switch (r.nextInt(3))
                     {
                         case 0:
                             id = sTree.makeTrunk(x, y);
-                            items.add(id, x, y);
+                            map.items.set(id, x, y);
                             break;
 
                         case 1:
-                            id = sTree.makeBranch(x, y);
-                            items.add(id, x, y);
-                            break;
-
                         case 2:
                             id = sTree.makeBranch(x, y);
-                            items.add(id, x, y);
+                            map.items.set(id, x, y);
                             break;
                     }
                 }

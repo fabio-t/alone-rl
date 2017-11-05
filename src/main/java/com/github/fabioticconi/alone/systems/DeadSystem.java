@@ -21,11 +21,8 @@ package com.github.fabioticconi.alone.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.github.fabioticconi.alone.components.*;
-import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 
 import java.awt.*;
 
@@ -39,11 +36,7 @@ public class DeadSystem extends IteratingSystem
     ComponentMapper<Size>     mSize;
     ComponentMapper<Name>     mName;
 
-    @Wire
-    SingleGrid obstacles;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem map;
 
     public DeadSystem()
     {
@@ -58,7 +51,7 @@ public class DeadSystem extends IteratingSystem
         final Name     name = mName.get(entityId);
 
         // remove dead creature from the world
-        obstacles.del(p.x, p.y);
+        map.obstacles.del(p.x, p.y);
         world.delete(entityId);
 
         // add corpse item
@@ -71,6 +64,6 @@ public class DeadSystem extends IteratingSystem
         edit.create(Health.class).set(size.value + 3);
         edit.add(new Name(name.name + "'s corpse"));
 
-        items.add(corpseId, p.x, p.y);
+        map.items.setFirstFree(corpseId, p.x, p.y);
     }
 }

@@ -20,19 +20,17 @@ package com.github.fabioticconi.alone.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
+import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.components.Corpse;
 import com.github.fabioticconi.alone.components.Hunger;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.systems.ActionSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.HungerSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +49,8 @@ public class ScavengeBehaviour extends AbstractBehaviour
 
     HungerSystem sHunger;
     BumpSystem   sBump;
-    MapSystem    sMap;
     ActionSystem sAction;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem    map;
 
     private Position pos;
     private Position corpsePos;
@@ -82,12 +77,14 @@ public class ScavengeBehaviour extends AbstractBehaviour
         final Hunger cHunger = mHunger.get(entityId);
         final float  hunger  = cHunger.value / cHunger.maxValue;
 
-        final IntSet visibleItems = items.get(sMap.getVisibleCells(pos.x, pos.y, sight));
+        final IntBag visibleItems = map.getItems().getEntities(map.getVisibleCells(pos.x, pos.y, sight));
 
         corpsePos = null;
 
-        for (final int itemId : visibleItems)
+        for (int i = 0, size = visibleItems.size(); i < size; i++)
         {
+            final int itemId = visibleItems.get(i);
+
             if (mCorpse.has(itemId))
             {
                 corpsePos = mPosition.get(itemId);
