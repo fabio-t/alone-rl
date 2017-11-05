@@ -51,7 +51,7 @@ public class BumpSystem extends PassiveSystem
     PushSystem     sPush;
     CrushSystem    sCrush;
     MovementSystem sMove;
-    MapSystem map;
+    MapSystem      map;
 
     public float bumpAction(final int entityId, final Side direction)
     {

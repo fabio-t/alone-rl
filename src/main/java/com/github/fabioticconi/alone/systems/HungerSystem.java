@@ -41,7 +41,7 @@ public class HungerSystem extends IntervalIteratingSystem
     ComponentMapper<Corpse>   mCorpse;
 
     MessageSystem msg;
-    MapSystem map;
+    MapSystem     map;
 
     public HungerSystem(final float interval)
     {

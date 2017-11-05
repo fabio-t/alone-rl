@@ -36,8 +36,8 @@ import java.util.Arrays;
  */
 public class SingleGrid
 {
-    final int width;
-    final int height;
+    final int     width;
+    final int     height;
     final int[][] grid;
 
     public SingleGrid(final int width, final int height)
@@ -59,7 +59,7 @@ public class SingleGrid
      */
     public boolean has(final int x, final int y)
     {
-        return Util.inRange(x, 0, width - 1) && Util.inRange(y, 0, height - 1);
+        return Util.in(x, 0, width - 1) && Util.in(y, 0, height - 1);
     }
 
     public boolean has(final int id, final int x, final int y)
@@ -111,27 +111,23 @@ public class SingleGrid
         return grid[x][y] < 0;
     }
 
-    public boolean setFirstFree(final int id, final int x, final int y)
+    public int[] setFirstFree(final int id, final int x, final int y)
     {
         return setFirstFree(id, x, y, -1);
     }
 
-    public boolean setFirstFree(final int id, final int x, final int y, final int maxRadius)
+    public int[] setFirstFree(final int id, final int x, final int y, final int maxRadius)
     {
         if (!has(x, y))
-            return false;
+            return null;
 
-        if (maxRadius == 0)
+        if (grid[x][y] < 0)
         {
-            if (grid[x][y] < 0)
-            {
-                grid[x][y] = id;
+            grid[x][y] = id;
 
-                return true;
-            }
-            else
-                return false;
-        }
+            return new int[]{x, y};
+        } else if (maxRadius == 0)
+            return null;
 
         final int r = maxRadius < 0 ? Math.max(width, height) : maxRadius;
 
@@ -159,9 +155,9 @@ public class SingleGrid
 
                 if (grid[cur_x][cur_y] < 0)
                 {
-                    grid[x][y] = id;
+                    grid[cur_x][cur_y] = id;
 
-                    return true;
+                    return new int[]{cur_x, cur_y};
                 }
             }
 
@@ -176,9 +172,9 @@ public class SingleGrid
 
                 if (grid[cur_x][cur_y] < 0)
                 {
-                    grid[x][y] = id;
+                    grid[cur_x][cur_y] = id;
 
-                    return true;
+                    return new int[]{cur_x, cur_y};
                 }
             }
 
@@ -193,9 +189,9 @@ public class SingleGrid
 
                 if (grid[cur_x][cur_y] < 0)
                 {
-                    grid[x][y] = id;
+                    grid[cur_x][cur_y] = id;
 
-                    return true;
+                    return new int[]{cur_x, cur_y};
                 }
             }
 
@@ -210,9 +206,9 @@ public class SingleGrid
 
                 if (grid[cur_x][cur_y] < 0)
                 {
-                    grid[x][y] = id;
+                    grid[cur_x][cur_y] = id;
 
-                    return true;
+                    return new int[]{cur_x, cur_y};
                 }
             }
 
@@ -222,7 +218,7 @@ public class SingleGrid
 
         // if we are here, we haven't found any free cells
 
-        return false;
+        return null;
     }
 
     /**
@@ -266,14 +262,16 @@ public class SingleGrid
      */
     public IntBag getClosestEntities(final int x, final int y, int maxRadius)
     {
-        final IntBag entities = new IntBag(maxRadius*maxRadius*4);
-
         if (grid[x][y] >= 0)
         {
-            entities.add(grid[x][y]);
-
-            return entities;
+            final IntBag single = new IntBag(1);
+            single.add(grid[x][y]);
+            return single;
         }
+        else if (maxRadius == 0) // we don't care about looking further
+            return new IntBag(0);
+
+        final IntBag entities = new IntBag(maxRadius * maxRadius * 4);
 
         // avoid stupid crashes for negative radii
         maxRadius = Math.abs(maxRadius);
@@ -377,7 +375,7 @@ public class SingleGrid
         if (r < 0)
             return new IntBag(0);
 
-        final IntBag entities = new IntBag(r*8);
+        final IntBag entities = new IntBag(r * 8);
 
         if (r == 0)
         {
@@ -476,7 +474,7 @@ public class SingleGrid
      */
     public IntBag getEntitiesWithinRadius(final int x, final int y, final int r)
     {
-        final IntBag entities = new IntBag(r*r*8);
+        final IntBag entities = new IntBag(r * r * 8);
 
         if (grid[x][y] >= 0)
         {

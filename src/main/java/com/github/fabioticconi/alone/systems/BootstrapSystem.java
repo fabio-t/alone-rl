@@ -409,27 +409,27 @@ public class BootstrapSystem extends PassiveSystem
             if (name.equals("strength"))
             {
                 str = parser.getIntValue();
-                edit.create(Strength.class).value = Util.ensureRange(str, -2, 2);
+                edit.create(Strength.class).value = Util.clamp(str, -2, 2);
             }
             else if (name.equals("agility"))
             {
                 agi = parser.getIntValue();
-                edit.create(Agility.class).value = Util.ensureRange(agi, -2, 2);
+                edit.create(Agility.class).value = Util.clamp(agi, -2, 2);
             }
             else if (name.equals("constitution"))
             {
                 con = parser.getIntValue();
-                edit.create(Constitution.class).value = Util.ensureRange(con, -2, 2);
+                edit.create(Constitution.class).value = Util.clamp(con, -2, 2);
             }
             else if (name.equals("skin"))
             {
                 skin = parser.getIntValue();
-                edit.create(Skin.class).value = Util.ensureRange(skin, -2, 2);
+                edit.create(Skin.class).value = Util.clamp(skin, -2, 2);
             }
             else if (name.equals("sight"))
             {
                 sight = parser.getIntValue();
-                edit.create(Sight.class).value = Util.ensureRange(sight, 1, 18);
+                edit.create(Sight.class).value = Util.clamp(sight, 1, 18);
             }
             else if (name.equals("herbivore"))
             {

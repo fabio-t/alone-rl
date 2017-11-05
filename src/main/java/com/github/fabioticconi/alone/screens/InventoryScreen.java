@@ -112,7 +112,7 @@ public abstract class InventoryScreen extends AbstractScreen
 
             final int pos = keyCode - VK_A;
 
-            if (pos <= i.items.size())
+            if (pos < i.items.size())
             {
                 return i.items.get(pos);
             }

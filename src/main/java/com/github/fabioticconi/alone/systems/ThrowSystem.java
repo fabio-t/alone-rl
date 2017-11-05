@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

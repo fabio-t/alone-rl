@@ -41,8 +41,8 @@ public class UnderwaterBehaviour extends AbstractBehaviour
 {
     final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
     ComponentMapper<Position> mPos;
-    MapSystem  map;
-    BumpSystem sBump;
+    MapSystem                 map;
+    BumpSystem                sBump;
     @Wire
     Random r;
     private Position curPos;

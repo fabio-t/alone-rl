@@ -35,9 +35,9 @@ public class MovementSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
 
-    ComponentMapper<Position>     mPosition;
-    ComponentMapper<Speed>        mSpeed;
-    ComponentMapper<Underwater>   mUnderWater;
+    ComponentMapper<Position>   mPosition;
+    ComponentMapper<Speed>      mSpeed;
+    ComponentMapper<Underwater> mUnderWater;
 
     StaminaSystem sStamina;
     MapSystem     map;

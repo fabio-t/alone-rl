@@ -131,7 +131,7 @@ public class AttackSystem extends PassiveSystem
             sStamina.consume(actorId, cost);
             sStamina.consume(targetId, 0.25f);
 
-            final float toHit = Util.ensureRange((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
+            final float toHit = Util.clamp((cAgility.value - tAgility.value + 4) / 8f, 0.05f, 0.95f);
 
             if (r.nextFloat() < toHit)
             {

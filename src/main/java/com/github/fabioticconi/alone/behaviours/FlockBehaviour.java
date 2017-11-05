@@ -79,7 +79,7 @@ public class FlockBehaviour extends AbstractBehaviour
         curPos = mPosition.get(entityId);
 
         final LongBag visibleCells = sMap.getVisibleCells(curPos.x, curPos.y, sight);
-        final IntBag creatures = sMap.getObstacles().getEntities(visibleCells);
+        final IntBag  creatures    = sMap.getObstacles().getEntities(visibleCells);
 
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;

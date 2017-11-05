@@ -269,7 +269,7 @@ public class PlayScreen extends AbstractScreen
         Size   size;
 
         final SingleGrid obstacles = map.getObstacles();
-        final SingleGrid items = map.getItems();
+        final SingleGrid items     = map.getItems();
 
         final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
 
@@ -327,19 +327,22 @@ public class PlayScreen extends AbstractScreen
                     if (sprite == null)
                         continue;
 
-                    // if the obstacle does not have a "shadow view" and it's
-                    // not among the visible cells, don't render it
-                    if (!cells.contains(key) && !sprite.shadowView)
-                        continue;
-
-                    // shadowed obstacles are darker than normal
-                    if (sprite.shadowView)
+                    if (cells.contains(key))
                     {
+                        tileFg = sprite.col;
+                    }
+                    else if (sprite.shadowView)
+                    {
+                        // shadowed obstacles are darker than normal
+
                         tileFg = sprite.col.darker().darker().darker();
                     }
                     else
                     {
-                        tileFg = sprite.col;
+                        // if the obstacle does not have a "shadow view" and it's
+                        // not among the visible cells, don't render it
+
+                        continue;
                     }
 
                     size = mSize.get(entityId);

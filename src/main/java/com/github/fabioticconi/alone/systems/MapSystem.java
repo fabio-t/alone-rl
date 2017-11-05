@@ -56,11 +56,9 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     /* FOV/LOS stuff */
     final LongBag lastVisited;
     final AStar   astar;
-    ComponentMapper<LightBlocker> mLightBlocker;
-
     final SingleGrid obstacles;
     final SingleGrid items;
-
+    ComponentMapper<LightBlocker> mLightBlocker;
     PrecisePermissive view;
 
     public MapSystem() throws IOException
@@ -294,7 +292,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     @Override
     public boolean contains(final int x, final int y)
     {
-        return Util.inRange(x, 0, Options.MAP_SIZE_X - 1) && Util.inRange(y, 0, Options.MAP_SIZE_Y - 1);
+        return Util.in(x, 0, Options.MAP_SIZE_X - 1) && Util.in(y, 0, Options.MAP_SIZE_Y - 1);
     }
 
     @Override

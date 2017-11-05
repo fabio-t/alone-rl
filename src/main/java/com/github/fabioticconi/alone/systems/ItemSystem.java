@@ -48,7 +48,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Wearable>  mWearable;
 
     MessageSystem msg;
-    MapSystem map;
+    MapSystem     map;
 
     public GetAction get(final int actorId)
     {
@@ -190,14 +190,18 @@ public class ItemSystem extends PassiveSystem
 
             if (i.items.removeValue(itemId))
             {
-                if (!map.items.setFirstFree(itemId, p.x, p.y))
+                final int[] coords = map.items.setFirstFree(itemId, p.x, p.y);
+
+                if (coords == null)
                 {
                     msg.send(actorId, itemId, new CannotMsg("drop", "there is no free space!"));
 
                     return;
                 }
 
-                mPos.create(itemId).set(p.x, p.y);
+                System.out.println(coords[0] + " " + coords[1]);
+
+                mPos.create(itemId).set(coords[0], coords[1]);
 
                 msg.send(actorId, itemId, new DropMsg());
             }

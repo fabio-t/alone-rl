@@ -29,34 +29,34 @@ public class Util
     // FIXME put this in a more appropriate place..
     public static Color BROWN = new Color(102, 51, 0);
 
-    public static int ensureRange(final int value, final int min, final int max)
+    public static int clamp(final int value, final int min, final int max)
     {
         return Math.min(Math.max(value, min), max);
     }
 
-    public static float ensureRange(final float value, final float min, final float max)
+    public static float clamp(final float value, final float min, final float max)
     {
         return Math.min(Math.max(value, min), max);
     }
 
-    public static boolean inRange(final int value, final int min, final int max)
+    public static boolean in(final int value, final int min, final int max)
     {
         return (value >= min) && (value <= max);
     }
 
-    public static boolean inRange(final float value, final float min, final float max)
+    public static boolean in(final float value, final float min, final float max)
     {
         return (value >= min) && (value <= max);
     }
 
-    public static boolean outRange(final int value, final int min, final int max)
+    public static boolean out(final int value, final int min, final int max)
     {
-        return (value > max) || (value < min);
+        return (value < min) || (value > max);
     }
 
-    public static boolean outRange(final float value, final float min, final float max)
+    public static boolean out(final float value, final float min, final float max)
     {
-        return (value > max) || (value < min);
+        return (value < min) || (value > max);
     }
 
     public static float bias(final float v, final float bias)
