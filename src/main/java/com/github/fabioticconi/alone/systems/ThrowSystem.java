@@ -175,7 +175,8 @@ public class ThrowSystem extends PassiveSystem
 
                 // at this point it really happened: the weapon is flying at its new position
                 // (it's not an obstacle, so there's not risk of someone interrupting it in mid-air)
-                map.items.setFirstFree(weaponId, newP.x, newP.y);
+                final Point p2 = map.getFirstTotallyFree(newP.x, newP.y, -1);
+                map.items.set(weaponId, p2.x, p2.y);
             }
             else
             {

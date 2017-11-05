@@ -29,8 +29,9 @@ import com.github.fabioticconi.alone.messages.CrushMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.EnumSet;
 
 /**
@@ -63,6 +64,11 @@ public class CrushSystem extends PassiveSystem
         return c;
     }
 
+    public int makeStone(final Point p)
+    {
+        return makeStone(p.x, p.y);
+    }
+
     public int makeStone(final int x, final int y)
     {
         final int id = world.create();
@@ -74,7 +80,14 @@ public class CrushSystem extends PassiveSystem
         edit.create(Wearable.class);
         edit.add(new Name("A stone"));
 
+        map.items.set(id, x, y);
+
         return id;
+    }
+
+    public int makeBoulder(final Point p)
+    {
+        return makeBoulder(p.x, p.y);
     }
 
     public int makeBoulder(final int x, final int y)
@@ -88,6 +101,8 @@ public class CrushSystem extends PassiveSystem
         edit.create(Pushable.class);
         edit.create(Crushable.class);
         edit.add(new Name("A boulder"));
+
+        map.obstacles.set(id, x, y);
 
         return id;
     }
@@ -140,6 +155,8 @@ public class CrushSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
+            msg.send(actorId, targetId, new CrushMsg());
+
             final Position p = mPosition.get(targetId);
 
             // from a tree we get a trunk and two branches
@@ -147,12 +164,12 @@ public class CrushSystem extends PassiveSystem
             world.delete(targetId);
 
             for (int i = 0; i < 3; i++)
-                map.items.setFirstFree(makeStone(p.x, p.y), p.x, p.y);
+            {
+                makeStone(map.getFirstTotallyFree(p.x, p.y, -1));
+            }
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
-
-            msg.send(actorId, targetId, new CrushMsg());
         }
     }
 }

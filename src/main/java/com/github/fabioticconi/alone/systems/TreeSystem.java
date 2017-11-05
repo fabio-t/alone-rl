@@ -30,6 +30,7 @@ import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
 import java.awt.*;
 import java.util.EnumSet;
@@ -75,7 +76,14 @@ public class TreeSystem extends PassiveSystem
         edit.create(Tree.class);
         edit.add(new Name("A tree"));
 
+        map.obstacles.set(id, x, y);
+
         return id;
+    }
+
+    public int makeTrunk(final Point p)
+    {
+        return makeTrunk(p.x, p.y);
     }
 
     public int makeTrunk(final int x, final int y)
@@ -87,7 +95,14 @@ public class TreeSystem extends PassiveSystem
         edit.create(Sprite.class).set('-', Util.BROWN.brighter());
         edit.add(new Name("A tree trunk"));
 
+        map.items.set(id, x, y);
+
         return id;
+    }
+
+    public int makeBranch(final Point p)
+    {
+        return makeBranch(p.x, p.y);
     }
 
     public int makeBranch(final int x, final int y)
@@ -100,6 +115,8 @@ public class TreeSystem extends PassiveSystem
         edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
         edit.create(Wearable.class);
         edit.add(new Name("A branch"));
+
+        map.items.set(id, x, y);
 
         return id;
     }
@@ -144,20 +161,20 @@ public class TreeSystem extends PassiveSystem
 
             final int treeId = targets.get(0);
 
+            msg.send(actorId, treeId, new CutMsg());
+
             final Position p = mPosition.get(treeId);
 
             // from a tree we get a trunk and two branches
             map.obstacles.del(p.x, p.y);
             world.delete(treeId);
 
-            map.items.setFirstFree(makeTrunk(p.x, p.y), p.x, p.y);
-            map.items.setFirstFree(makeBranch(p.x, p.y), p.x, p.y);
-            map.items.setFirstFree(makeBranch(p.x, p.y), p.x, p.y);
+            makeTrunk(map.getFirstTotallyFree(p.x, p.y, -1));
+            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
+            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);
-
-            msg.send(actorId, treeId, new CutMsg());
         }
     }
 }

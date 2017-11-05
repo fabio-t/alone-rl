@@ -23,8 +23,9 @@ import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.systems.IteratingSystem;
 import com.github.fabioticconi.alone.components.*;
+import rlforj.math.Point;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Author: Fabio Ticconi
@@ -54,16 +55,18 @@ public class DeadSystem extends IteratingSystem
         map.obstacles.del(p.x, p.y);
         world.delete(entityId);
 
+        final Point p2 = map.getFirstTotallyFree(p.x, p.y, -1);
+
         // add corpse item
         final int        corpseId = world.create();
         final EntityEdit edit     = world.edit(corpseId);
 
-        edit.create(Position.class).set(p.x, p.y);
+        edit.create(Position.class).set(p2.x, p2.y);
         edit.create(Sprite.class).set('$', Color.RED.darker().darker(), false);
         edit.create(Corpse.class);
         edit.create(Health.class).set(size.value + 3);
         edit.add(new Name(name.name + "'s corpse"));
 
-        map.items.setFirstFree(corpseId, p.x, p.y);
+        map.items.set(corpseId, p2.x, p2.y);
     }
 }

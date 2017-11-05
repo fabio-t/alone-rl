@@ -296,9 +296,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    id = sTree.makeTree(x, y);
-
-                    map.obstacles.set(id, x, y);
+                    sTree.makeTree(x, y);
                 }
             }
         }
@@ -320,9 +318,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    id = sCrush.makeBoulder(x, y);
-
-                    map.obstacles.set(id, x, y);
+                    sCrush.makeBoulder(x, y);
                 }
             }
         }
@@ -344,8 +340,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.items.isEmpty(x, y))
                         continue;
 
-                    id = sCrush.makeStone(x, y);
-                    map.items.set(id, x, y);
+                    sCrush.makeStone(x, y);
                 }
             }
         }

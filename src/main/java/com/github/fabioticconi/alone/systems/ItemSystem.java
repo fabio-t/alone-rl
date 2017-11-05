@@ -30,6 +30,7 @@ import com.github.fabioticconi.alone.screens.AbstractScreen;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
 import java.util.EnumSet;
 
@@ -190,18 +191,23 @@ public class ItemSystem extends PassiveSystem
 
             if (i.items.removeValue(itemId))
             {
-                final int[] coords = map.items.setFirstFree(itemId, p.x, p.y);
+                final Point p2 = map.getFirstTotallyFree(p.x, p.y, -1);
 
-                if (coords == null)
+                if (p2 == null)
                 {
-                    msg.send(actorId, itemId, new CannotMsg("drop", "there is no free space!"));
+                    i.items.add(itemId);
+
+                    msg.send(actorId, itemId, new CannotMsg("drop", "- there is no free space!"));
 
                     return;
                 }
 
-                System.out.println(coords[0] + " " + coords[1]);
+                // if it was equipped, we must remove that status
+                mEquip.remove(itemId);
 
-                mPos.create(itemId).set(coords[0], coords[1]);
+                map.items.set(itemId, p2.x, p2.y);
+
+                mPos.create(itemId).set(p2.x, p2.y);
 
                 msg.send(actorId, itemId, new DropMsg());
             }

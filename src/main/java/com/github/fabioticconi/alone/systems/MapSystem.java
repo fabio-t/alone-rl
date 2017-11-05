@@ -214,6 +214,100 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         return Side.HERE;
     }
 
+    public Point getFirstTotallyFree(final int x, final int y, final int maxRadius)
+    {
+        if (!contains(x, y))
+            return null;
+
+        if (isTotallyFree(x, y))
+            return new Point(x, y);
+        else if (maxRadius == 0)
+            return null;
+
+        final int r = maxRadius < 0 ? Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y) : maxRadius;
+
+        int cur_y = y - 1;
+        int cur_x = x;
+        for (int d = 1; d <= r; d++)
+        {
+            // FIXME what do we do if the north row is "out of bound" already?
+            // we should skip the next for and position ourselves immediately to
+            // the correct east-side column, at the same y position as we are
+
+            final int max_x = x + d;
+            final int max_y = y + d;
+            final int min_x = x - d;
+            final int min_y = y - d;
+
+            // continue east, through the north row
+            for (; cur_x < max_x; cur_x++)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue south, through the east column
+            for (; cur_y < max_y; cur_y++)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue west, through the south row
+            for (; cur_x > min_x; cur_x--)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue north, through the west column of this circle
+            for (; cur_y >= min_y; cur_y--)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // at this point we are positioned WITHIN the north row of the next
+            // cycle
+        }
+
+        // if we are here, we haven't found any free cells
+
+        return null;
+    }
+
     /**
      * Searches concentrically for a cell of the specified type, and returns the
      * coordinate array if it finds one.
@@ -273,7 +367,20 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
     /**
      * This function only returns true if the cell is within bounds
-     * and does not contain any creature, regardless of visibility status.
+     * and does not contain any obstacle or item, regardless of visibility status.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isTotallyFree(final int x, final int y)
+    {
+        return isFree(x, y) && items.get(x, y) < 0;
+    }
+
+    /**
+     * This function only returns true if the cell is within bounds
+     * and does not contain any obstacle, regardless of visibility status.
      *
      * @param x
      * @param y
