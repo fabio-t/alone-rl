@@ -25,6 +25,7 @@ import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.messages.DamageMsg;
 import com.github.fabioticconi.alone.messages.KillMsg;
 import com.github.fabioticconi.alone.messages.MissMsg;
@@ -51,12 +52,14 @@ public class AttackSystem extends PassiveSystem
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Dead>     mDead;
     ComponentMapper<Position> mPos;
-    ComponentMapper<Name>     mName;
+    ComponentMapper<Weapon>   mWeapon;
+    ComponentMapper<Armour>   mArmour;
 
     @Wire
     Random r;
 
     StaminaSystem sStamina;
+    ItemSystem    sItem;
     MessageSystem msg;
 
     public AttackAction attack(final int entityId, final int targetId)
@@ -64,7 +67,6 @@ public class AttackSystem extends PassiveSystem
         final AttackAction a = new AttackAction();
 
         a.actorId = entityId;
-
         a.targets.add(targetId);
 
         return a;
@@ -135,9 +137,34 @@ public class AttackSystem extends PassiveSystem
 
             if (r.nextFloat() < toHit)
             {
-                final float damage = Math.max(((cStrength.value + 2) - tSkin.value), 1f);
+                float damage = cStrength.value + 2f;
+                float armour = tSkin.value;
 
-                tHealth.value -= damage;
+                // assuming the actor is unharmed, we use a generic "natural" attack
+                WeaponType dmgType = WeaponType.NATURAL;
+
+                // the weapon damage is added to the strength-based one, so that creatures
+                // wielding weapons can overcome stronger, unharmed creatures
+                final int weaponId = sItem.getWeapon(actorId);
+                if (weaponId >= 0)
+                {
+                    final Weapon w = mWeapon.get(weaponId);
+                    damage += w.damage;
+                    dmgType = w.damageType;
+                }
+
+                final int armourId = sItem.getArmour(targetId);
+                if (armourId >= 0)
+                {
+                    final Armour a = mArmour.get(armourId);
+                    armour += a.defences.get(dmgType);
+                }
+
+                // the armour absorbs some or all the damage
+                damage -= armour;
+
+                // every successful hit removes at least one hp, always
+                tHealth.value -= Math.max(damage, 1f);
 
                 msg.send(actorId, targetId, new DamageMsg(damage, tHealth.value));
 

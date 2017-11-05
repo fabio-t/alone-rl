@@ -16,16 +16,33 @@
  *
  */
 
-package com.github.fabioticconi.alone.constants;
+package com.github.fabioticconi.alone.components;
+
+import com.artemis.Component;
+import com.github.fabioticconi.alone.constants.WeaponType;
+
+import java.util.EnumMap;
 
 /**
  * Author: Fabio Ticconi
- * Date: 04/11/17
+ * Date: 05/11/17
  */
-public enum WeaponType
+public class Armour extends Component
 {
-    SLASH,
-    POINT,
-    BLUNT,
-    NATURAL
+    public final EnumMap<WeaponType, Float> defences;
+
+    public Armour()
+    {
+        this.defences = new EnumMap<>(WeaponType.class);
+    }
+
+    public void set(final float slash, final float point, final float blunt, final float natural)
+    {
+        this.defences.put(WeaponType.SLASH, slash);
+        this.defences.put(WeaponType.POINT, point);
+        this.defences.put(WeaponType.BLUNT, blunt);
+
+        // a generic type for animal attacks
+        this.defences.put(WeaponType.NATURAL, natural);
+    }
 }

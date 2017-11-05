@@ -47,6 +47,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Weapon>    mWeapon;
     ComponentMapper<Equip>     mEquip;
     ComponentMapper<Wearable>  mWearable;
+    ComponentMapper<Armour>    mArmour;
 
     MessageSystem msg;
     MapSystem     map;
@@ -78,6 +79,50 @@ public class ItemSystem extends PassiveSystem
         a.targets.add(targetId);
 
         return a;
+    }
+
+    int getArmour(final int entityId)
+    {
+        return getArmour(entityId, true);
+    }
+
+    int getArmour(final int entityId, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            if (itemId < 0)
+            {
+                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+
+                continue;
+            }
+
+            // we might only want an equipped weapon
+            if (!mArmour.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
+                continue;
+
+            return itemId;
+        }
+
+        return -1;
+    }
+
+    int getWeapon(final int entityId)
+    {
+        return getWeapon(entityId, true);
+    }
+
+    int getWeapon(final int entityId, final boolean onlyEquipped)
+    {
+        return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
     }
 
     int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
