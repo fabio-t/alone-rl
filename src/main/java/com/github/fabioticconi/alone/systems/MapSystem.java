@@ -29,8 +29,8 @@ import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.los.ILosBoard;
-import rlforj.los.PrecisePermissive;
+import rlforj.IBoard;
+import rlforj.los.*;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
@@ -47,7 +47,7 @@ import java.util.Set;
 /**
  * @author Fabio Ticconi
  */
-public class MapSystem extends PassiveSystem implements ILosBoard
+public class MapSystem extends PassiveSystem implements IBoard
 {
     static final Logger log = LoggerFactory.getLogger(MapSystem.class);
 
@@ -56,15 +56,18 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     /* FOV/LOS stuff */
     final LongBag lastVisited;
     final AStar   astar;
+    final IFovAlgorithm fov;
+    final ILosAlgorithm los;
+    ComponentMapper<LightBlocker> mLightBlocker;
+
     final SingleGrid obstacles;
     final SingleGrid items;
-    ComponentMapper<LightBlocker> mLightBlocker;
-    PrecisePermissive view;
 
     public MapSystem() throws IOException
     {
         lastVisited = new LongBag(256);
-        view = new PrecisePermissive();
+        fov = new ShadowCasting();
+        los = new BresLos(true);
 
         final InputStream mapStream       = new FileInputStream("data/map/map.png");
         final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
@@ -321,7 +324,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
         lastVisited.clear();
 
-        view.visitFieldOfView(this, x, y, r);
+        fov.visitFieldOfView(this, x, y, r);
 
         int[] coords;
         Cell  cell;
@@ -432,19 +435,19 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     {
         lastVisited.clear();
 
-        view.visitFieldOfView(this, x, y, r);
+        fov.visitFieldOfView(this, x, y, r);
 
         return lastVisited;
     }
 
     public List<Point> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
-        final boolean exists = view.existsLineOfSight(this, startX, startY, endX, endY, true);
+        final boolean exists = los.existsLineOfSight(this, startX, startY, endX, endY, true);
 
         // FIXME: rlforj-alt should either always return a list, or always an array
 
         if (exists)
-            return view.getProjectPath();
+            return los.getProjectPath();
 
         return null;
     }
