@@ -26,5 +26,6 @@ public enum WeaponType
 {
     SLASH,
     POINT,
-    BLUNT
+    BLUNT,
+    NATURAL
 }

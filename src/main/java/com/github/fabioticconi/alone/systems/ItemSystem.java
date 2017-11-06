@@ -19,20 +19,18 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
 import com.github.fabioticconi.alone.screens.AbstractScreen;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
 import java.util.EnumSet;
 
@@ -49,11 +47,10 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Weapon>    mWeapon;
     ComponentMapper<Equip>     mEquip;
     ComponentMapper<Wearable>  mWearable;
+    ComponentMapper<Armour>    mArmour;
 
     MessageSystem msg;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem     map;
 
     public GetAction get(final int actorId)
     {
@@ -82,6 +79,50 @@ public class ItemSystem extends PassiveSystem
         a.targets.add(targetId);
 
         return a;
+    }
+
+    int getArmour(final int entityId)
+    {
+        return getArmour(entityId, true);
+    }
+
+    int getArmour(final int entityId, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            if (itemId < 0)
+            {
+                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
+
+                continue;
+            }
+
+            // we might only want an equipped weapon
+            if (!mArmour.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
+                continue;
+
+            return itemId;
+        }
+
+        return -1;
+    }
+
+    int getWeapon(final int entityId)
+    {
+        return getWeapon(entityId, true);
+    }
+
+    int getWeapon(final int entityId, final boolean onlyEquipped)
+    {
+        return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
     }
 
     int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
@@ -137,18 +178,13 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            if (i.items.size() >= AbstractScreen.Letter.values().length)
+            if (map.items.isEmpty(p.x, p.y))
             {
-                msg.send(actorId, new CannotMsg("get", "anything, your hands are full"));
+                msg.send(actorId, new CannotMsg("get", "anything here"));
                 return;
             }
 
-            final IntSet itemsHere = items.get(p.x, p.y);
-
-            if (itemsHere.isEmpty())
-                return;
-
-            final int itemId = itemsHere.iterator().nextInt();
+            final int itemId = map.items.get(p.x, p.y);
 
             if (itemId < 0)
             {
@@ -157,9 +193,7 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            mPos.remove(itemId);
-
-            items.del(itemId, p.x, p.y);
+            map.items.del(p.x, p.y);
             i.items.add(itemId);
 
             mPos.remove(itemId);
@@ -192,15 +226,29 @@ public class ItemSystem extends PassiveSystem
                 return;
             }
 
-            final int targetId = targets.get(0);
+            final int itemId = targets.get(0);
 
-            if (i.items.removeValue(targetId))
+            if (i.items.removeValue(itemId))
             {
-                items.add(targetId, p.x, p.y);
+                final Point p2 = map.getFirstTotallyFree(p.x, p.y, -1);
 
-                mPos.create(targetId).set(p.x, p.y);
+                if (p2 == null)
+                {
+                    i.items.add(itemId);
 
-                msg.send(actorId, targetId, new DropMsg());
+                    msg.send(actorId, itemId, new CannotMsg("drop", "- there is no free space!"));
+
+                    return;
+                }
+
+                // if it was equipped, we must remove that status
+                mEquip.remove(itemId);
+
+                map.items.set(itemId, p2.x, p2.y);
+
+                mPos.create(itemId).set(p2.x, p2.y);
+
+                msg.send(actorId, itemId, new DropMsg());
             }
             else
             {

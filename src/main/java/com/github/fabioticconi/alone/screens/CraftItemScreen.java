@@ -18,42 +18,45 @@
 
 package com.github.fabioticconi.alone.screens;
 
-import com.artemis.ComponentMapper;
+import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.components.Wearable;
+import com.github.fabioticconi.alone.systems.ScreenSystem;
+
+import java.awt.event.KeyEvent;
 
 /**
  * Author: Fabio Ticconi
- * Date: 04/11/17
+ * Date: 05/11/17
  */
-public class EquipScreen extends InventoryScreen
+public class CraftItemScreen extends AbstractScreen
 {
-    ComponentMapper<Wearable> mWearable;
-
-    @Override
-    public float handleKeys(final BitVector keys)
-    {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        final int targetId = getItem(keys);
-
-        if (targetId < 0)
-            return super.handleKeys(keys);
-
-        screen.select(PlayScreen.class);
-
-        return sAction.act(sItems.equip(playerId, targetId));
-    }
+    ScreenSystem screen;
+    CraftScreen craftScreen;
 
     @Override
     public String header()
     {
-        return "Equip item:";
+        return "Crafting item:";
     }
 
     @Override
-    public boolean canDraw(final int entityId)
+    public float handleKeys(final BitVector keys)
     {
-        return mWearable.has(entityId);
+        if (keys.get(KeyEvent.VK_ESCAPE))
+            screen.select(PlayScreen.class);
+
+        keys.clear();
+
+        return 0f;
+    }
+
+    @Override
+    public void display(final AsciiPanel terminal)
+    {
+        drawHeader(terminal);
+
+        terminal.writeCenter(craftScreen.craftItem, terminal.getHeightInCharacters()/2);
+
+        // TODO
     }
 }

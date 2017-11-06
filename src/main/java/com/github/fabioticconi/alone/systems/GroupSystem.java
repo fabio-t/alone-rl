@@ -20,17 +20,16 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
 import com.artemis.utils.Bag;
+import com.artemis.utils.IntBag;
 import com.artemis.utils.IntDeque;
 import com.github.fabioticconi.alone.components.Group;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 public class GroupSystem extends PassiveSystem
 {
     ComponentMapper<Group> mGroup;
 
-    Bag<IntSet> groups;
+    Bag<IntBag> groups;
 
     IntDeque recycling;
 
@@ -48,7 +47,7 @@ public class GroupSystem extends PassiveSystem
      */
     public int createGroup()
     {
-        final IntSet newGroup = new IntArraySet();
+        final IntBag newGroup = new IntBag(5);
 
         final int newId;
         if (recycling.isEmpty())
@@ -74,9 +73,9 @@ public class GroupSystem extends PassiveSystem
      * @param groupId
      * @return
      */
-    public IntSet removeGroup(final int groupId)
+    public IntBag removeGroup(final int groupId)
     {
-        final IntSet group = groups.get(groupId);
+        final IntBag group = groups.get(groupId);
 
         groups.set(groupId, null);
         recycling.add(groupId);
@@ -91,13 +90,13 @@ public class GroupSystem extends PassiveSystem
      * @param groupId
      * @return
      */
-    public IntSet removeGroupStrict(final int groupId)
+    public IntBag removeGroupStrict(final int groupId)
     {
-        final IntSet group = removeGroup(groupId);
+        final IntBag group = removeGroup(groupId);
 
-        for (final int entityId : group)
+        for (int i = 0, size = group.size(); i < size; i++)
         {
-            mGroup.remove(entityId);
+            mGroup.remove(group.get(i));
         }
 
         return group;
@@ -110,7 +109,7 @@ public class GroupSystem extends PassiveSystem
      * @param groupId
      * @return the specified group or null
      */
-    public IntSet getGroup(final int groupId)
+    public IntBag getGroup(final int groupId)
     {
         return groups.get(groupId);
     }
@@ -120,10 +119,11 @@ public class GroupSystem extends PassiveSystem
      * the Group component.
      *
      * @param entityId
+     * @return the id of the new group
      */
-    public void addToGroup(final int entityId)
+    public int addToGroup(final int entityId)
     {
-        addToGroup(entityId, createGroup());
+        return addToGroup(entityId, createGroup());
     }
 
     /**
@@ -132,39 +132,59 @@ public class GroupSystem extends PassiveSystem
      *
      * @param entityId
      * @param groupId
+     * @return same as groupId
      */
-    public void addToGroup(final int entityId, final int groupId)
+    public int addToGroup(final int entityId, final int groupId)
     {
-        if (groups.isIndexWithinBounds(groupId))
-        {
-            final IntSet group = groups.get(groupId);
+        final IntBag group = groups.get(groupId);
 
-            group.add(entityId);
+        group.add(entityId);
 
-            mGroup.create(entityId).groupId = groupId;
-        }
+        mGroup.create(entityId).groupId = groupId;
 
-        throw new RuntimeException("groupId not valid");
+        return groupId;
     }
 
     /**
-     * Removes the entity from the specified group. Also takes care of removing
-     * the Group component.
+     * Removes the entity from the specified group. If the groupIds don't match it doesn't do anything.
+     * Same thing if the entity does not belong to any group.
+     * Also takes care of removing the Group component.
      *
      * @param entityId
      * @param groupId
      */
     public void removeFromGroup(final int entityId, final int groupId)
     {
-        if (groups.isIndexWithinBounds(groupId))
-        {
-            final IntSet group = groups.get(groupId);
+        final Group g = mGroup.get(entityId);
 
-            group.remove(entityId);
+        if (g == null || g.groupId != groupId)
+            return;
 
-            mGroup.remove(entityId);
-        }
+        final IntBag group = groups.get(groupId);
 
-        throw new RuntimeException("groupId not valid");
+        group.remove(entityId);
+
+        mGroup.remove(entityId);
+    }
+
+    /**
+     * Removes the entity from any group it belongs to. If it doesn't belong to any group,
+     * it doesn't do anything.
+     * Also takes care of removing the Group component.
+     *
+     * @param entityId
+     */
+    public void removeFromGroup(final int entityId)
+    {
+        final Group g = mGroup.get(entityId);
+
+        if (g == null)
+            return;
+
+        final IntBag group = groups.get(g.groupId);
+
+        group.remove(entityId);
+
+        mGroup.remove(entityId);
     }
 }

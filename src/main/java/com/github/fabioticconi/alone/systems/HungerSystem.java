@@ -19,15 +19,12 @@ package com.github.fabioticconi.alone.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.EatFinishMsg;
 import com.github.fabioticconi.alone.messages.EatMsg;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +41,7 @@ public class HungerSystem extends IntervalIteratingSystem
     ComponentMapper<Corpse>   mCorpse;
 
     MessageSystem msg;
-
-    @Wire
-    MultipleGrid items;
+    MapSystem     map;
 
     public HungerSystem(final float interval)
     {
@@ -83,32 +78,6 @@ public class HungerSystem extends IntervalIteratingSystem
         a.cost = 0.5f;
 
         return a;
-    }
-
-    public EatAction devourClosestCorpse(final int entityId)
-    {
-        final Position p = mPosition.get(entityId);
-
-        final IntSet itemsClose = items.getWithinRadius(p.x, p.y, 1);
-
-        for (final int foodId : itemsClose)
-        {
-            if (mCorpse.has(foodId))
-            {
-                final EatAction a = new EatAction();
-
-                a.actorId = entityId;
-
-                a.targets.add(foodId);
-
-                a.delay = 1f;
-                a.cost = 0.5f;
-
-                return a;
-            }
-        }
-
-        return null;
     }
 
     public FeedAction feed(final int entityId)
@@ -186,7 +155,8 @@ public class HungerSystem extends IntervalIteratingSystem
                 msg.send(actorId, targetId, new EatFinishMsg());
 
                 final Position p = mPosition.get(targetId);
-                items.del(targetId, p.x, p.y);
+
+                map.getItems().del(p.x, p.y);
                 world.delete(targetId);
             }
         }

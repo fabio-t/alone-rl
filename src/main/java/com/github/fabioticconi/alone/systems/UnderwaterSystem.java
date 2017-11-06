@@ -36,8 +36,8 @@ public class UnderwaterSystem extends IntervalIteratingSystem
 {
     private final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
     ComponentMapper<Position> mPos;
-    HealthSystem sHealth;
-    MapSystem    map;
+    HealthSystem              sHealth;
+    MapSystem                 map;
 
     public UnderwaterSystem(final float interval)
     {

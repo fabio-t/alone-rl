@@ -28,13 +28,11 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.MultipleGrid;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.systems.*;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
+import com.github.fabioticconi.alone.utils.LongBag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +62,6 @@ public class PlayScreen extends AbstractScreen
     MessageSystem msg;
     ScreenSystem  screen;
 
-    @Wire
-    SingleGrid   grid;
-    @Wire
-    MultipleGrid items;
     @Wire
     Properties properties;
 
@@ -274,7 +268,10 @@ public class PlayScreen extends AbstractScreen
         Sprite sprite;
         Size   size;
 
-        final LongSet cells = map.getVisibleCells(p.x, p.y, sight);
+        final SingleGrid obstacles = map.getObstacles();
+        final SingleGrid items     = map.getItems();
+
+        final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
 
         for (int x = 0; x < xmax; x++)
         {
@@ -305,56 +302,55 @@ public class PlayScreen extends AbstractScreen
 
                     terminal.write(cell.c, x, y, tileFg, tileBg);
 
-                    if (cells.contains(key))
+                    // render items only on visible cells
+                    if (cells.contains(key) && !items.isEmpty(posX, posY))
                     {
-                        // then render the items
-                        final IntSet entities = items.get(key);
+                        final int itemId = items.get(posX, posY);
 
-                        // we actually only render the first (renderable) item
-                        for (final int firstItemId : entities)
-                        {
-                            if (firstItemId < 0)
-                                continue;
-
-                            sprite = mSprite.get(firstItemId);
-
-                            if (sprite == null)
-                                continue;
-
-                            terminal.write(sprite.c, x, y, sprite.col, tileBg);
-
-                            break;
-                        }
-                    }
-
-                    // on top, render the obstacles/trees/walls etc
-
-                    final int entityId = grid.get(posX, posY);
-
-                    if (entityId >= 0)
-                    {
-                        sprite = mSprite.get(entityId);
+                        sprite = mSprite.get(itemId);
 
                         if (sprite == null)
                             continue;
 
-                        if (!cells.contains(key) && !sprite.shadowView)
-                            continue;
-                        else if (cells.contains(key))
-                        {
-                            tileFg = sprite.col;
-                        }
-                        else
-                        {
-                            tileFg = sprite.col.darker().darker().darker();
-                        }
-
-                        size = mSize.get(entityId);
-
-                        final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
-
-                        terminal.write(c, x, y, tileFg, tileBg);
+                        terminal.write(sprite.c, x, y, sprite.col, tileBg);
                     }
+
+                    // render all solid obstacles in the view square
+
+                    if (obstacles.isEmpty(posX, posY))
+                        continue;
+
+                    final int entityId = obstacles.get(posX, posY);
+
+                    sprite = mSprite.get(entityId);
+
+                    if (sprite == null)
+                        continue;
+
+                    if (cells.contains(key))
+                    {
+                        tileFg = sprite.col;
+                    }
+                    else if (sprite.shadowView)
+                    {
+                        // shadowed obstacles are darker than normal
+
+                        tileFg = sprite.col.darker().darker().darker();
+                    }
+                    else
+                    {
+                        // if the obstacle does not have a "shadow view" and it's
+                        // not among the visible cells, don't render it
+
+                        continue;
+                    }
+
+                    size = mSize.get(entityId);
+
+                    // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
+                    final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
+
+                    terminal.write(c, x, y, tileFg, tileBg);
                 }
                 else
                 {
@@ -365,7 +361,7 @@ public class PlayScreen extends AbstractScreen
         }
 
         // title:
-        terminal.writeCenter(properties.getProperty("name"), 1);
+        drawHeader(terminal);
 
         final Hunger  hunger  = mHunger.get(playerId);
         final Health  health  = mHealth.get(playerId);
@@ -446,5 +442,11 @@ public class PlayScreen extends AbstractScreen
         }
 
         // player.messages.clear();
+    }
+
+    @Override
+    public String header()
+    {
+        return properties.getProperty("name");
     }
 }

@@ -64,10 +64,10 @@ public class StartScreen extends AbstractScreen
     {
         terminal.clear(' ');
 
-        final String title = title();
+        final String header = header();
 
-        terminal.writeCenter(title, 2);
-        terminal.writeCenter(String.join("", Collections.nCopies(title.length(), "-")), 3);
+        terminal.writeCenter(header, 2);
+        terminal.writeCenter(String.join("", Collections.nCopies(header.length(), "-")), 3);
 
         int y = terminal.getHeightInCharacters() / 2 - 4 * 2;
         terminal.writeCenter("(N)ew", y);
@@ -84,10 +84,9 @@ public class StartScreen extends AbstractScreen
         // TODO credits?
     }
 
-    private String title()
+    @Override
+    public String header()
     {
-        return String.format("%s v%s",
-                             properties.getProperty("name"),
-                             properties.getProperty("version"));
+        return String.format("%s v%s", properties.getProperty("name"), properties.getProperty("version"));
     }
 }

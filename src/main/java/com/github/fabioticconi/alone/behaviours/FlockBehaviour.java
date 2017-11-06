@@ -20,18 +20,16 @@ package com.github.fabioticconi.alone.behaviours;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
+import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.components.Group;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.GroupSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
+import com.github.fabioticconi.alone.utils.LongBag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +39,11 @@ public class FlockBehaviour extends AbstractBehaviour
 
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
-    ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Group>    mGroup;
 
     BumpSystem  sBump;
     GroupSystem sGroup;
     MapSystem   sMap;
-
-    @Wire
-    SingleGrid grid;
 
     private Position curPos;
     private Position centerOfGroup;
@@ -77,16 +71,15 @@ public class FlockBehaviour extends AbstractBehaviour
             return 0f;
 
         final int    groupId = mGroup.get(entityId).groupId;
-        final IntSet members = sGroup.getGroup(groupId);
+        final IntBag members = sGroup.getGroup(groupId);
 
         if (members.size() < 2)
             return 0f;
 
         curPos = mPosition.get(entityId);
 
-        final LongSet visibleCells = sMap.getVisibleCells(curPos.x, curPos.y, sight);
-
-        final IntSet creatures = grid.getEntities(visibleCells);
+        final LongBag visibleCells = sMap.getVisibleCells(curPos.x, curPos.y, sight);
+        final IntBag  creatures    = sMap.getObstacles().getEntities(visibleCells);
 
         centerOfGroup.x = 0;
         centerOfGroup.y = 0;
@@ -95,9 +88,11 @@ public class FlockBehaviour extends AbstractBehaviour
 
         int      count = 0;
         Position temp;
-        for (final int memberId : members)
+        for (int i = 0, size = members.size(); i < size; i++)
         {
-            if (creatures.contains(memberId) && memberId != entityId)
+            final int memberId = members.get(i);
+
+            if (memberId != entityId && creatures.contains(memberId))
             {
                 temp = mPosition.get(memberId);
 

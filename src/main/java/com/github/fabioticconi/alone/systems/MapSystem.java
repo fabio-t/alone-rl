@@ -18,23 +18,19 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.LightBlocker;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
+import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.Util;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.LongSets;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.los.ILosBoard;
-import rlforj.los.PrecisePermissive;
+import rlforj.IBoard;
+import rlforj.los.*;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
@@ -44,31 +40,34 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabio Ticconi
  */
-public class MapSystem extends PassiveSystem implements ILosBoard
+public class MapSystem extends PassiveSystem implements IBoard
 {
     static final Logger log = LoggerFactory.getLogger(MapSystem.class);
 
     final Cell terrain[][];
 
     /* FOV/LOS stuff */
-    final LongSet lastVisited;
-    final AStar astar;
+    final LongBag lastVisited;
+    final AStar   astar;
+    final IFovAlgorithm fov;
+    final ILosAlgorithm los;
     ComponentMapper<LightBlocker> mLightBlocker;
-    @Wire
-    SingleGrid obstacles;
 
-    PrecisePermissive view;
+    final SingleGrid obstacles;
+    final SingleGrid items;
 
     public MapSystem() throws IOException
     {
-        lastVisited = new LongOpenHashSet();
-        view = new PrecisePermissive();
+        lastVisited = new LongBag(256);
+        fov = new ShadowCasting();
+        los = new BresLos(true);
 
         final InputStream mapStream       = new FileInputStream("data/map/map.png");
         final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
@@ -80,6 +79,8 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         Options.MAP_SIZE_Y = img.getHeight();
 
         terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+        items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
         float value;
 
@@ -144,7 +145,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     {
         int xn, yn;
 
-        final Set<Side> exits = new ObjectArraySet<>(8);
+        final Set<Side> exits = new LinkedHashSet<>(8);
 
         for (final Side side : Side.values())
         {
@@ -173,7 +174,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     {
         int xn, yn;
 
-        final Set<Side> exits = new ObjectArraySet<>(8);
+        final Set<Side> exits = new LinkedHashSet<>(8);
 
         for (final Side side : Side.values())
         {
@@ -216,6 +217,100 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         return Side.HERE;
     }
 
+    public Point getFirstTotallyFree(final int x, final int y, final int maxRadius)
+    {
+        if (!contains(x, y))
+            return null;
+
+        if (isTotallyFree(x, y))
+            return new Point(x, y);
+        else if (maxRadius == 0)
+            return null;
+
+        final int r = maxRadius < 0 ? Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y) : maxRadius;
+
+        int cur_y = y - 1;
+        int cur_x = x;
+        for (int d = 1; d <= r; d++)
+        {
+            // FIXME what do we do if the north row is "out of bound" already?
+            // we should skip the next for and position ourselves immediately to
+            // the correct east-side column, at the same y position as we are
+
+            final int max_x = x + d;
+            final int max_y = y + d;
+            final int min_x = x - d;
+            final int min_y = y - d;
+
+            // continue east, through the north row
+            for (; cur_x < max_x; cur_x++)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue south, through the east column
+            for (; cur_y < max_y; cur_y++)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue west, through the south row
+            for (; cur_x > min_x; cur_x--)
+            {
+                // if we are out of bounds
+                if (cur_x < 0 || cur_x >= Options.MAP_SIZE_X)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // continue north, through the west column of this circle
+            for (; cur_y >= min_y; cur_y--)
+            {
+                // if we are out of bounds
+                if (cur_y < 0 || cur_y >= Options.MAP_SIZE_Y)
+                {
+                    continue;
+                }
+
+                if (isTotallyFree(cur_x, cur_y))
+                {
+                    return new Point(cur_x, cur_y);
+                }
+            }
+
+            // at this point we are positioned WITHIN the north row of the next
+            // cycle
+        }
+
+        // if we are here, we haven't found any free cells
+
+        return null;
+    }
+
     /**
      * Searches concentrically for a cell of the specified type, and returns the
      * coordinate array if it finds one.
@@ -229,12 +324,14 @@ public class MapSystem extends PassiveSystem implements ILosBoard
 
         lastVisited.clear();
 
-        view.visitFieldOfView(this, x, y, r);
+        fov.visitFieldOfView(this, x, y, r);
 
         int[] coords;
         Cell  cell;
-        for (final long key : lastVisited)
+        for (int i = 0, size = lastVisited.size(); i < size; i++)
         {
+            final long key = lastVisited.get(i);
+
             coords = Coords.unpackCoords(key);
             cell = terrain[coords[0]][coords[1]];
 
@@ -261,9 +358,32 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         }
     }
 
+    public SingleGrid getObstacles()
+    {
+        return obstacles;
+    }
+
+    public SingleGrid getItems()
+    {
+        return items;
+    }
+
     /**
      * This function only returns true if the cell is within bounds
-     * and does not contain any creature, regardless of visibility status.
+     * and does not contain any obstacle or item, regardless of visibility status.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isTotallyFree(final int x, final int y)
+    {
+        return isFree(x, y) && items.get(x, y) < 0;
+    }
+
+    /**
+     * This function only returns true if the cell is within bounds
+     * and does not contain any obstacle, regardless of visibility status.
      *
      * @param x
      * @param y
@@ -282,7 +402,7 @@ public class MapSystem extends PassiveSystem implements ILosBoard
     @Override
     public boolean contains(final int x, final int y)
     {
-        return Util.inRange(x, 0, Options.MAP_SIZE_X - 1) && Util.inRange(y, 0, Options.MAP_SIZE_Y - 1);
+        return Util.in(x, 0, Options.MAP_SIZE_X - 1) && Util.in(y, 0, Options.MAP_SIZE_Y - 1);
     }
 
     @Override
@@ -311,21 +431,23 @@ public class MapSystem extends PassiveSystem implements ILosBoard
         lastVisited.add(Coords.packCoords(x, y));
     }
 
-    public LongSet getVisibleCells(final int x, final int y, final int r)
+    public LongBag getVisibleCells(final int x, final int y, final int r)
     {
         lastVisited.clear();
 
-        view.visitFieldOfView(this, x, y, r);
+        fov.visitFieldOfView(this, x, y, r);
 
-        return LongSets.unmodifiable(lastVisited);
+        return lastVisited;
     }
 
     public List<Point> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
-        final boolean exists = view.existsLineOfSight(this, startX, startY, endX, endY, true);
+        final boolean exists = los.existsLineOfSight(this, startX, startY, endX, endY, true);
+
+        // FIXME: rlforj-alt should either always return a list, or always an array
 
         if (exists)
-            return view.getProjectPath();
+            return los.getProjectPath();
 
         return null;
     }

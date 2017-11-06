@@ -16,40 +16,33 @@
  *
  */
 
-package com.github.fabioticconi.alone.screens;
+package com.github.fabioticconi.alone.components;
 
-import com.artemis.utils.BitVector;
+import com.artemis.Component;
+import com.github.fabioticconi.alone.constants.WeaponType;
+
+import java.util.EnumMap;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 05/11/17
  */
-public class DropScreen extends InventoryScreen
+public class Armour extends Component
 {
-    @Override
-    public float handleKeys(final BitVector keys)
+    public final EnumMap<WeaponType, Float> defences;
+
+    public Armour()
     {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        final int targetId = getItem(keys);
-
-        if (targetId < 0)
-            return super.handleKeys(keys);
-
-        screen.select(PlayScreen.class);
-
-        return sAction.act(sItems.drop(playerId, targetId));
+        this.defences = new EnumMap<>(WeaponType.class);
     }
 
-    @Override
-    public String header()
+    public void set(final float slash, final float point, final float blunt, final float natural)
     {
-        return "Drop item:";
-    }
+        this.defences.put(WeaponType.SLASH, slash);
+        this.defences.put(WeaponType.POINT, point);
+        this.defences.put(WeaponType.BLUNT, blunt);
 
-    @Override
-    public boolean canDraw(final int entityId)
-    {
-        return true;
+        // a generic type for animal attacks
+        this.defences.put(WeaponType.NATURAL, natural);
     }
 }

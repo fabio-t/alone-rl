@@ -20,7 +20,7 @@ package com.github.fabioticconi.alone.map;
 
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.utils.Coords;
-import it.unimi.dsi.fastutil.longs.LongSet;
+import com.github.fabioticconi.alone.utils.LongBag;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,12 +28,12 @@ import java.io.IOException;
 
 public class MapSystemTest
 {
-    MapSystem sMap;
+    MapSystem map;
 
     @Before
     public void setup() throws IOException
     {
-        sMap = new MapSystem();
+        map = new MapSystem();
     }
 
     @Test
@@ -64,10 +64,10 @@ public class MapSystemTest
     @Test
     public void testGetVisibleCells() throws Exception
     {
-        final LongSet set = sMap.getVisibleCells(100, 100, 10);
+        final LongBag set = map.getVisibleCells(100, 100, 10);
 
         int[] coords;
-        for (final long key : set)
+        for (final long key : set.getData())
         {
             coords = Coords.unpackCoords(key);
             System.out.println(
@@ -77,7 +77,7 @@ public class MapSystemTest
         }
 
         int count = 0;
-        for (final long key : set)
+        for (final long key : set.getData())
         {
             coords = Coords.unpackCoords(key);
 

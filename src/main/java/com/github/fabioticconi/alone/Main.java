@@ -27,8 +27,6 @@ import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
-import com.github.fabioticconi.alone.map.MultipleGrid;
-import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.screens.*;
 import com.github.fabioticconi.alone.systems.*;
 import org.slf4j.Logger;
@@ -74,9 +72,7 @@ public class Main extends JFrame implements KeyListener
         config = new WorldConfiguration();
         // first thing to be loaded
         config.setSystem(MapSystem.class);
-        // POJOs
-        config.register(new SingleGrid());
-        config.register(new MultipleGrid());
+        // POJO
         config.register(new Random());
         config.register(properties);
         // passive systems, one-timers, managers etc
@@ -102,6 +98,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(PushSystem.class);
         config.setSystem(CrushSystem.class);
         config.setSystem(ThrowSystem.class);
+        config.setSystem(CraftSystem.class);
         // ai behaviours (passive)
         config.setSystem(FleeBehaviour.class);
         config.setSystem(GrazeBehaviour.class);
@@ -109,6 +106,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(FlockBehaviour.class);
         config.setSystem(ScavengeBehaviour.class);
         config.setSystem(WanderBehaviour.class);
+
         config.setSystem(UnderwaterBehaviour.class);
         config.setSystem(FleeFromActionBehaviour.class);
         // screens (passive)
@@ -118,6 +116,8 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(EatScreen.class);
         config.setSystem(LookScreen.class);
         config.setSystem(EquipScreen.class);
+        config.setSystem(CraftScreen.class);
+        config.setSystem(CraftItemScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 

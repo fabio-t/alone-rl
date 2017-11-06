@@ -153,9 +153,8 @@ public class LookScreen extends PlayScreen
 
         final List<Point> los = map.getLineOfSight(pos.x, pos.y, t.pos.x, t.pos.y);
 
-        los.remove(0);
-
-        for (final Point p : los)
+        // we skip the first point for that's always the starting point
+        for (final Point p : los.subList(1, los.size()))
         {
             final int x = playerX + (p.x - pos.x);
             final int y = playerY + (p.y - pos.y);
