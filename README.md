@@ -1,5 +1,7 @@
 # Alone
 
+[![Latest Github release](https://img.shields.io/github/release/fabioticconi/alone-rl.svg)](https://github.com/fabioticconi/alone-rl/releases/latest)
+
 Single-player ASCII roguelike/roguelite focused on surviving, alone, on an island inhabited by animals.
 The main inspiration is from [Unreal World](http://unrealworld.fi) and [Wayward](http://www.waywardgame.com),
 with a much simpler gameplay.
@@ -7,9 +9,8 @@ with a much simpler gameplay.
 It's a real-time game but it defaults to a turn-based modality where the world only advances during player actions,
 for as long as the player action runs. Pure real-time gameplay can be toggled.
 
-**NB: this is not even in alpha state.** Lurk freely if you like the concept, but *know* this is not playable,
-by far.
-Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite/releases) area, for the future.
+**NB: this is not ready yet.** Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite/releases)
+for a stable release.
 
 ## Controls
 
@@ -19,18 +20,17 @@ Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite
   For the last two you need proper tools (a cutting weapon for cutting three, not craftable yet, and a blunt weapon
   for crushing boulders: you can use a stone for that)
   
-* **`g` to get the first item** on the ground you are currently positioned on (stones, sticks, corpses, tree trunks..
-  there's no inventory limit for now).
-  
+* **`g` to get an item**. You must move onto it first. There is currently no inventory limit.
+
 * **`d` to open the Drop screen**. You will be able to choose which item to drop.
 
 * **`e` to open the Eat screen**. You can only eat corpses that you have taken from the ground, for now.
 
 * **`w` to wear or wield an object** via the Equip screen. Stones and branches will do nicely for now.
-  
+
 * **`l` to open the Look screen**. Move around to choose a target (if you have Line of Sight) and press **`t`** to throw
   an equipped weapon in that direction.
-  
+
 There are also some special commands:
 
 * **`Ctrl+SPACE`** to toggle real-time/turn-based behaviour
@@ -38,13 +38,13 @@ There are also some special commands:
 * **`SPACE`** to pause/unpause if you are on real-time mode; if you are on turn-based mode, keep `SPACE`
   pressed to temporarily run the game in real-time (needed, for example, to recover stamina when you finish it,
   or regenerate health).
-  
+
 * **`F1`** removes the speed delay of the player. Useful to test the game without having to suffer the movement delays.
   Will be removed in the final version.
-  
+
 * **`F2`** restores the correct player speed.
   Will be removed in the final version.
-  
+
 ## Screenshots
 
 This is how the game looks when run (**very** preliminary GUI):
