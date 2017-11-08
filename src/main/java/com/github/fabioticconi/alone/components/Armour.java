@@ -29,6 +29,8 @@ import java.util.EnumMap;
  */
 public class Armour extends Component
 {
+    // TODO we can improve this by using a primitive float array and WeaponType ordinals as indeces.
+    // which is what EnumMap does internally. We'd avoid autoboxing.
     public final EnumMap<WeaponType, Float> defences;
 
     public Armour()

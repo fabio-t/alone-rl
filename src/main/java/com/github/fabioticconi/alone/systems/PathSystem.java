@@ -25,6 +25,8 @@ import com.github.fabioticconi.alone.components.Path;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.constants.Side;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
 /**
@@ -33,14 +35,14 @@ import rlforj.math.Point;
  */
 public class PathSystem extends DelayedIteratingSystem
 {
+    static final Logger log = LoggerFactory.getLogger(PathSystem.class);
+
     ComponentMapper<Path>     mPath;
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Position> mPos;
 
-    MapSystem map;
-
-    MovementSystem sMove;
-    BumpSystem     sBump;
+    MapSystem  map;
+    BumpSystem sBump;
 
     public PathSystem()
     {
@@ -65,19 +67,26 @@ public class PathSystem extends DelayedIteratingSystem
         final Path     path = mPath.get(entityId);
         final Position p    = mPos.get(entityId);
 
-        final Point newP      = path.steps.remove(0);
-        final Side  direction = Side.getSide(p.x, p.y, newP.x, newP.y);
+        if (path.i >= path.steps.size())
+        {
+            // for some reason the path has ended outside of us. Let's just terminate
+            mPath.remove(entityId);
 
-        final float wait = sBump.bumpAction(entityId, direction);
+            log.warn("{} was moving via a Path but there are no steps left");
 
-        // FIXME: if wait is zero, it usually means the bump failed somehow. If that's true than we need
-        // to stop path-moving. Maybe we should reserve -1 for when the bump fails?
+            return;
+        }
 
-        // in general, actually, we should stop whenever the bump did not do a movement. This
-        // requires a more complicated handling which should, I believe, be completely performed by
-        // BumpSystem.
+        final Point p2   = path.steps.get(path.i++);
+        final Side  side = Side.getSide(p.x, p.y, p2.x, p2.y);
 
-        if (path.steps.isEmpty())
+        final float wait = sBump.bumpAction(entityId, side);
+
+        // bump can remove the Path in case movement fails (eg, there's an obstacle and so we actually bump)
+        if (!mPath.has(entityId))
+            return;
+
+        if (path.i == path.steps.size())
         {
             // we arrived!
             mPath.remove(entityId);
