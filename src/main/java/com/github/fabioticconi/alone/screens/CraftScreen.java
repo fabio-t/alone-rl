@@ -72,6 +72,8 @@ public class CraftScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        terminal.clear(' ');
+
         drawHeader(terminal);
 
         drawList(terminal, sCraft.getRecipeNames());

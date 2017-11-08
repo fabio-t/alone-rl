@@ -36,6 +36,8 @@ import static java.awt.event.KeyEvent.VK_Z;
  */
 public abstract class AbstractScreen extends PassiveSystem implements Screen
 {
+    public static final Letter[] ALL = Letter.values();
+
     PlayerManager pManager;
 
     public enum Letter
@@ -90,7 +92,7 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
 
         for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - size / 2; i < size; i++)
         {
-            final String entry = list.get(i);
+            final String entry = ALL[i] + " " + list.get(i);
 
             terminal.writeCenter(entry, starty + (size < maxSize / 2 ? i * 2 : i));
         }

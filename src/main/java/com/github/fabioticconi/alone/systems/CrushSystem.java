@@ -78,7 +78,7 @@ public class CrushSystem extends PassiveSystem
         edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
         edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
         edit.create(Wearable.class);
-        edit.add(new Name("A stone"));
+        edit.add(new Name("A round stone", "stone"));
 
         map.items.set(id, x, y);
 
@@ -100,7 +100,7 @@ public class CrushSystem extends PassiveSystem
         edit.create(LightBlocker.class);
         edit.create(Pushable.class);
         edit.create(Crushable.class);
-        edit.add(new Name("A boulder"));
+        edit.add(new Name("A big boulder", "boulder"));
 
         map.obstacles.set(id, x, y);
 

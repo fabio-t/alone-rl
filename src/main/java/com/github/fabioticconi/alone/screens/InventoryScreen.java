@@ -74,15 +74,17 @@ public abstract class InventoryScreen extends AbstractScreen
 
         final ArrayList<String> elements = new ArrayList<>();
         final IntBag            items    = inv.items;
-        for (int i = 0, size = items.size(); i < size; i++)
+        for (int i = 0, j = 0, size = items.size(); i < size; i++)
         {
             final int itemId = items.get(i);
 
             if (!canDraw(itemId))
+            {
+                j++;
                 continue;
+            }
 
-            elements.add(String.format("%s %s %s",
-                                       Letter.values()[i],
+            elements.add(String.format("%s %s",
                                        mName.get(itemId).name.toLowerCase(),
                                        mEquip.has(itemId) ? " [WORN]" : ""));
         }
@@ -102,10 +104,15 @@ public abstract class InventoryScreen extends AbstractScreen
             return -1;
 
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-        final Inventory i = mInventory.get(playerId);
+        final Inventory inv = mInventory.get(playerId);
 
-        if (pos < i.items.size())
-            return i.items.get(pos);
+        for (int i = 0, j = 0, size = inv.items.size(); i < size; i++, j++)
+        {
+            final int itemId = inv.items.get(i);
+
+            if (canDraw(itemId) && j == pos)
+                return itemId;
+        }
 
         return -1;
     }

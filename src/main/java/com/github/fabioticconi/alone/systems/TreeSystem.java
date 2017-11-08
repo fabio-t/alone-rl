@@ -23,6 +23,7 @@ import com.artemis.EntityEdit;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CutMsg;
@@ -74,7 +75,7 @@ public class TreeSystem extends PassiveSystem
         edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
         edit.create(LightBlocker.class);
         edit.create(Tree.class);
-        edit.add(new Name("A tree"));
+        edit.add(new Name("A mature tree", "tree"));
 
         map.obstacles.set(id, x, y);
 
@@ -92,8 +93,8 @@ public class TreeSystem extends PassiveSystem
 
         final EntityEdit edit = world.edit(id);
         edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
-        edit.add(new Name("A tree trunk"));
+        edit.create(Sprite.class).set((char)22, Util.BROWN.brighter());
+        edit.add(new Name("A fallen tree", "trunk"));
 
         map.items.set(id, x, y);
 
@@ -114,7 +115,26 @@ public class TreeSystem extends PassiveSystem
         edit.create(Sprite.class).set('/', Util.BROWN.brighter());
         edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
         edit.create(Wearable.class);
-        edit.add(new Name("A branch"));
+        edit.add(new Name("A sturdy branch", "branch"));
+
+        map.items.set(id, x, y);
+
+        return id;
+    }
+
+    public int makeVine(final Point p)
+    {
+        return makeVine(p.x, p.y);
+    }
+
+    public int makeVine(final int x, final int y)
+    {
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+        edit.create(Position.class).set(x, y);
+        edit.create(Sprite.class).set((char)239, Cell.GRASS.col);
+        edit.add(new Name("A thin, flexible branch", "vine"));
 
         map.items.set(id, x, y);
 
@@ -171,7 +191,7 @@ public class TreeSystem extends PassiveSystem
 
             makeTrunk(map.getFirstTotallyFree(p.x, p.y, -1));
             makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
-            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
+            makeVine(map.getFirstTotallyFree(p.x, p.y, -1));
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);

@@ -197,6 +197,16 @@ public class PlayScreen extends AbstractScreen
 
             return 0f;
         }
+        else if (keys.get(KeyEvent.VK_C))
+        {
+            keys.clear();
+
+            Main.pause();
+
+            screen.select(CraftScreen.class);
+
+            return 0f;
+        }
         else if (keys.get(KeyEvent.VK_ESCAPE))
         {
             keys.clear();
