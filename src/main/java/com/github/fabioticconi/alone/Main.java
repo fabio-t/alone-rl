@@ -139,12 +139,11 @@ public class Main extends JFrame implements KeyListener
     }
 
     /**
-     * In real-time mode, space means pause/unpause the game, while
-     * in turn-based mode, space means unpause the game until SPACE is released.
+     * Makes sure that the game is paused
      */
     public static void pause()
     {
-        Main.paused = Main.realtime && !Main.paused;
+        Main.paused = true;
     }
 
     public void loop()

@@ -239,9 +239,9 @@ public class PlayScreen extends AbstractScreen
 
             if (Main.realtime)
             {
-                // in real-time mode, SPACE just means pausing
+                // in real-time mode, SPACE just means pausing (or unpausing)
 
-                Main.pause();
+                Main.paused = !Main.paused;
             }
             else
             {
