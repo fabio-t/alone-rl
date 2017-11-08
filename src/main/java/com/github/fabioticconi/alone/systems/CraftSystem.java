@@ -18,12 +18,10 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
-import com.github.fabioticconi.alone.screens.CraftItemScreen;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -56,11 +54,14 @@ public class CraftSystem extends PassiveSystem
     {
         // TODO we can actually instantiate the factory and mapper in the Main and inject/Wire them
 
-        final InputStream  fileStream = new FileInputStream("data/crafting.yml");
-        final YAMLFactory  factory    = new YAMLFactory();
-        final ObjectMapper mapper     = new ObjectMapper(factory);
+        final InputStream fileStream = new FileInputStream("data/crafting.yml");
+        final YAMLFactory factory    = new YAMLFactory();
+        final ObjectMapper mapper = new ObjectMapper(factory)
+                                        .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-        recipes = mapper.readValue(fileStream, new TypeReference<HashMap<String, CraftItem>>(){});
+        recipes = mapper.readValue(fileStream, new TypeReference<HashMap<String, CraftItem>>()
+        {
+        });
 
         for (final Map.Entry<String, CraftItem> entry : recipes.entrySet())
         {
@@ -70,16 +71,16 @@ public class CraftSystem extends PassiveSystem
 
     public static class CraftItem
     {
-        public String name;
-        public String source;
-        public String tool;
+        public String   name;
+        public String[] source;
+        public String[] tools;
         public int n = 1;
 
         @Override
         public String toString()
         {
-            return "CraftItem{" + "name='" + name + '\'' + ", source='" + source + '\'' + ", tool='" + tool + '\'' +
-                   ", n=" + n + '}';
+            return "CraftItem{" + "name='" + name + '\'' + ", source='" + Arrays.toString(source) + '\'' + ", tools='" +
+                   Arrays.toString(tools) + '\'' + ", n=" + n + '}';
         }
     }
 }

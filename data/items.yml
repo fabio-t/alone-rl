@@ -1,12 +1,24 @@
 
 stone:
   name: a stone
+  sprite:
+    c: 'o'
+    col:
 
 branch:
   name: a branch
+  sprite:
+    c: '/'
+    col:
 
 trunk:
   name: a tree trunk
+  sprite:
+    c: '-'
+    col:
 
 boulder:
   name: a boulder
+  sprite:
+    c: '#'
+    col:

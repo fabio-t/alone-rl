@@ -223,20 +223,26 @@ public class PlayScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_SPACE))
         {
+            keys.clear();
+
             if (keys.get(KeyEvent.VK_CONTROL))
             {
                 // Ctrl+Space means we are toggling the real-time mode
                 Main.realtime = !Main.realtime;
                 // as well as toggling the pause, of course
                 Main.paused = !Main.paused;
+            }
+            else if (Main.realtime)
+            {
+                // in real-time mode, SPACE just means pausing
 
-                keys.clear();
+                Main.pause();
             }
             else
             {
-                keys.clear();
-
-                Main.paused = Main.realtime && !Main.paused;
+                // in turn-based mode, SPACE means "unpause", which we achieve by
+                // simply setting a player action equal to the world delta.
+                // this will
 
                 return world.delta;
             }
