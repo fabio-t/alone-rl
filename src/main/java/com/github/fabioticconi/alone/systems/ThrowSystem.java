@@ -52,6 +52,7 @@ public class ThrowSystem extends PassiveSystem
     ComponentMapper<Strength>  mStrength;
     ComponentMapper<Agility>   mAgility;
     ComponentMapper<Name>      mName;
+    ComponentMapper<Equip>     mEquip;
 
     StaminaSystem sStamina;
     BumpSystem    sBump;
@@ -151,9 +152,9 @@ public class ThrowSystem extends PassiveSystem
 
             final int weaponId = targets.get(0);
 
-            final Point newP = path.get(0);
+            final Point p2 = path.get(0);
 
-            if (map.isFree(newP.x, newP.y))
+            if (map.isFree(p2.x, p2.y))
             {
                 final Inventory inventory = mInventory.get(actorId);
 
@@ -166,17 +167,19 @@ public class ThrowSystem extends PassiveSystem
 
                 mSpeed.create(weaponId).set(cooldown);
                 mPath.create(weaponId).set(cooldown, path);
-                mPos.create(weaponId).set(newP.x, newP.y);
+                mPos.create(weaponId).set(p2.x, p2.y);
+
+                // it's not equipped anymore
+                mEquip.remove(weaponId);
 
                 // strength and agility of thrower are passed on to the thrown weapon.
                 // effects: the weapon will hit more likely with high agility, and do more damage with high strength.
                 mStrength.create(weaponId).value = mStrength.get(actorId).value;
                 mAgility.create(weaponId).value = mAgility.get(actorId).value;
 
-                // at this point it really happened: the weapon is flying at its new position
-                // (it's not an obstacle, so there's not risk of someone interrupting it in mid-air)
-                final Point p2 = map.getFirstTotallyFree(newP.x, newP.y, -1);
-                map.items.set(weaponId, p2.x, p2.y);
+                // at this point it really happened: the weapon is flying at its new position.
+                // it's an obstacle, so it will bump against whatever it finds
+                map.obstacles.set(weaponId, p2.x, p2.y);
             }
             else
             {
@@ -186,7 +189,7 @@ public class ThrowSystem extends PassiveSystem
 
                 final Position p = mPos.get(actorId);
 
-                sBump.bumpAction(actorId, Side.getSide(p.x, p.y, newP.x, newP.y));
+                sBump.bumpAction(actorId, Side.getSide(p.x, p.y, p2.x, p2.y));
             }
 
             sStamina.consume(actorId, cost);

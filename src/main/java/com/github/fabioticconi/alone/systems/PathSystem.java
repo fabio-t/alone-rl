@@ -25,6 +25,7 @@ import com.github.fabioticconi.alone.components.Path;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
@@ -62,6 +63,19 @@ public class PathSystem extends DelayedIteratingSystem
     }
 
     @Override
+    protected void removed(final int entityId)
+    {
+        // path was removed, so it stopped. Ergo, we place the object on the ground
+
+        final Position pos = mPos.get(entityId);
+
+        final Point p = map.getFirstTotallyFree(pos.x, pos.y, -1);
+
+        map.obstacles.del(pos.x, pos.y);
+        map.items.set(entityId, p.x, p.y);
+    }
+
+    @Override
     protected void processExpired(final int entityId)
     {
         final Path     path = mPath.get(entityId);
@@ -80,7 +94,7 @@ public class PathSystem extends DelayedIteratingSystem
         final Point p2   = path.steps.get(path.i++);
         final Side  side = Side.getSide(p.x, p.y, p2.x, p2.y);
 
-        final float wait = sBump.bumpAction(entityId, side);
+        sBump.bumpAction(entityId, side);
 
         // bump can remove the Path in case movement fails (eg, there's an obstacle and so we actually bump)
         if (!mPath.has(entityId))
@@ -93,9 +107,9 @@ public class PathSystem extends DelayedIteratingSystem
         }
         else
         {
-            final float speed = mSpeed.get(entityId).value;
+            final float speed = mSpeed.get(entityId).value * Util.gain((float)path.i/path.steps.size(), 0.25f);
 
-            path.cooldown = Math.max(speed, wait);
+            path.cooldown = Math.max(speed, 0.05f); // let's not go too fast
 
             offerDelay(speed);
         }

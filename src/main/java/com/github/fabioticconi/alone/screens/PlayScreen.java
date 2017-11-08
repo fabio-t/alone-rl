@@ -230,6 +230,8 @@ public class PlayScreen extends AbstractScreen
                 // as well as toggling the pause, of course
                 Main.paused = !Main.paused;
 
+                keys.clear();
+
                 return 0f;
             }
 
