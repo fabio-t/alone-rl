@@ -22,3 +22,10 @@ boulder:
   sprite:
     c: '#'
     col:
+
+vine:
+  name: a vine
+  sprite:
+    c:
+    col:
+

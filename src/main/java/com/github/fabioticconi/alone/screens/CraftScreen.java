@@ -67,7 +67,7 @@ public class CraftScreen extends AbstractScreen
         {
             final int pos = getTargetIndex(keys);
 
-            if (pos >= 0)
+            if (pos >= 0 && pos < recipeNames.size())
             {
                 craftItem = sCraft.getRecipes().get(recipeNames.get(pos));
                 screen.select(CraftItemScreen.class);

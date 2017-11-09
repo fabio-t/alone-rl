@@ -48,6 +48,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Equip>     mEquip;
     ComponentMapper<Wearable>  mWearable;
     ComponentMapper<Armour>    mArmour;
+    ComponentMapper<Name>      mName;
 
     MessageSystem msg;
     MapSystem     map;
@@ -115,6 +116,31 @@ public class ItemSystem extends PassiveSystem
         return -1;
     }
 
+    public int getItem(final int entityId, final String tag, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            // we might only want an equipped item
+            if (!mName.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
+                continue;
+
+            final Name name = mName.get(itemId);
+
+            if (name.tag.equals(tag))
+                return itemId;
+        }
+
+        return -1;
+    }
+
     public int getWeapon(final int entityId)
     {
         return getWeapon(entityId, true);
@@ -136,13 +162,6 @@ public class ItemSystem extends PassiveSystem
         for (int i = 0, size = items.items.size(); i < size; i++)
         {
             final int itemId = data[i];
-
-            if (itemId < 0)
-            {
-                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
-
-                continue;
-            }
 
             // we might only want an equipped weapon
             if (!mWeapon.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))

@@ -18,9 +18,14 @@
 
 package com.github.fabioticconi.alone.systems;
 
+import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
+import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fabioticconi.alone.components.Equip;
+import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.components.Name;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -34,6 +39,10 @@ import java.util.*;
  */
 public class CraftSystem extends PassiveSystem
 {
+    ComponentMapper<Inventory> mInventory;
+    ComponentMapper<Name>      mName;
+    ComponentMapper<Equip>     mEquip;
+
     @Wire
     ObjectMapper mapper;
 
@@ -89,13 +98,113 @@ public class CraftSystem extends PassiveSystem
 
         for (final Map.Entry<String, CraftItem> entry : recipes.entrySet())
         {
-            System.out.println(entry.getKey() + " | " + entry.getValue());
+            final CraftItem temp = entry.getValue();
+            temp.tag = entry.getKey();
+
+            for (final String tempSource : temp.source)
+            {
+                switch (tempSource)
+                {
+                    case "stone":
+                    case "branch":
+                    case "vine":
+                    case "trunk":
+                        break;
+
+                    default:
+                        if (!recipes.keySet().contains(tempSource))
+                            throw new RuntimeException("unknown item in source field: " + tempSource);
+                }
+            }
+
+            for (final String tempTool : temp.tools)
+            {
+                switch (tempTool)
+                {
+                    case "stone":
+                    case "branch":
+                    case "vine":
+                    case "trunk":
+                        break;
+
+                    default:
+                        if (!recipes.keySet().contains(tempTool))
+                            throw new RuntimeException("unknown item in tools field: " + tempTool);
+                }
+            }
+
+            // System.out.println(entry.getKey() + " | " + entry.getValue());
         }
+    }
+
+    public boolean craftItem(final int entityId, final CraftItem itemRecipe)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return false;
+
+        final IntBag tempSources = new IntBag(itemRecipe.source.length);
+        final IntBag tempTools   = new IntBag(itemRecipe.tools.length);
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            // we might only want an equipped weapon
+            if (!mName.has(itemId))
+                continue;
+
+            final Name name = mName.get(itemId);
+
+            int ii = 0;
+            while (ii < itemRecipe.source.length)
+            {
+                if (tempSources.get(ii) < 0 && name.tag.equals(itemRecipe.source[ii]))
+                {
+                    tempSources.set(ii, itemId);
+
+                    break; // item can be used only once
+                }
+
+                ii++;
+            }
+
+            // if ii == source.length, then it means that the previous loop completed
+            // without setting itemId as a "source". So it's OK to evaluate whether it
+            // can be used as a "tool".
+
+            ii = 0;
+            while (ii < itemRecipe.tools.length)
+            {
+                if (tempTools.get(ii) < 0 && name.tag.equals(itemRecipe.tools[ii]))
+                {
+                    tempTools.set(ii, itemId);
+
+                    break; // item can be used only once
+                }
+
+                ii++;
+            }
+        }
+
+        if (tempSources.size() < itemRecipe.source.length || tempTools.size() < itemRecipe.tools.length)
+            return false;
+
+        // TODO: here we should first create the object (using the internal fields.. we are still missing
+        // some, eg sprite, if is weapon, if is wearable..
+
+        // TODO: then we must destroy the items in the "source" array. Make sure to remove them from the map
+        // AND from the inventory too.
+
+        return true;
     }
 
     public static class CraftItem
     {
         public String   name;
+        public String   tag;
         public String[] source;
         public String[] tools;
         public int n = 1;
@@ -103,7 +212,8 @@ public class CraftSystem extends PassiveSystem
         @Override
         public String toString()
         {
-            return "consumes:" + Arrays.toString(source) + "|tools:" + Arrays.toString(tools);
+            return "CraftItem{" + "name='" + name + '\'' + ", tag='" + tag + '\'' + ", source=" +
+                   Arrays.toString(source) + ", tools=" + Arrays.toString(tools) + ", n=" + n + '}';
         }
     }
 }

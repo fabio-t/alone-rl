@@ -23,6 +23,7 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 /**
  * Author: Fabio Ticconi
@@ -36,7 +37,7 @@ public class CraftItemScreen extends AbstractScreen
     @Override
     public String header()
     {
-        return "Crafting item:";
+        return "Craft " + craftScreen.craftItem.tag + "?";
     }
 
     @Override
@@ -46,7 +47,7 @@ public class CraftItemScreen extends AbstractScreen
             screen.select(CraftScreen.class);
         else if (keys.get(KeyEvent.VK_ENTER))
         {
-            // TODO do craft
+
         }
 
         keys.clear();
@@ -61,8 +62,21 @@ public class CraftItemScreen extends AbstractScreen
 
         drawHeader(terminal);
 
-        terminal.writeCenter(craftScreen.craftItem.toString(), terminal.getHeightInCharacters()/2);
+        int height = terminal.getHeightInCharacters() / 3;
 
-        // TODO
+        terminal.writeCenter("Consumes:", height);
+        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.source), height+2);
+
+        height += 8;
+
+        terminal.writeCenter("Tools needed:", height);
+        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.tools), height+2);
+
+        height += 8;
+
+        terminal.writeCenter("# items produced:", height);
+        terminal.writeCenter(String.valueOf(craftScreen.craftItem.n), height + 2);
+
+        terminal.writeCenter("[ type ENTER to confirm ]", terminal.getHeightInCharacters()-2);
     }
 }
