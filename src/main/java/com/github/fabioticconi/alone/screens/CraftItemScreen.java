@@ -43,7 +43,11 @@ public class CraftItemScreen extends AbstractScreen
     public float handleKeys(final BitVector keys)
     {
         if (keys.get(KeyEvent.VK_ESCAPE))
-            screen.select(PlayScreen.class);
+            screen.select(CraftScreen.class);
+        else if (keys.get(KeyEvent.VK_ENTER))
+        {
+            // TODO do craft
+        }
 
         keys.clear();
 
@@ -53,9 +57,11 @@ public class CraftItemScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        terminal.clear();
+
         drawHeader(terminal);
 
-        terminal.writeCenter(craftScreen.craftItem, terminal.getHeightInCharacters()/2);
+        terminal.writeCenter(craftScreen.craftItem.toString(), terminal.getHeightInCharacters()/2);
 
         // TODO
     }

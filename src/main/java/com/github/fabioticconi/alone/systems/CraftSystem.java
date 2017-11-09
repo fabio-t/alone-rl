@@ -18,10 +18,9 @@
 
 package com.github.fabioticconi.alone.systems;
 
+import com.artemis.annotations.Wire;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -35,29 +34,54 @@ import java.util.*;
  */
 public class CraftSystem extends PassiveSystem
 {
+    @Wire
+    ObjectMapper mapper;
+
     HashMap<String, CraftItem> recipes;
 
-    public CraftSystem() throws IOException
+    @Override
+    protected void initialize()
     {
-        loadRecipes();
+        try
+        {
+            loadRecipes();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public List<String> getRecipeNames()
     {
-        if (recipes == null || recipes.isEmpty())
-            return List.of();
+        try
+        {
+            loadRecipes();
 
-        return new ArrayList<>(recipes.keySet());
+            return new ArrayList<>(recipes.keySet());
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+
+            return List.of();
+        }
+    }
+
+    public HashMap<String, CraftItem> getRecipes()
+    {
+        try
+        {
+            loadRecipes();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return recipes;
     }
 
     private void loadRecipes() throws IOException
     {
-        // TODO we can actually instantiate the factory and mapper in the Main and inject/Wire them
-
         final InputStream fileStream = new FileInputStream("data/crafting.yml");
-        final YAMLFactory factory    = new YAMLFactory();
-        final ObjectMapper mapper = new ObjectMapper(factory)
-                                        .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         recipes = mapper.readValue(fileStream, new TypeReference<HashMap<String, CraftItem>>()
         {
@@ -79,8 +103,7 @@ public class CraftSystem extends PassiveSystem
         @Override
         public String toString()
         {
-            return "CraftItem{" + "name='" + name + '\'' + ", source='" + Arrays.toString(source) + '\'' + ", tools='" +
-                   Arrays.toString(tools) + '\'' + ", n=" + n + '}';
+            return "consumes:" + Arrays.toString(source) + "|tools:" + Arrays.toString(tools);
         }
     }
 }

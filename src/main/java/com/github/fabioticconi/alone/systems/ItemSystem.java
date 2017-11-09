@@ -81,12 +81,12 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
-    int getArmour(final int entityId)
+    public int getArmour(final int entityId)
     {
         return getArmour(entityId, true);
     }
 
-    int getArmour(final int entityId, final boolean onlyEquipped)
+    public int getArmour(final int entityId, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
@@ -115,17 +115,17 @@ public class ItemSystem extends PassiveSystem
         return -1;
     }
 
-    int getWeapon(final int entityId)
+    public int getWeapon(final int entityId)
     {
         return getWeapon(entityId, true);
     }
 
-    int getWeapon(final int entityId, final boolean onlyEquipped)
+    public int getWeapon(final int entityId, final boolean onlyEquipped)
     {
         return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
     }
 
-    int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    public int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
