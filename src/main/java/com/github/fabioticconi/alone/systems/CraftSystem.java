@@ -208,6 +208,10 @@ public class CraftSystem extends PassiveSystem
         public String[] tools;
         public int n = 1;
 
+        // if I put this in a list of "components",
+        // then it's easier to instantiate them (since I know already they are
+        // Components, I can just add them to EntityEdit in a loop.
+
         public boolean wearable;
         public Weapon  weapon;
         public Sprite  sprite;
