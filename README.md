@@ -2,25 +2,25 @@
 
 [![Latest Github release](https://img.shields.io/github/release/fabioticconi/alone-rl.svg)](https://github.com/fabioticconi/alone-rl/releases/latest)
 
-Single-player ASCII roguelike/roguelite focused on surviving, alone, on an island inhabited by animals.
+Single-player ASCII roguelike focused on surviving, alone, on an island inhabited by animals.
 The main inspiration is from [Unreal World](http://unrealworld.fi) and [Wayward](http://www.waywardgame.com),
 with a much simpler gameplay.
 
 It's a real-time game but it defaults to a turn-based modality where the world only advances during player actions,
 for as long as the player action runs. Pure real-time gameplay can be toggled.
 
-**NB: this is not ready yet.** Keep an eye on the [release](https://github.com/fabioticconi/alone-the-roguelite/releases)
+**NB: this is not ready yet.** Keep an eye on the [releases page](https://github.com/fabioticconi/alone-the-roguelite/releases)
 for a stable release.
 
 ## Controls
 
 * **`directional arrows` to move** (hold two together for diagonal movement, eg UP+RIGHT to go north-east)
 
-  Move into creatures to attack them (message/combat log coming soon), trees to cut them, boulders to crush them.
-  For the last two you need proper tools (a cutting weapon for cutting three, not craftable yet, and a blunt weapon
-  for crushing boulders: you can use a stone for that)
+  Move into creatures to attack them, trees to cut them, boulders to crush them.
+  For the last two you need proper tools (a cutting weapon for cutting three and a blunt weapon
+  for crushing boulders).
   
-* **`g` to get an item**. You must move onto it first. There is currently no inventory limit.
+* **`g` to get an item**. You must move onto it first. There is no inventory limit.
 
 * **`d` to open the Drop screen**. You will be able to choose which item to drop.
 
@@ -30,6 +30,9 @@ for a stable release.
 
 * **`l` to open the Look screen**. Move around to choose a target (if you have Line of Sight) and press **`t`** to throw
   an equipped weapon in that direction.
+  
+* **`c` to open the Craft screen**. A list of recipes is loaded anew from a yaml file and displayed. See
+  [Crafting](https://github.com/fabioticconi/alone-rl#crafting) for details.
 
 There are also some special commands:
 
@@ -50,8 +53,6 @@ There are also some special commands:
 This is how the game looks when run (**very** preliminary GUI):
 
 ![](screenshots/gameplay.gif)
-
-A few wolves are chasing rabbits, while pumas manage to bring a buffalo down.
 
 ### Map
 
@@ -74,6 +75,8 @@ Later the terrain will be configurable by the user.
 
 You can also see some rivers (still in-progress, not in the game yet) flowing from high to low places.
 
+Note: this is only temporary. In the final game the terrain will be randomised.
+
 ## Features
 
 ### Field of view
@@ -85,14 +88,14 @@ Pathfinding is both precise and efficient thanks to an AStar implementation that
 to plan a course to a target position.
 
 What this means for the end user is that the game doesn't cheat. It doesn't magically make creatures see you
-if they shouldn't. The other creatures can only do what *you* also can.
+if they shouldn't. The other creatures can only do what *you* can also do.
 
-### Simple Ecology Simulation
+### Simple Ecology
 
-Creatures don't "pop" or "spawn", they don't just appear when needed but they keep going even when the
+Creatures don't "pop" or "spawn", they don't just appear when needed but they *exist*; and they keep going even when the
 player is not looking.
 
-This is the main difference between Alone and most roguelikes/roguelites. It makes it a simulation game, to an extent.
+This is the main difference between `AloneRL` and most roguelikes/roguelites. It makes it a simulation game, to an extent.
 
 Different creatures have different set of behaviours:
 
@@ -116,5 +119,8 @@ Escape predators, steal their carcasses if you can, or kill any walking thing an
 
 ### Crafting
 
-**Not implemented yet**. It will cover the basic primitive technology of a Neolithic hunter, eg stone knives, spears and axes,
+It will cover the basic primitive technology of a Neolithic hunter, eg stone knives, spears and axes,
 simple bark protection, a shelter, maybe rudimentary pit traps and extraction of parts from dead animals.
+
+All currently implemented recipes can be seen (and modified, added or removed) in the file 
+[crafting.yml](data/crafting.yml).
