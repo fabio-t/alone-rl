@@ -45,6 +45,11 @@ public class Sprite extends Component
         this(c, col, false);
     }
 
+    public Sprite(final char c, final String hexCol)
+    {
+        this(c, Color.decode(hexCol), false);
+    }
+
     public Sprite(final char c, final Color col, final boolean shadowView)
     {
         this.c = c;

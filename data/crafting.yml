@@ -3,24 +3,59 @@ sharp-stone:
   name: a sharp stone
   source: stone
   tools: stone
+  wearable: true
+  weapon:
+    damageType: SLASH
+    damage: 2
+  sprite:
+    c: 'o' # change
+    col: 5987163 # using rgb as single int..
 
 small-sharp-stone:
   name: a small, sharp stone
   source: sharp-stone
   tools: stone
   n: 2
+  wearable: true
+  weapon:
+    damageType: POINT
+    damage: 2
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
 
 stone-hammer:
   name: a stone hammer
   source: [stone, branch, vine]
   tools: stone
+  wearable: true
+  weapon:
+    damageType: BLUNT
+    damage: 4
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
 
 stone-axe:
   name: a stone axe
   source: [sharp-stone, branch, vine]
   tools: stone
+  wearable: true
+  weapon:
+    damageType: SLASH
+    damage: 4
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
 
 stone-spear:
   name: a stone spear
   source: [small-sharp-stone, trunk, vine]
   tools: stone
+  wearable: true
+  weapon:
+    damageType: POINT
+    damage: 4
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change

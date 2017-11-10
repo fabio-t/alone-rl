@@ -1,31 +1,38 @@
 
 stone:
-  name: a stone
+  name: a round stone
+  wearable: true
+  weapon:
+    damageType: BLUNT
+    damage: 2
   sprite:
     c: 'o'
-    col:
+    col: 5987163
 
 branch:
-  name: a branch
+  name: a sturdy branch
+  wearable: true
+  weapon:
+    damageType: BLUNT
+    damage: 1
   sprite:
     c: '/'
-    col:
+    col: 5987163 # change
 
 trunk:
   name: a tree trunk
   sprite:
-    c: '-'
-    col:
+    c: '-' # change
+    col: 5987163 # change
 
 boulder:
-  name: a boulder
+  name: a big boulder
   sprite:
     c: '#'
-    col:
+    col: 5987163 # change
 
 vine:
-  name: a vine
+  name: a thin, flexible branch
   sprite:
-    c:
-    col:
-
+    c: '>' # change
+    col: 5987163 # change

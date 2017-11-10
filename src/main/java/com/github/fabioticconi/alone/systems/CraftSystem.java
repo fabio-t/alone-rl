@@ -23,9 +23,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fabioticconi.alone.components.Equip;
-import com.github.fabioticconi.alone.components.Inventory;
-import com.github.fabioticconi.alone.components.Name;
+import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -208,6 +207,10 @@ public class CraftSystem extends PassiveSystem
         public String[] source;
         public String[] tools;
         public int n = 1;
+
+        public boolean wearable;
+        public Weapon  weapon;
+        public Sprite  sprite;
 
         @Override
         public String toString()
