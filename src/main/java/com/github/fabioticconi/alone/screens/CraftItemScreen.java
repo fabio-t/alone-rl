@@ -92,11 +92,6 @@ public class CraftItemScreen extends AbstractScreen
         terminal.writeCenter("Tools needed:", height);
         terminal.writeCenter(Arrays.toString(craftScreen.craftItem.tools), height+2);
 
-        height += 8;
-
-        terminal.writeCenter("# items produced:", height);
-        terminal.writeCenter(String.valueOf(craftScreen.craftItem.n), height + 2);
-
         terminal.writeCenter("[ type ENTER to confirm ]", terminal.getHeightInCharacters()-2);
     }
 }

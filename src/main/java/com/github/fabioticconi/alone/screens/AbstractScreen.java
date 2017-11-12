@@ -22,6 +22,7 @@ import asciiPanel.AsciiPanel;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.util.Collections;
@@ -87,14 +88,18 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
 
     void drawList(final AsciiPanel terminal, final List<String> list)
     {
+        if (list.isEmpty())
+            return;
+
         final int maxSize = AbstractScreen.Letter.values().length;
         final int size = Math.min(maxSize, list.size());
+        final int space = Util.clamp(maxSize/size, 1, 4);
 
-        for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - size / 2; i < size; i++)
+        for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - (size*space / 2); i < size; i++)
         {
             final String entry = ALL[i] + " " + list.get(i);
 
-            terminal.writeCenter(entry, starty + (size < maxSize / 2 ? i * 2 : i));
+            terminal.writeCenter(entry, starty + i*space);
         }
     }
 

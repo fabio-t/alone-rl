@@ -6,7 +6,6 @@ sharp-stone:
 small-sharp-stone:
   sources: sharp-stone
   tools: stone
-  n: 2
 
 stone-hammer:
   sources: [stone, branch, vine]

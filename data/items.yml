@@ -21,8 +21,14 @@ branch:
     c: '/'
     col: 5987163 # change
 
+vine:
+  name: a thin, flexible branch
+  sprite:
+    c: 239
+    col: 5987163 # change
+
 trunk:
-  name: a tree trunk
+  name: a fallen tree
   sprite:
     c: '-' # change
     col: 5987163 # change
@@ -31,12 +37,6 @@ boulder:
   name: a big boulder
   sprite:
     c: '#'
-    col: 5987163 # change
-
-vine:
-  name: a thin, flexible branch
-  sprite:
-    c: '>' # change
     col: 5987163 # change
 
 sharp-stone:
@@ -48,7 +48,7 @@ sharp-stone:
     damage: 2
   sprite:
     c: 'o' # change
-    col: 5987163 # using rgb as single int..
+    col: 5987163 # change
 
 small-sharp-stone:
   name: a small, sharp stone

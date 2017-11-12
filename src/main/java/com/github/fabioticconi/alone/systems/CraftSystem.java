@@ -185,8 +185,6 @@ public class CraftSystem extends PassiveSystem
         if (tempSources.size() < itemRecipe.sources.length || tempTools.size() < itemRecipe.tools.length)
             return -1;
 
-        // FIXME it doesn't take "n" into account.. do we actually need that?
-
         final int id = sItems.makeItem(itemRecipe.tag);
 
         if (id < 0)
@@ -195,8 +193,6 @@ public class CraftSystem extends PassiveSystem
         for (final int sourceId : tempSources.getData())
         {
             // destroying source items
-            // TODO figure out how to rely on EntityLinkManager even though we are effectively in pause
-            // (the best option is to make CraftItem an Action, which is also preferable overall..)
             world.delete(sourceId);
             inv.items.removeValue(sourceId);
         }
@@ -209,13 +205,12 @@ public class CraftSystem extends PassiveSystem
         public String   tag;
         public String[] sources;
         public String[] tools;
-        public int n = 1;
 
         @Override
         public String toString()
         {
             return "CraftItem{" + "tag='" + tag + '\'' + ", sources=" + Arrays.toString(sources) + ", tools=" +
-                   Arrays.toString(tools) + ", n=" + n + '}';
+                   Arrays.toString(tools) + '}';
         }
     }
 }
