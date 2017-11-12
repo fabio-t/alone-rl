@@ -19,7 +19,11 @@
 package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
+import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.systems.CraftSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
@@ -31,7 +35,11 @@ import java.util.Arrays;
  */
 public class CraftItemScreen extends AbstractScreen
 {
+    ComponentMapper<Inventory> mInventory;
+
     ScreenSystem screen;
+    CraftSystem sCraft;
+
     CraftScreen craftScreen;
 
     @Override
@@ -43,11 +51,23 @@ public class CraftItemScreen extends AbstractScreen
     @Override
     public float handleKeys(final BitVector keys)
     {
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
         if (keys.get(KeyEvent.VK_ESCAPE))
             screen.select(CraftScreen.class);
         else if (keys.get(KeyEvent.VK_ENTER))
         {
+            System.out.println(craftScreen.craftItem);
+            final int id = sCraft.craftItem(playerId, craftScreen.craftItem);
+            if (id >= 0)
+            {
+                final Inventory inv = mInventory.get(playerId);
+                inv.items.add(id);
+            }
 
+            // TODO: send a success/failure message
+
+            screen.select(PlayScreen.class);
         }
 
         keys.clear();
@@ -65,7 +85,7 @@ public class CraftItemScreen extends AbstractScreen
         int height = terminal.getHeightInCharacters() / 3;
 
         terminal.writeCenter("Consumes:", height);
-        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.source), height+2);
+        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.sources), height + 2);
 
         height += 8;
 

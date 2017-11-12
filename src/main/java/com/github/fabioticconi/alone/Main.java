@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 
+import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS;
+
 public class Main extends JFrame implements KeyListener
 {
     static final  Logger  log          = LoggerFactory.getLogger(Main.class);

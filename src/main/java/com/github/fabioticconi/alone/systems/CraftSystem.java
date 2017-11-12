@@ -24,7 +24,6 @@ import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
-import com.github.fabioticconi.alone.constants.WeaponType;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -40,7 +39,8 @@ public class CraftSystem extends PassiveSystem
 {
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Name>      mName;
-    ComponentMapper<Equip>     mEquip;
+
+    ItemSystem sItems;
 
     @Wire
     ObjectMapper mapper;
@@ -87,7 +87,7 @@ public class CraftSystem extends PassiveSystem
         return recipes;
     }
 
-    private void loadRecipes() throws IOException
+    public void loadRecipes() throws IOException
     {
         final InputStream fileStream = new FileInputStream("data/crafting.yml");
 
@@ -95,128 +95,127 @@ public class CraftSystem extends PassiveSystem
         {
         });
 
+        // reload item templates
+        sItems.loadTemplates();
+
         for (final Map.Entry<String, CraftItem> entry : recipes.entrySet())
         {
             final CraftItem temp = entry.getValue();
             temp.tag = entry.getKey();
 
-            for (final String tempSource : temp.source)
+            for (final String tempSource : temp.sources)
             {
-                switch (tempSource)
-                {
-                    case "stone":
-                    case "branch":
-                    case "vine":
-                    case "trunk":
-                        break;
-
-                    default:
-                        if (!recipes.keySet().contains(tempSource))
-                            throw new RuntimeException("unknown item in source field: " + tempSource);
-                }
+                if (!sItems.templates.keySet().contains(tempSource))
+                    throw new RuntimeException("unknown item in sources field: " + tempSource);
             }
 
             for (final String tempTool : temp.tools)
             {
-                switch (tempTool)
-                {
-                    case "stone":
-                    case "branch":
-                    case "vine":
-                    case "trunk":
-                        break;
-
-                    default:
-                        if (!recipes.keySet().contains(tempTool))
-                            throw new RuntimeException("unknown item in tools field: " + tempTool);
-                }
+                if (!sItems.templates.keySet().contains(tempTool))
+                    throw new RuntimeException("unknown item in tools field: " + tempTool);
             }
-
-            // System.out.println(entry.getKey() + " | " + entry.getValue());
         }
     }
 
-    public boolean craftItem(final int entityId, final CraftItem itemRecipe)
+    public int craftItem(final int entityId, final CraftItem itemRecipe)
     {
-        final Inventory items = mInventory.get(entityId);
+        final Inventory inv = mInventory.get(entityId);
 
-        if (items == null)
-            return false;
+        if (inv == null)
+            return -1;
 
-        final IntBag tempSources = new IntBag(itemRecipe.source.length);
+        final IntBag tempSources = new IntBag(itemRecipe.sources.length);
+        Arrays.fill(tempSources.getData(), -1);
         final IntBag tempTools   = new IntBag(itemRecipe.tools.length);
+        Arrays.fill(tempTools.getData(), -1);
 
-        final int[] data = items.items.getData();
-        for (int i = 0, size = items.items.size(); i < size; i++)
+        final int[] data = inv.items.getData();
+        for (int i = 0, size = inv.items.size(); i < size; i++)
         {
             final int itemId = data[i];
 
-            // we might only want an equipped weapon
             if (!mName.has(itemId))
                 continue;
 
             final Name name = mName.get(itemId);
 
             int ii = 0;
-            while (ii < itemRecipe.source.length)
+            final int[] sources = tempSources.getData();
+            while (ii < itemRecipe.sources.length)
             {
-                if (tempSources.get(ii) < 0 && name.tag.equals(itemRecipe.source[ii]))
+                System.out.println("sources " + ii);
+                System.out.println(name.tag + " | " + itemRecipe.sources[ii]);
+                System.out.println(sources[ii]);
+                if (sources[ii] < 0 && name.tag.equals(itemRecipe.sources[ii]))
                 {
                     tempSources.set(ii, itemId);
 
-                    break; // item can be used only once
+                    break; // source items can only be "used" once
                 }
 
                 ii++;
             }
 
-            // if ii == source.length, then it means that the previous loop completed
+            // if ii == sources.length, then it means that the previous loop completed
             // without setting itemId as a "source". So it's OK to evaluate whether it
             // can be used as a "tool".
+            // conversely, if ii < sources.length then itemId is a "source" and we cannot use it
+            // as tool.
+            if (ii < sources.length)
+                continue;
 
             ii = 0;
+            final int[] tools = tempTools.getData();
             while (ii < itemRecipe.tools.length)
             {
-                if (tempTools.get(ii) < 0 && name.tag.equals(itemRecipe.tools[ii]))
+                System.out.println("tools " + ii);
+                System.out.println(name.tag + " | " + itemRecipe.tools[ii]);
+                System.out.println(tools[ii]);
+                if (tools[ii] < 0 && name.tag.equals(itemRecipe.tools[ii]))
                 {
                     tempTools.set(ii, itemId);
 
-                    break; // item can be used only once
+                    break; // tool items can only be used once
                 }
 
                 ii++;
             }
         }
 
-        if (tempSources.size() < itemRecipe.source.length || tempTools.size() < itemRecipe.tools.length)
-            return false;
+        if (tempSources.size() < itemRecipe.sources.length || tempTools.size() < itemRecipe.tools.length)
+            return -1;
 
-        // TODO: here we should first create the object (using the internal fields.. we are still missing
-        // some, eg sprite, if is weapon, if is wearable..
+        // FIXME it doesn't take "n" into account.. do we actually need that?
 
-        // TODO: then we must destroy the items in the "source" array. Make sure to remove them from the map
-        // AND from the inventory too.
+        final int id = sItems.makeItem(itemRecipe.tag);
 
-        return true;
+        if (id < 0)
+            return -1;
+
+        for (final int sourceId : tempSources.getData())
+        {
+            // destroying source items
+            // TODO figure out how to rely on EntityLinkManager even though we are effectively in pause
+            // (the best option is to make CraftItem an Action, which is also preferable overall..)
+            world.delete(sourceId);
+            inv.items.removeValue(sourceId);
+        }
+
+        return id;
     }
 
     public static class CraftItem
     {
-        public String   name;
         public String   tag;
-        public String[] source;
+        public String[] sources;
         public String[] tools;
         public int n = 1;
-
-        public boolean wearable;
-        public Weapon  weapon;
-        public Sprite  sprite;
 
         @Override
         public String toString()
         {
-            return "CraftItem{" + "name='" + name + '\'' + ", tag='" + tag + '\'' + ", source=" +
-                   Arrays.toString(source) + ", tools=" + Arrays.toString(tools) + ", n=" + n + '}';
+            return "CraftItem{" + "tag='" + tag + '\'' + ", sources=" + Arrays.toString(sources) + ", tools=" +
+                   Arrays.toString(tools) + ", n=" + n + '}';
         }
     }
 }

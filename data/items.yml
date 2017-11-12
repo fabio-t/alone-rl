@@ -1,7 +1,8 @@
 
 stone:
   name: a round stone
-  wearable: true
+  wearable:
+    where: HANDS
   weapon:
     damageType: BLUNT
     damage: 2
@@ -11,7 +12,8 @@ stone:
 
 branch:
   name: a sturdy branch
-  wearable: true
+  wearable:
+    where: HANDS
   weapon:
     damageType: BLUNT
     damage: 1
@@ -35,4 +37,59 @@ vine:
   name: a thin, flexible branch
   sprite:
     c: '>' # change
+    col: 5987163 # change
+
+sharp-stone:
+  name: a sharp stone
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: SLASH
+    damage: 2
+  sprite:
+    c: 'o' # change
+    col: 5987163 # using rgb as single int..
+
+small-sharp-stone:
+  name: a small, sharp stone
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: POINT
+    damage: 2
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
+
+stone-hammer:
+  name: a stone hammer
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: BLUNT
+    damage: 4
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
+
+stone-axe:
+  name: a stone axe
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: SLASH
+    damage: 4
+  sprite:
+    c: 'o' # change
+    col: 5987163 # change
+
+stone-spear:
+  name: a stone spear
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: POINT
+    damage: 4
+  sprite:
+    c: 'o' # change
     col: 5987163 # change

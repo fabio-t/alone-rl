@@ -31,10 +31,6 @@ import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Collections;
-
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
@@ -74,15 +70,12 @@ public abstract class InventoryScreen extends AbstractScreen
 
         final ArrayList<String> elements = new ArrayList<>();
         final IntBag            items    = inv.items;
-        for (int i = 0, j = 0, size = items.size(); i < size; i++)
+        for (int i = 0, size = items.size(); i < size; i++)
         {
             final int itemId = items.get(i);
 
             if (!canDraw(itemId))
-            {
-                j++;
                 continue;
-            }
 
             elements.add(String.format("%s %s",
                                        mName.get(itemId).name.toLowerCase(),
@@ -106,12 +99,17 @@ public abstract class InventoryScreen extends AbstractScreen
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
         final Inventory inv = mInventory.get(playerId);
 
-        for (int i = 0, j = 0, size = inv.items.size(); i < size; i++, j++)
+        for (int i = 0, j = 0, size = inv.items.size(); i < size; i++)
         {
             final int itemId = inv.items.get(i);
 
-            if (canDraw(itemId) && j == pos)
+            if (!canDraw(itemId))
+                continue;
+
+            if (j == pos)
                 return itemId;
+
+            j++;
         }
 
         return -1;

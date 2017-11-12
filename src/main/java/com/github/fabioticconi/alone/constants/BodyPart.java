@@ -16,38 +16,15 @@
  *
  */
 
-package com.github.fabioticconi.alone.screens;
-
-import com.artemis.utils.BitVector;
+package com.github.fabioticconi.alone.constants;
 
 /**
  * Author: Fabio Ticconi
- * Date: 02/11/17
+ * Date: 12/11/17
  */
-public class DropScreen extends InventoryScreen
+public enum BodyPart
 {
-    @Override
-    public float handleKeys(final BitVector keys)
-    {
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-
-        final int targetId = getItem(keys);
-
-        if (targetId < 0)
-            return super.handleKeys(keys);
-
-        return sAction.act(sItems.drop(playerId, targetId));
-    }
-
-    @Override
-    public String header()
-    {
-        return "Drop item:";
-    }
-
-    @Override
-    public boolean canDraw(final int entityId)
-    {
-        return true;
-    }
+    HEAD,
+    BODY,
+    HANDS
 }

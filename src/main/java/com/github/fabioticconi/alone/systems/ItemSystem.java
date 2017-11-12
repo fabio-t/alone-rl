@@ -18,7 +18,12 @@
 
 package com.github.fabioticconi.alone.systems;
 
+import com.artemis.Component;
 import com.artemis.ComponentMapper;
+import com.artemis.EntityEdit;
+import com.artemis.annotations.Wire;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.WeaponType;
@@ -26,13 +31,17 @@ import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
-import com.github.fabioticconi.alone.screens.AbstractScreen;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Author: Fabio Ticconi
@@ -52,6 +61,99 @@ public class ItemSystem extends PassiveSystem
 
     MessageSystem msg;
     MapSystem     map;
+
+    @Wire
+    ObjectMapper mapper;
+
+    HashMap<String, ItemTemplate> templates;
+
+    @Override
+    protected void initialize()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public HashMap<String, ItemTemplate> getTemplates()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return templates;
+    }
+
+    public void loadTemplates() throws IOException
+    {
+        final InputStream fileStream = new FileInputStream("data/items.yml");
+
+        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, ItemTemplate>>()
+        {
+        });
+
+        for (final Map.Entry<String, ItemTemplate> entry : templates.entrySet())
+        {
+            final ItemTemplate temp = entry.getValue();
+            temp.tag = entry.getKey();
+        }
+    }
+
+    public int makeItem(final String tag)
+    {
+        try
+        {
+            loadTemplates();
+
+            final ItemTemplate template = templates.get(tag);
+
+            if (template == null)
+            {
+                log.warn("Item named {} doesn't exist", tag);
+                return -1;
+            }
+
+            final int id = world.create();
+
+            final EntityEdit edit = world.edit(id);
+
+            edit.add(new Name(template.name, tag));
+
+            // TODO find a way to do this dynamically. Right now I cannot figure out a way
+            // of deserialising an array of Components, because it's an abstract class that I cannot annotate.
+            if (template.wearable != null)
+                edit.add(template.wearable);
+            if (template.weapon != null)
+                edit.add(template.weapon);
+            if (template.sprite != null)
+                edit.add(template.sprite);
+
+            return id;
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+
+            return -1;
+        }
+    }
+
+    public static class ItemTemplate
+    {
+        public String name;
+        public String tag;
+
+        public Wearable wearable;
+        public Weapon weapon;
+        public Sprite sprite;
+    }
 
     public GetAction get(final int actorId)
     {
