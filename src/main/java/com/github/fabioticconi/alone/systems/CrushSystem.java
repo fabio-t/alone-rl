@@ -71,18 +71,7 @@ public class CrushSystem extends PassiveSystem
 
     public int makeStone(final int x, final int y)
     {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
-        edit.create(Wearable.class);
-        edit.add(new Name("A round stone", "stone"));
-
-        map.items.set(id, x, y);
-
-        return id;
+        return sItem.makeItem("stone", x, y);
     }
 
     public int makeBoulder(final Point p)

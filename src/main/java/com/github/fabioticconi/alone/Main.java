@@ -28,6 +28,7 @@ import com.artemis.utils.BitVector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.screens.*;
@@ -75,6 +76,7 @@ public class Main extends JFrame implements KeyListener
 
         final YAMLFactory factory = new YAMLFactory();
         final ObjectMapper mapper = new ObjectMapper(factory)
+                                        .registerModule(new ParameterNamesModule())
                                         .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         final WorldConfiguration config;

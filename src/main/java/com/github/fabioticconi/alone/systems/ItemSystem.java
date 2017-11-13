@@ -58,6 +58,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Wearable>  mWearable;
     ComponentMapper<Armour>    mArmour;
     ComponentMapper<Name>      mName;
+    ComponentMapper<Obstacle>  mObstacle;
 
     MessageSystem msg;
     MapSystem     map;
@@ -107,6 +108,45 @@ public class ItemSystem extends PassiveSystem
         }
     }
 
+    /**
+     * It instantiates an object of the given type and places at that Point.
+     *
+     * @param tag
+     * @param p
+     * @return
+     */
+    public int makeItem(final String tag, final Point p)
+    {
+        return makeItem(tag, p.x, p.y);
+    }
+
+    /**
+     * It instantiates an object of the given type and places at that position.
+     *
+     * @param tag
+     * @param x
+     * @param y
+     * @return
+     */
+    public int makeItem(final String tag, final int x, final int y)
+    {
+        final int id = makeItem(tag);
+
+        if (id < 0)
+            return id;
+
+        final Point p = map.getFirstTotallyFree(x, y, -1);
+
+        mPos.create(id).set(p.x, p.y);
+
+        if (mObstacle.has(id))
+            map.obstacles.set(id, p.x, p.y);
+        else
+            map.items.set(id, p.x, p.y);
+
+        return id;
+    }
+
     public int makeItem(final String tag)
     {
         try
@@ -135,6 +175,8 @@ public class ItemSystem extends PassiveSystem
                 edit.add(template.weapon);
             if (template.sprite != null)
                 edit.add(template.sprite);
+            if (template.obstacle != null)
+                edit.add(template.obstacle);
 
             return id;
         } catch (final IOException e)
@@ -153,6 +195,7 @@ public class ItemSystem extends PassiveSystem
         public Wearable wearable;
         public Weapon weapon;
         public Sprite sprite;
+        public Obstacle obstacle;
     }
 
     public GetAction get(final int actorId)

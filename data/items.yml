@@ -7,8 +7,11 @@ stone:
     damageType: BLUNT
     damage: 2
   sprite:
-    c: 'o'
-    col: 5987163
+    c: 7
+    col:
+      red: 88
+      green: 88
+      blue: 88
 
 branch:
   name: a sturdy branch
@@ -37,7 +40,12 @@ boulder:
   name: a big boulder
   sprite:
     c: '#'
-    col: 5987163 # change
+    col:
+      red: 88
+      green: 88
+      blue: 88
+    shadowView: true
+  obstacle: true
 
 sharp-stone:
   name: a sharp stone
