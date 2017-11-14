@@ -44,7 +44,7 @@ public class TreeSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(TreeSystem.class);
 
-    ComponentMapper<Tree>     mTree;
+    ComponentMapper<Cuttable> mCuttable;
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Strength> mStrength;
     ComponentMapper<Position> mPosition;
@@ -66,81 +66,6 @@ public class TreeSystem extends PassiveSystem
         return c;
     }
 
-    public int makeTree(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
-        edit.create(LightBlocker.class);
-        edit.create(Tree.class);
-        edit.add(new Name("A mature tree", "tree"));
-
-        map.obstacles.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeTrunk(final Point p)
-    {
-        return makeTrunk(p.x, p.y);
-    }
-
-    public int makeTrunk(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set((char)22, Util.BROWN.brighter());
-        edit.add(new Name("A fallen tree", "trunk"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeBranch(final Point p)
-    {
-        return makeBranch(p.x, p.y);
-    }
-
-    public int makeBranch(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('/', Util.BROWN.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
-        edit.create(Wearable.class);
-        edit.add(new Name("A sturdy branch", "branch"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeVine(final Point p)
-    {
-        return makeVine(p.x, p.y);
-    }
-
-    public int makeVine(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set((char)239, Cell.GRASS.col);
-        edit.add(new Name("A thin, flexible branch", "vine"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
     public class CutAction extends ActionContext
     {
         @Override
@@ -151,7 +76,7 @@ public class TreeSystem extends PassiveSystem
 
             final int treeId = targets.get(0);
 
-            if (!mTree.has(treeId))
+            if (!mCuttable.has(treeId))
                 return false;
 
             final int axeId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.SLASH), false);
@@ -189,9 +114,9 @@ public class TreeSystem extends PassiveSystem
             map.obstacles.del(p.x, p.y);
             world.delete(treeId);
 
-            makeTrunk(map.getFirstTotallyFree(p.x, p.y, -1));
-            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
-            makeVine(map.getFirstTotallyFree(p.x, p.y, -1));
+            sItem.makeItem("trunk", p.x, p.y);
+            sItem.makeItem("branch", p.x, p.y);
+            sItem.makeItem("vine", p.x, p.y);
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);

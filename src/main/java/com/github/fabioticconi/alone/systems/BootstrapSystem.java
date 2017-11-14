@@ -52,6 +52,7 @@ public class BootstrapSystem extends PassiveSystem
     MapSystem   sMap;
     TreeSystem  sTree;
     CrushSystem sCrush;
+    ItemSystem  sItems;
     MapSystem   map;
 
     PlayerManager pManager;
@@ -297,7 +298,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sTree.makeTree(x, y);
+                    sItems.makeItem("tree", x, y);
                 }
             }
         }
@@ -319,7 +320,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sCrush.makeBoulder(x, y);
+                    sItems.makeItem("boulder", x, y);
                 }
             }
         }
@@ -341,7 +342,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.items.isEmpty(x, y))
                         continue;
 
-                    sCrush.makeStone(x, y);
+                    sItems.makeItem("stone", x, y);
                 }
             }
         }
@@ -360,9 +361,9 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.items.isEmpty(x, y))
                         continue;
 
-                    sTree.makeTrunk(map.getFirstTotallyFree(x, y, -1));
-                    sTree.makeBranch(map.getFirstTotallyFree(x, y, -1));
-                    sTree.makeVine(map.getFirstTotallyFree(x, y, -1));
+                    sItems.makeItem("trunk", x, y);
+                    sItems.makeItem("branch", x, y);
+                    sItems.makeItem("vine", x, y);
                 }
             }
         }

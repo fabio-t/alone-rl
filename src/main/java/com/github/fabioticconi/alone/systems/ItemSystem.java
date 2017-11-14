@@ -18,7 +18,6 @@
 
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
@@ -177,6 +176,10 @@ public class ItemSystem extends PassiveSystem
                 edit.add(template.sprite);
             if (template.obstacle != null)
                 edit.add(template.obstacle);
+            if (template.crushable != null)
+                edit.add(template.crushable);
+            if (template.cuttable != null)
+                edit.add(template.cuttable);
 
             return id;
         } catch (final IOException e)
@@ -192,10 +195,12 @@ public class ItemSystem extends PassiveSystem
         public String name;
         public String tag;
 
-        public Wearable wearable;
-        public Weapon weapon;
-        public Sprite sprite;
-        public Obstacle obstacle;
+        public Wearable  wearable;
+        public Weapon    weapon;
+        public Sprite    sprite;
+        public Obstacle  obstacle;
+        public Crushable crushable;
+        public Cuttable  cuttable;
     }
 
     public GetAction get(final int actorId)

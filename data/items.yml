@@ -22,19 +22,28 @@ branch:
     damage: 1
   sprite:
     c: '/'
-    col: 5987163 # change
+    col:
+      red: 141
+      green: 104
+      blue: 21
 
 vine:
   name: a thin, flexible branch
   sprite:
     c: 239
-    col: 5987163 # change
+    col:
+      red: 36
+      green: 122
+      blue: 7
 
 trunk:
   name: a fallen tree
   sprite:
-    c: '-' # change
-    col: 5987163 # change
+    c: 22
+    col:
+      red: 141
+      green: 104
+      blue: 21
 
 boulder:
   name: a big boulder
@@ -45,7 +54,20 @@ boulder:
       green: 88
       blue: 88
     shadowView: true
-  obstacle: true
+  obstacle: {}
+  crushable: {}
+
+tree:
+  name: a mature tree
+  sprite:
+    c: T
+    col:
+      red: 0
+      green: 205
+      blue: 113
+    shadowView: true
+  obstacle: {}
+  cuttable: {}
 
 sharp-stone:
   name: a sharp stone
@@ -55,8 +77,11 @@ sharp-stone:
     damageType: SLASH
     damage: 2
   sprite:
-    c: 'o' # change
-    col: 5987163 # change
+    c: 4
+    col:
+      red: 88
+      green: 88
+      blue: 88
 
 small-sharp-stone:
   name: a small, sharp stone
@@ -66,8 +91,11 @@ small-sharp-stone:
     damageType: POINT
     damage: 2
   sprite:
-    c: 'o' # change
-    col: 5987163 # change
+    c: 17
+    col:
+      red: 88
+      green: 88
+      blue: 88
 
 stone-hammer:
   name: a stone hammer
@@ -77,8 +105,11 @@ stone-hammer:
     damageType: BLUNT
     damage: 4
   sprite:
-    c: 'o' # change
-    col: 5987163 # change
+    c: 209
+    col:
+      red: 141
+      green: 104
+      blue: 21
 
 stone-axe:
   name: a stone axe
@@ -88,8 +119,11 @@ stone-axe:
     damageType: SLASH
     damage: 4
   sprite:
-    c: 'o' # change
-    col: 5987163 # change
+    c: 184
+    col:
+      red: 141
+      green: 104
+      blue: 21
 
 stone-spear:
   name: a stone spear
@@ -99,5 +133,8 @@ stone-spear:
     damageType: POINT
     damage: 4
   sprite:
-    c: 'o' # change
-    col: 5987163 # change
+    c: 244
+    col:
+      red: 141
+      green: 104
+      blue: 21

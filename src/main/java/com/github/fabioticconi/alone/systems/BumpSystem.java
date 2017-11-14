@@ -38,7 +38,7 @@ public class BumpSystem extends PassiveSystem
     static final Logger log = LoggerFactory.getLogger(BumpSystem.class);
 
     ComponentMapper<Health>    mHealth;
-    ComponentMapper<Tree>      mTree;
+    ComponentMapper<Cuttable>  mCuttable;
     ComponentMapper<Pushable>  mPushable;
     ComponentMapper<Crushable> mCrushable;
     ComponentMapper<Position>  mPos;
@@ -83,7 +83,7 @@ public class BumpSystem extends PassiveSystem
         // if we were path-moving, now, whatever happens next, we stop
         mPath.remove(actorId);
 
-        if (mPlayer.has(actorId) && mTree.has(targetId))
+        if (mPlayer.has(actorId) && mCuttable.has(targetId))
         {
             c = sTree.cut(actorId, targetId);
         }

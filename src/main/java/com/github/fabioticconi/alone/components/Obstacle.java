@@ -22,12 +22,9 @@ import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 13/11/17
+ * Date: 10/09/17
  */
 public class Obstacle extends Component
 {
-    public Obstacle(final boolean state)
-    {
-
-    }
+    // TODO eventually, we might need a parameter to say: "this only blocks light, not movement"
 }

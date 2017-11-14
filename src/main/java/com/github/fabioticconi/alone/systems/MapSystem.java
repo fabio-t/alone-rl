@@ -18,7 +18,7 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.github.fabioticconi.alone.components.LightBlocker;
+import com.github.fabioticconi.alone.components.Obstacle;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
@@ -58,7 +58,7 @@ public class MapSystem extends PassiveSystem implements IBoard
     final AStar   astar;
     final IFovAlgorithm fov;
     final ILosAlgorithm los;
-    ComponentMapper<LightBlocker> mLightBlocker;
+    ComponentMapper<Obstacle> mObstacle;
 
     final SingleGrid obstacles;
     final SingleGrid items;
@@ -422,7 +422,7 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         // currently no tile blocks light by itself, so if there's no creature
         // here we know that light passes.
-        return entityId >= 0 && mLightBlocker.has(entityId);
+        return entityId >= 0 && mObstacle.has(entityId);
     }
 
     @Override
