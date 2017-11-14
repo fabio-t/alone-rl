@@ -43,8 +43,6 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 
-import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS;
-
 public class Main extends JFrame implements KeyListener
 {
     static final  Logger  log          = LoggerFactory.getLogger(Main.class);
@@ -75,9 +73,8 @@ public class Main extends JFrame implements KeyListener
         properties.load(this.getClass().getResourceAsStream("/project.properties"));
 
         final YAMLFactory factory = new YAMLFactory();
-        final ObjectMapper mapper = new ObjectMapper(factory)
-                                        .registerModule(new ParameterNamesModule())
-                                        .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        final ObjectMapper mapper = new ObjectMapper(factory).registerModule(new ParameterNamesModule())
+                                                             .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         final WorldConfiguration config;
         config = new WorldConfiguration();

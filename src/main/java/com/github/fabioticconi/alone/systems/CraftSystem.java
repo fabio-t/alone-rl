@@ -23,7 +23,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.utils.IntBag;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.components.Name;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -126,7 +127,7 @@ public class CraftSystem extends PassiveSystem
 
         final IntBag tempSources = new IntBag(itemRecipe.sources.length);
         Arrays.fill(tempSources.getData(), -1);
-        final IntBag tempTools   = new IntBag(itemRecipe.tools.length);
+        final IntBag tempTools = new IntBag(itemRecipe.tools.length);
         Arrays.fill(tempTools.getData(), -1);
 
         final int[] data = inv.items.getData();
@@ -139,7 +140,7 @@ public class CraftSystem extends PassiveSystem
 
             final Name name = mName.get(itemId);
 
-            int ii = 0;
+            int         ii      = 0;
             final int[] sources = tempSources.getData();
             while (ii < itemRecipe.sources.length)
             {

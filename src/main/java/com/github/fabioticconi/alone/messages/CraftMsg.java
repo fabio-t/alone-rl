@@ -16,37 +16,17 @@
  *
  */
 
-package com.github.fabioticconi.alone.components;
-
-import com.artemis.Component;
-import rlforj.math.Point;
-
-import java.util.List;
+package com.github.fabioticconi.alone.messages;
 
 /**
  * Author: Fabio Ticconi
- * Date: 11/10/17
+ * Date: 14/11/17
  */
-public class Path extends Component
+public class CraftMsg extends AbstractMessage
 {
-    public float       cooldown;
-    public List<Point> steps;
-    public int         i;
-
-    public Path()
+    @Override
+    public String format()
     {
-
-    }
-
-    public Path(final float cooldown, final List<Point> steps)
-    {
-        set(cooldown, steps);
-    }
-
-    public void set(final float cooldown, final List<Point> steps)
-    {
-        this.i = 0;
-        this.cooldown = cooldown;
-        this.steps = steps;
+        return String.format("%s successfully %s %s", actor, thirdPerson ? "crafts" : "craft", target.toLowerCase());
     }
 }

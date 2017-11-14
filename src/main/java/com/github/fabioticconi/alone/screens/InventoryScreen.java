@@ -77,9 +77,8 @@ public abstract class InventoryScreen extends AbstractScreen
             if (!canDraw(itemId))
                 continue;
 
-            elements.add(String.format("%s %s",
-                                       mName.get(itemId).name.toLowerCase(),
-                                       mEquip.has(itemId) ? " [WORN]" : ""));
+            elements
+                .add(String.format("%s %s", mName.get(itemId).name.toLowerCase(), mEquip.has(itemId) ? " [WORN]" : ""));
         }
 
         drawList(terminal, elements);
@@ -96,8 +95,8 @@ public abstract class InventoryScreen extends AbstractScreen
         if (pos < 0)
             return -1;
 
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-        final Inventory inv = mInventory.get(playerId);
+        final int       playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+        final Inventory inv      = mInventory.get(playerId);
 
         for (int i = 0, j = 0, size = inv.items.size(); i < size; i++)
         {

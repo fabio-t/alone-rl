@@ -107,7 +107,7 @@ public class PathSystem extends DelayedIteratingSystem
         }
         else
         {
-            final float speed = mSpeed.get(entityId).value * Util.gain((float)path.i/path.steps.size(), 0.25f);
+            final float speed = mSpeed.get(entityId).value * Util.gain((float) path.i / path.steps.size(), 0.25f);
 
             path.cooldown = Math.max(speed, 0.05f); // let's not go too fast
 

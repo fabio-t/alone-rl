@@ -25,7 +25,7 @@ import com.artemis.systems.IteratingSystem;
 import com.github.fabioticconi.alone.components.*;
 import rlforj.math.Point;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi

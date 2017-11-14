@@ -30,7 +30,10 @@ import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.IBoard;
-import rlforj.los.*;
+import rlforj.los.BresLos;
+import rlforj.los.IFovAlgorithm;
+import rlforj.los.ILosAlgorithm;
+import rlforj.los.ShadowCasting;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
@@ -54,14 +57,13 @@ public class MapSystem extends PassiveSystem implements IBoard
     final Cell terrain[][];
 
     /* FOV/LOS stuff */
-    final LongBag lastVisited;
-    final AStar   astar;
+    final LongBag       lastVisited;
+    final AStar         astar;
     final IFovAlgorithm fov;
     final ILosAlgorithm los;
-    ComponentMapper<Obstacle> mObstacle;
-
     final SingleGrid obstacles;
     final SingleGrid items;
+    ComponentMapper<Obstacle> mObstacle;
 
     public MapSystem() throws IOException
     {

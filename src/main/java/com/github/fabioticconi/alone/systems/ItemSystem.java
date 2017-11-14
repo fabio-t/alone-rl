@@ -190,19 +190,6 @@ public class ItemSystem extends PassiveSystem
         }
     }
 
-    public static class ItemTemplate
-    {
-        public String name;
-        public String tag;
-
-        public Wearable  wearable;
-        public Weapon    weapon;
-        public Sprite    sprite;
-        public Obstacle  obstacle;
-        public Crushable crushable;
-        public Cuttable  cuttable;
-    }
-
     public GetAction get(final int actorId)
     {
         final GetAction a = new GetAction();
@@ -324,6 +311,19 @@ public class ItemSystem extends PassiveSystem
         }
 
         return -1;
+    }
+
+    public static class ItemTemplate
+    {
+        public String name;
+        public String tag;
+
+        public Wearable  wearable;
+        public Weapon    weapon;
+        public Sprite    sprite;
+        public Obstacle  obstacle;
+        public Crushable crushable;
+        public Cuttable  cuttable;
     }
 
     public class GetAction extends ActionContext

@@ -31,9 +31,7 @@ import com.github.fabioticconi.alone.systems.ItemSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: Fabio Ticconi
@@ -52,7 +50,7 @@ public class CraftScreen extends AbstractScreen
 
     PlayerManager pManager;
 
-    List<String> recipeNames;
+    List<String>          recipeNames;
     CraftSystem.CraftItem craftItem;
 
     @Override

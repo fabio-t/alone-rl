@@ -24,7 +24,6 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Target;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.systems.ItemSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.systems.ThrowSystem;
@@ -33,7 +32,6 @@ import rlforj.math.Point;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.EnumSet;
 import java.util.List;
 
 import static com.github.fabioticconi.alone.constants.Side.*;
@@ -50,7 +48,7 @@ public class LookScreen extends PlayScreen
 
     ThrowSystem sThrow;
     MapSystem   map;
-    ItemSystem sItem;
+    ItemSystem  sItem;
 
     @Override
     public float handleKeys(final BitVector keys)

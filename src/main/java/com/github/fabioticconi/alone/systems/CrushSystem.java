@@ -19,7 +19,10 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.Crushable;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Speed;
+import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.WeaponType;

@@ -21,7 +21,6 @@ package com.github.fabioticconi.alone.screens;
 import asciiPanel.AsciiPanel;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
@@ -40,6 +39,52 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
     public static final Letter[] ALL = Letter.values();
 
     PlayerManager pManager;
+
+    public abstract String header();
+
+    void drawHeader(final AsciiPanel terminal)
+    {
+        final String header = header();
+        terminal.writeCenter(header, 2);
+        terminal.writeCenter(String.join("", Collections.nCopies(header.length(), "-")), 3);
+    }
+
+    void drawList(final AsciiPanel terminal, final List<String> list)
+    {
+        if (list.isEmpty())
+            return;
+
+        final int maxSize = AbstractScreen.Letter.values().length;
+        final int size    = Math.min(maxSize, list.size());
+        final int space   = Util.clamp(maxSize / size, 1, 4);
+
+        for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - (size * space / 2); i < size; i++)
+        {
+            final String entry = ALL[i] + " " + list.get(i);
+
+            terminal.writeCenter(entry, starty + i * space);
+        }
+    }
+
+    /**
+     * Returns a number between 0 and 25, corresponding to letters A to Z (eg, possible selections).
+     *
+     * @param keys
+     * @return
+     */
+    int getTargetIndex(final BitVector keys)
+    {
+        final int keyCode = keys.nextSetBit(VK_A);
+
+        if (keyCode >= VK_A && keyCode <= VK_Z)
+        {
+            keys.clear(keyCode);
+
+            return keyCode - VK_A;
+        }
+
+        return -1;
+    }
 
     public enum Letter
     {
@@ -75,51 +120,5 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
         {
             return name() + ")";
         }
-    }
-
-    public abstract String header();
-
-    void drawHeader(final AsciiPanel terminal)
-    {
-        final String header = header();
-        terminal.writeCenter(header, 2);
-        terminal.writeCenter(String.join("", Collections.nCopies(header.length(), "-")), 3);
-    }
-
-    void drawList(final AsciiPanel terminal, final List<String> list)
-    {
-        if (list.isEmpty())
-            return;
-
-        final int maxSize = AbstractScreen.Letter.values().length;
-        final int size = Math.min(maxSize, list.size());
-        final int space = Util.clamp(maxSize/size, 1, 4);
-
-        for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - (size*space / 2); i < size; i++)
-        {
-            final String entry = ALL[i] + " " + list.get(i);
-
-            terminal.writeCenter(entry, starty + i*space);
-        }
-    }
-
-    /**
-     * Returns a number between 0 and 25, corresponding to letters A to Z (eg, possible selections).
-     *
-     * @param keys
-     * @return
-     */
-    int getTargetIndex(final BitVector keys)
-    {
-        final int keyCode = keys.nextSetBit(VK_A);
-
-        if (keyCode >= VK_A && keyCode <= VK_Z)
-        {
-            keys.clear(keyCode);
-
-            return keyCode - VK_A;
-        }
-
-        return -1;
     }
 }
