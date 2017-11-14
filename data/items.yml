@@ -62,9 +62,9 @@ tree:
   sprite:
     c: T
     col:
-      red: 0
-      green: 205
-      blue: 113
+      red: 77
+      green: 168
+      blue: 59
     shadowView: true
   obstacle: {}
   cuttable: {}
