@@ -27,14 +27,17 @@ import com.artemis.Component;
 public class Name extends Component
 {
     public final String name;
+    public final String tag;
 
     public Name()
     {
         this.name = "";
+        this.tag = "";
     }
 
-    public Name(final String name)
+    public Name(final String name, final String tag)
     {
         this.name = name;
+        this.tag = tag;
     }
 }

@@ -24,6 +24,6 @@ import com.artemis.Component;
  * Author: Fabio Ticconi
  * Date: 07/10/17
  */
-public class Tree extends Component
+public class Cuttable extends Component
 {
 }

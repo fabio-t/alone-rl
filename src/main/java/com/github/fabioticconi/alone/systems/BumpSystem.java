@@ -38,12 +38,13 @@ public class BumpSystem extends PassiveSystem
     static final Logger log = LoggerFactory.getLogger(BumpSystem.class);
 
     ComponentMapper<Health>    mHealth;
-    ComponentMapper<Tree>      mTree;
+    ComponentMapper<Cuttable>  mCuttable;
     ComponentMapper<Pushable>  mPushable;
     ComponentMapper<Crushable> mCrushable;
     ComponentMapper<Position>  mPos;
     ComponentMapper<Player>    mPlayer;
     ComponentMapper<Sight>     mSight;
+    ComponentMapper<Path>      mPath;
 
     ActionSystem   sAction;
     AttackSystem   sAttack;
@@ -53,12 +54,12 @@ public class BumpSystem extends PassiveSystem
     MovementSystem sMove;
     MapSystem      map;
 
-    public float bumpAction(final int entityId, final Side direction)
+    public float bumpAction(final int actorId, final Side direction)
     {
         if (direction.equals(Side.HERE))
             return 0f;
 
-        final Position p = mPos.get(entityId);
+        final Position p = mPos.get(actorId);
 
         final int newX = p.x + direction.x;
         final int newY = p.y + direction.y;
@@ -72,35 +73,44 @@ public class BumpSystem extends PassiveSystem
 
         if (targetId < 0)
         {
-            c = sMove.move(entityId, direction);
+            c = sMove.move(actorId, direction);
             sAction.act(c);
             return c.delay;
         }
 
-        if (mPlayer.has(entityId) && mTree.has(targetId))
+        // BUMPING!
+
+        // if we were path-moving, now, whatever happens next, we stop
+        mPath.remove(actorId);
+
+        if (mPlayer.has(actorId) && mCuttable.has(targetId))
         {
-            c = sTree.cut(entityId, targetId);
+            c = sTree.cut(actorId, targetId);
         }
-        // else if (mPlayer.has(entityId) && mPushable.has(targetId))
+        // else if (mPlayer.has(actorId) && mPushable.has(targetId))
         // {
-        //     c = sPush.push(entityId, targetId);
+        //     c = sPush.push(actorId, targetId);
         // }
-        else if (mPlayer.has(entityId) && mCrushable.has(targetId))
+        else if (mPlayer.has(actorId) && mCrushable.has(targetId))
         {
-            c = sCrush.crush(entityId, targetId);
+            c = sCrush.crush(actorId, targetId);
         }
         else if (mHealth.has(targetId))
         {
-            c = sAttack.attack(entityId, targetId);
+            c = sAttack.attack(actorId, targetId);
+        }
+        else
+        {
+            log.warn("{} bumped into {} but couldn't do anything", actorId, targetId);
         }
 
         return sAction.act(c);
     }
 
-    public float bumpAction(final int entityId, final Position target)
+    public float bumpAction(final int actorId, final Position target)
     {
-        final Position pos   = mPos.get(entityId);
-        final Sight    sight = mSight.get(entityId);
+        final Position pos   = mPos.get(actorId);
+        final Sight    sight = mSight.get(actorId);
 
         if (pos.equals(target))
         {
@@ -111,7 +121,7 @@ public class BumpSystem extends PassiveSystem
         if (Coords.distanceChebyshev(pos.x, pos.y, target.x, target.y) == 1)
         {
             // it's only one step away, no point calculating line of sight
-            return bumpAction(entityId, Side.getSide(pos.x, pos.y, target.x, target.y));
+            return bumpAction(actorId, Side.getSide(pos.x, pos.y, target.x, target.y));
         }
 
         // let's give them the opportunity to plan a path even if the creature is at the border of the vision
@@ -123,7 +133,7 @@ public class BumpSystem extends PassiveSystem
             // the target position is the same as the entity's position,
             // or the target is not visible. Either way, we don't move.
 
-            log.warn("{} cannot find a path from {} to {}", entityId, pos, target);
+            log.warn("{} cannot find a path from {} to {}", actorId, pos, target);
 
             return 0f;
         }
@@ -131,6 +141,6 @@ public class BumpSystem extends PassiveSystem
         // position 0 is "HERE"
         final Point p = path[1];
 
-        return bumpAction(entityId, Side.getSide(pos.x, pos.y, p.x, p.y));
+        return bumpAction(actorId, Side.getSide(pos.x, pos.y, p.x, p.y));
     }
 }

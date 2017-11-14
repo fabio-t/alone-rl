@@ -40,8 +40,6 @@ public class EquipScreen extends InventoryScreen
         if (targetId < 0)
             return super.handleKeys(keys);
 
-        screen.select(PlayScreen.class);
-
         return sAction.act(sItems.equip(playerId, targetId));
     }
 

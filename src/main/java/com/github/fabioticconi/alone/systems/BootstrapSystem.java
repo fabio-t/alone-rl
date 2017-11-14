@@ -21,7 +21,6 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.IntBag;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.github.fabioticconi.alone.behaviours.*;
@@ -52,6 +51,7 @@ public class BootstrapSystem extends PassiveSystem
     MapSystem   sMap;
     TreeSystem  sTree;
     CrushSystem sCrush;
+    ItemSystem  sItems;
     MapSystem   map;
 
     PlayerManager pManager;
@@ -87,7 +87,7 @@ public class BootstrapSystem extends PassiveSystem
         map.obstacles.set(id, x, y);
         pManager.setPlayer(world.getEntity(id), "player");
         edit.create(Inventory.class);
-        edit.add(new Name("You"));
+        edit.add(new Name("You", "you"));
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
@@ -125,7 +125,7 @@ public class BootstrapSystem extends PassiveSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker().darker());
-            edit.add(new Name("A buffalo"));
+            edit.add(new Name("A big buffalo", "buffalo"));
 
             map.obstacles.set(id, x, y);
         }
@@ -160,7 +160,7 @@ public class BootstrapSystem extends PassiveSystem
             edit.create(Position.class).set(x, y);
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
-            edit.add(new Name("A rabbit"));
+            edit.add(new Name("A cute rabbit", "rabbit"));
 
             map.obstacles.set(id, x, y);
         }
@@ -201,7 +201,7 @@ public class BootstrapSystem extends PassiveSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('w', Color.DARK_GRAY);
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Color.DARK_GRAY);
-            edit.add(new Name("A wolf"));
+            edit.add(new Name("A ferocious wolf", "wolf"));
 
             map.obstacles.set(id, x, y);
         }
@@ -237,7 +237,7 @@ public class BootstrapSystem extends PassiveSystem
             edit.create(Alertness.class).value = 0.0f;
             edit.create(Sprite.class).set('p', Util.BROWN.darker().darker());
             // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
-            edit.add(new Name("A puma"));
+            edit.add(new Name("A strong puma", "puma"));
 
             map.obstacles.set(id, x, y);
         }
@@ -276,7 +276,7 @@ public class BootstrapSystem extends PassiveSystem
                     edit.create(Position.class).set(x, y);
                     edit.create(Alertness.class).value = 0.0f;
                     edit.create(Sprite.class).set('f', Color.CYAN.darker());
-                    edit.add(new Name("A fish"));
+                    edit.add(new Name("A colorful fish", "fish"));
 
                     map.obstacles.set(id, x, y);
                 }
@@ -297,7 +297,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sTree.makeTree(x, y);
+                    sItems.makeItem("tree", x, y);
                 }
             }
         }
@@ -319,7 +319,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sCrush.makeBoulder(x, y);
+                    sItems.makeItem("boulder", x, y);
                 }
             }
         }
@@ -341,7 +341,7 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.items.isEmpty(x, y))
                         continue;
 
-                    sCrush.makeStone(x, y);
+                    sItems.makeItem("stone", x, y);
                 }
             }
         }
@@ -360,19 +360,9 @@ public class BootstrapSystem extends PassiveSystem
                     if (!map.items.isEmpty(x, y))
                         continue;
 
-                    switch (r.nextInt(3))
-                    {
-                        case 0:
-                            id = sTree.makeTrunk(x, y);
-                            map.items.set(id, x, y);
-                            break;
-
-                        case 1:
-                        case 2:
-                            id = sTree.makeBranch(x, y);
-                            map.items.set(id, x, y);
-                            break;
-                    }
+                    sItems.makeItem("trunk", x, y);
+                    sItems.makeItem("branch", x, y);
+                    sItems.makeItem("vine", x, y);
                 }
             }
         }

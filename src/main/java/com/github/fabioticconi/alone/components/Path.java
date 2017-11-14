@@ -31,6 +31,7 @@ public class Path extends Component
 {
     public float       cooldown;
     public List<Point> steps;
+    public int         i;
 
     public Path()
     {
@@ -44,6 +45,7 @@ public class Path extends Component
 
     public void set(final float cooldown, final List<Point> steps)
     {
+        this.i = 0;
         this.cooldown = cooldown;
         this.steps = steps;
     }

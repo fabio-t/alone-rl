@@ -19,6 +19,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
+import com.github.fabioticconi.alone.constants.BodyPart;
 
 /**
  * Author: Fabio Ticconi
@@ -26,4 +27,22 @@ import com.artemis.Component;
  */
 public class Wearable extends Component
 {
+    public BodyPart where;
+
+    public Wearable()
+    {
+
+    }
+
+    public Wearable(final BodyPart where)
+    {
+        this.where = where;
+    }
+
+    public Wearable set(final BodyPart where)
+    {
+        this.where = where;
+
+        return this;
+    }
 }

@@ -16,14 +16,17 @@
  *
  */
 
-package com.github.fabioticconi.alone.components;
-
-import com.artemis.Component;
+package com.github.fabioticconi.alone.messages;
 
 /**
  * Author: Fabio Ticconi
- * Date: 10/09/17
+ * Date: 14/11/17
  */
-public class LightBlocker extends Component
+public class CraftMsg extends AbstractMessage
 {
+    @Override
+    public String format()
+    {
+        return String.format("%s successfully %s %s", actor, thirdPerson ? "crafts" : "craft", target.toLowerCase());
+    }
 }

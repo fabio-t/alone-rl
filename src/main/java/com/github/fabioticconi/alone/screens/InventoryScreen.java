@@ -31,10 +31,6 @@ import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Collections;
-
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_Z;
 
 /**
  * Author: Fabio Ticconi
@@ -81,10 +77,8 @@ public abstract class InventoryScreen extends AbstractScreen
             if (!canDraw(itemId))
                 continue;
 
-            elements.add(String.format("%s %s %s",
-                                       Letter.values()[i],
-                                       mName.get(itemId).name.toLowerCase(),
-                                       mEquip.has(itemId) ? " [WORN]" : ""));
+            elements
+                .add(String.format("%s %s", mName.get(itemId).name.toLowerCase(), mEquip.has(itemId) ? " [WORN]" : ""));
         }
 
         drawList(terminal, elements);
@@ -101,11 +95,21 @@ public abstract class InventoryScreen extends AbstractScreen
         if (pos < 0)
             return -1;
 
-        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
-        final Inventory i = mInventory.get(playerId);
+        final int       playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+        final Inventory inv      = mInventory.get(playerId);
 
-        if (pos < i.items.size())
-            return i.items.get(pos);
+        for (int i = 0, j = 0, size = inv.items.size(); i < size; i++)
+        {
+            final int itemId = inv.items.get(i);
+
+            if (!canDraw(itemId))
+                continue;
+
+            if (j == pos)
+                return itemId;
+
+            j++;
+        }
 
         return -1;
     }

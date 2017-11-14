@@ -19,8 +19,10 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.EntityEdit;
-import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.Crushable;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Speed;
+import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.WeaponType;
@@ -29,9 +31,7 @@ import com.github.fabioticconi.alone.messages.CrushMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point;
 
-import java.awt.Color;
 import java.util.EnumSet;
 
 /**
@@ -42,10 +42,10 @@ public class CrushSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(CrushSystem.class);
 
-    ComponentMapper<Crushable> mCrushable;
+    ComponentMapper<Crushable> mCrush;
     ComponentMapper<Speed>     mSpeed;
-    ComponentMapper<Strength>  mStrength;
-    ComponentMapper<Position>  mPosition;
+    ComponentMapper<Strength>  mStr;
+    ComponentMapper<Position>  mPos;
     ComponentMapper<Weapon>    mWeapon;
 
     StaminaSystem sStamina;
@@ -64,49 +64,6 @@ public class CrushSystem extends PassiveSystem
         return c;
     }
 
-    public int makeStone(final Point p)
-    {
-        return makeStone(p.x, p.y);
-    }
-
-    public int makeStone(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('o', Color.DARK_GRAY.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
-        edit.create(Wearable.class);
-        edit.add(new Name("A stone"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeBoulder(final Point p)
-    {
-        return makeBoulder(p.x, p.y);
-    }
-
-    public int makeBoulder(final int x, final int y)
-    {
-        final int        id   = world.create();
-        final EntityEdit edit = world.edit(id);
-
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('#', Color.DARK_GRAY.brighter(), true);
-        edit.create(LightBlocker.class);
-        edit.create(Pushable.class);
-        edit.create(Crushable.class);
-        edit.add(new Name("A boulder"));
-
-        map.obstacles.set(id, x, y);
-
-        return id;
-    }
-
     public class CrushAction extends ActionContext
     {
         @Override
@@ -117,7 +74,7 @@ public class CrushSystem extends PassiveSystem
 
             final int targetId = targets.get(0);
 
-            if (targetId < 0 || !mCrushable.has(targetId))
+            if (targetId < 0 || !mCrush.has(targetId))
                 return false;
 
             final int hammerId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.BLUNT), true);
@@ -142,7 +99,7 @@ public class CrushSystem extends PassiveSystem
 
             // FIXME further adjust delay and cost using the hammer power
             delay = mSpeed.get(actorId).value;
-            cost = delay / (mStrength.get(actorId).value + 3f);
+            cost = delay / (mStr.get(actorId).value + 3f);
 
             return true;
         }
@@ -157,7 +114,7 @@ public class CrushSystem extends PassiveSystem
 
             msg.send(actorId, targetId, new CrushMsg());
 
-            final Position p = mPosition.get(targetId);
+            final Position p = mPos.get(targetId);
 
             // from a tree we get a trunk and two branches
             map.obstacles.del(p.x, p.y);
@@ -165,7 +122,7 @@ public class CrushSystem extends PassiveSystem
 
             for (int i = 0; i < 3; i++)
             {
-                makeStone(map.getFirstTotallyFree(p.x, p.y, -1));
+                sItem.makeItem("stone", p.x, p.y);
             }
 
             // consume a fixed amount of stamina

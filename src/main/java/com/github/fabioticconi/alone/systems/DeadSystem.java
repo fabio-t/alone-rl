@@ -25,7 +25,7 @@ import com.artemis.systems.IteratingSystem;
 import com.github.fabioticconi.alone.components.*;
 import rlforj.math.Point;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
@@ -65,7 +65,7 @@ public class DeadSystem extends IteratingSystem
         edit.create(Sprite.class).set('$', Color.RED.darker().darker(), false);
         edit.create(Corpse.class);
         edit.create(Health.class).set(size.value + 3);
-        edit.add(new Name(name.name + "'s corpse"));
+        edit.add(new Name(name.name + "'s corpse", "corpse"));
 
         map.items.set(corpseId, p2.x, p2.y);
     }

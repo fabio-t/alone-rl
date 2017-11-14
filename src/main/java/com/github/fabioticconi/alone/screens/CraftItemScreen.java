@@ -19,10 +19,17 @@
 package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
+import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.Inventory;
+import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.CraftMsg;
+import com.github.fabioticconi.alone.systems.CraftSystem;
+import com.github.fabioticconi.alone.systems.MessageSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 /**
  * Author: Fabio Ticconi
@@ -30,20 +37,42 @@ import java.awt.event.KeyEvent;
  */
 public class CraftItemScreen extends AbstractScreen
 {
+    ComponentMapper<Inventory> mInventory;
+
     ScreenSystem screen;
+    CraftSystem  sCraft;
+    MessageSystem msg;
+
     CraftScreen craftScreen;
 
     @Override
     public String header()
     {
-        return "Crafting item:";
+        return "Craft " + craftScreen.craftItem.tag + "?";
     }
 
     @Override
     public float handleKeys(final BitVector keys)
     {
+        final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
         if (keys.get(KeyEvent.VK_ESCAPE))
+            screen.select(CraftScreen.class);
+        else if (keys.get(KeyEvent.VK_ENTER))
+        {
+            System.out.println(craftScreen.craftItem);
+            final int id = sCraft.craftItem(playerId, craftScreen.craftItem);
+            if (id >= 0)
+            {
+                final Inventory inv = mInventory.get(playerId);
+                inv.items.add(id);
+                msg.send(playerId, id, new CraftMsg());
+            }
+            else
+                msg.send(playerId, id, new CannotMsg("craft"));
+
             screen.select(PlayScreen.class);
+        }
 
         keys.clear();
 
@@ -53,10 +82,20 @@ public class CraftItemScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        terminal.clear();
+
         drawHeader(terminal);
 
-        terminal.writeCenter(craftScreen.craftItem, terminal.getHeightInCharacters()/2);
+        int height = terminal.getHeightInCharacters() / 3;
 
-        // TODO
+        terminal.writeCenter("Consumes:", height);
+        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.sources), height + 2);
+
+        height += 8;
+
+        terminal.writeCenter("Tools needed:", height);
+        terminal.writeCenter(Arrays.toString(craftScreen.craftItem.tools), height + 2);
+
+        terminal.writeCenter("[ type ENTER to confirm ]", terminal.getHeightInCharacters() - 2);
     }
 }

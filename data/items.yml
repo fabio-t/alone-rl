@@ -1,12 +1,140 @@
 
 stone:
-  name: a stone
+  name: a round stone
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: BLUNT
+    damage: 2
+  sprite:
+    c: 7
+    col:
+      red: 88
+      green: 88
+      blue: 88
 
 branch:
-  name: a branch
+  name: a sturdy branch
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: BLUNT
+    damage: 1
+  sprite:
+    c: '/'
+    col:
+      red: 141
+      green: 104
+      blue: 21
+
+vine:
+  name: a thin, flexible branch
+  sprite:
+    c: 239
+    col:
+      red: 36
+      green: 122
+      blue: 7
 
 trunk:
-  name: a tree trunk
+  name: a fallen tree
+  sprite:
+    c: 22
+    col:
+      red: 141
+      green: 104
+      blue: 21
 
 boulder:
-  name: a boulder
+  name: a big boulder
+  sprite:
+    c: '#'
+    col:
+      red: 88
+      green: 88
+      blue: 88
+    shadowView: true
+  obstacle: {}
+  crushable: {}
+
+tree:
+  name: a mature tree
+  sprite:
+    c: T
+    col:
+      red: 0
+      green: 205
+      blue: 113
+    shadowView: true
+  obstacle: {}
+  cuttable: {}
+
+sharp-stone:
+  name: a sharp stone
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: SLASH
+    damage: 2
+  sprite:
+    c: 4
+    col:
+      red: 88
+      green: 88
+      blue: 88
+
+small-sharp-stone:
+  name: a small, sharp stone
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: POINT
+    damage: 2
+  sprite:
+    c: 17
+    col:
+      red: 88
+      green: 88
+      blue: 88
+
+stone-hammer:
+  name: a stone hammer
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: BLUNT
+    damage: 4
+  sprite:
+    c: 209
+    col:
+      red: 141
+      green: 104
+      blue: 21
+
+stone-axe:
+  name: a stone axe
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: SLASH
+    damage: 4
+  sprite:
+    c: 184
+    col:
+      red: 141
+      green: 104
+      blue: 21
+
+stone-spear:
+  name: a stone spear
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: POINT
+    damage: 4
+  sprite:
+    c: 244
+    col:
+      red: 141
+      green: 104
+      blue: 21

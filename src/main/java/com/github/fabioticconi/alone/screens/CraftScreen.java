@@ -31,6 +31,7 @@ import com.github.fabioticconi.alone.systems.ItemSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 /**
  * Author: Fabio Ticconi
@@ -49,19 +50,26 @@ public class CraftScreen extends AbstractScreen
 
     PlayerManager pManager;
 
-    String craftItem = "Test";
+    List<String>          recipeNames;
+    CraftSystem.CraftItem craftItem;
 
     @Override
     public float handleKeys(final BitVector keys)
     {
         if (keys.get(KeyEvent.VK_ESCAPE))
+        {
+            recipeNames = null;
             screen.select(PlayScreen.class);
+        }
         else
         {
             final int pos = getTargetIndex(keys);
 
-            if (pos >= 0)
+            if (pos >= 0 && pos < recipeNames.size())
+            {
+                craftItem = sCraft.getRecipes().get(recipeNames.get(pos));
                 screen.select(CraftItemScreen.class);
+            }
         }
 
         keys.clear();
@@ -72,9 +80,14 @@ public class CraftScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        if (recipeNames == null)
+            recipeNames = sCraft.getRecipeNames();
+
+        terminal.clear(' ');
+
         drawHeader(terminal);
 
-        drawList(terminal, sCraft.getRecipeNames());
+        drawList(terminal, recipeNames);
     }
 
     @Override

@@ -18,6 +18,7 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
+import com.github.fabioticconi.alone.components.Path;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Underwater;
@@ -38,6 +39,7 @@ public class MovementSystem extends PassiveSystem
     ComponentMapper<Position>   mPosition;
     ComponentMapper<Speed>      mSpeed;
     ComponentMapper<Underwater> mUnderWater;
+    ComponentMapper<Path>       mPath;
 
     StaminaSystem sStamina;
     MapSystem     map;
@@ -76,6 +78,23 @@ public class MovementSystem extends PassiveSystem
 
             final Cell cell = map.get(x2, y2);
 
+            if (mUnderWater.has(actorId))
+            {
+                cost = 0.25f;
+                delay = speed.value * 0.25f;
+
+                return true;
+            }
+
+            if (mPath.has(actorId))
+            {
+                // it's a thrown weapon, no cost whatsoever
+                cost = 0f;
+                delay = speed.value;
+
+                return true;
+            }
+
             switch (cell)
             {
                 case HILL:
@@ -93,17 +112,11 @@ public class MovementSystem extends PassiveSystem
                     break;
 
                 case WATER:
-                    if (mUnderWater.has(actorId))
-                        cost = 0.25f;
-                    else
-                        cost = 3f;
+                    cost = 3f;
                     break;
 
                 case DEEP_WATER:
-                    if (mUnderWater.has(actorId))
-                        cost = 0.25f;
-                    else
-                        cost = 4f;
+                    cost = 4f;
                     break;
 
                 default:
@@ -123,17 +136,7 @@ public class MovementSystem extends PassiveSystem
             final int x2 = p.x + direction.x;
             final int y2 = p.y + direction.y;
 
-            if (map.items.has(actorId, p.x, p.y))
-            {
-                // it's a moving item
-                map.items.move(p.x, p.y, x2, y2);
-
-                p.x = x2;
-                p.y = y2;
-
-                // it doesn't have stamina
-            }
-            else if (map.obstacles.has(actorId, p.x, p.y) && map.isFree(x2, y2))
+            if (map.isFree(x2, y2))
             {
                 final int id = map.obstacles.move(p.x, p.y, x2, y2);
 

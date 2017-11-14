@@ -28,9 +28,11 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.map.SingleGrid;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.Msg;
 import com.github.fabioticconi.alone.systems.*;
 import com.github.fabioticconi.alone.utils.LongBag;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.EnumSet;
 import java.util.Properties;
 import java.util.Stack;
 
@@ -177,7 +180,7 @@ public class PlayScreen extends AbstractScreen
 
             return 0f;
         }
-        else if (keys.get(KeyEvent.VK_L) || keys.get(KeyEvent.VK_T))
+        else if (keys.get(KeyEvent.VK_L))
         {
             keys.clear();
 
@@ -187,6 +190,22 @@ public class PlayScreen extends AbstractScreen
 
             return 0f;
         }
+        else if (keys.get(KeyEvent.VK_T))
+        {
+            keys.clear();
+
+            final int weaponId = sItems.getWeapon(playerId, EnumSet.allOf(WeaponType.class), true);
+
+            if (weaponId < 0)
+            {
+                // TODO: it would be cool if we could support proper screen chaining.
+                // Eg, here we should actually select the EquipScreen AND follow it with a LookScreen.
+
+                msg.send(playerId, new Msg("must equip a weapon first"));
+
+                return 0f;
+            }
+        }
         else if (keys.get(KeyEvent.VK_W))
         {
             keys.clear();
@@ -194,6 +213,16 @@ public class PlayScreen extends AbstractScreen
             Main.pause();
 
             screen.select(EquipScreen.class);
+
+            return 0f;
+        }
+        else if (keys.get(KeyEvent.VK_C))
+        {
+            keys.clear();
+
+            Main.pause();
+
+            screen.select(CraftScreen.class);
 
             return 0f;
         }
@@ -231,12 +260,23 @@ public class PlayScreen extends AbstractScreen
                 Main.paused = !Main.paused;
 
                 keys.clear();
+
+                return 0f;
+            }
+
+            keys.clear();
+
+            if (Main.realtime)
+            {
+                // in real-time mode, SPACE just means pausing (or unpausing)
+
+                Main.paused = !Main.paused;
             }
             else
             {
-                keys.clear();
-
-                Main.paused = Main.realtime && !Main.paused;
+                // in turn-based mode, SPACE means "unpause", which we achieve by
+                // simply setting a player action equal to the world delta.
+                // this will
 
                 return world.delta;
             }

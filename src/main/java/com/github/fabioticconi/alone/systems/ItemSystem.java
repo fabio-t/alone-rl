@@ -19,6 +19,10 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
+import com.artemis.EntityEdit;
+import com.artemis.annotations.Wire;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.constants.WeaponType;
@@ -26,13 +30,17 @@ import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
-import com.github.fabioticconi.alone.screens.AbstractScreen;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Author: Fabio Ticconi
@@ -48,9 +56,139 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Equip>     mEquip;
     ComponentMapper<Wearable>  mWearable;
     ComponentMapper<Armour>    mArmour;
+    ComponentMapper<Name>      mName;
+    ComponentMapper<Obstacle>  mObstacle;
 
     MessageSystem msg;
     MapSystem     map;
+
+    @Wire
+    ObjectMapper mapper;
+
+    HashMap<String, ItemTemplate> templates;
+
+    @Override
+    protected void initialize()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public HashMap<String, ItemTemplate> getTemplates()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return templates;
+    }
+
+    public void loadTemplates() throws IOException
+    {
+        final InputStream fileStream = new FileInputStream("data/items.yml");
+
+        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, ItemTemplate>>()
+        {
+        });
+
+        for (final Map.Entry<String, ItemTemplate> entry : templates.entrySet())
+        {
+            final ItemTemplate temp = entry.getValue();
+            temp.tag = entry.getKey();
+        }
+    }
+
+    /**
+     * It instantiates an object of the given type and places at that Point.
+     *
+     * @param tag
+     * @param p
+     * @return
+     */
+    public int makeItem(final String tag, final Point p)
+    {
+        return makeItem(tag, p.x, p.y);
+    }
+
+    /**
+     * It instantiates an object of the given type and places at that position.
+     *
+     * @param tag
+     * @param x
+     * @param y
+     * @return
+     */
+    public int makeItem(final String tag, final int x, final int y)
+    {
+        final int id = makeItem(tag);
+
+        if (id < 0)
+            return id;
+
+        final Point p = map.getFirstTotallyFree(x, y, -1);
+
+        mPos.create(id).set(p.x, p.y);
+
+        if (mObstacle.has(id))
+            map.obstacles.set(id, p.x, p.y);
+        else
+            map.items.set(id, p.x, p.y);
+
+        return id;
+    }
+
+    public int makeItem(final String tag)
+    {
+        try
+        {
+            loadTemplates();
+
+            final ItemTemplate template = templates.get(tag);
+
+            if (template == null)
+            {
+                log.warn("Item named {} doesn't exist", tag);
+                return -1;
+            }
+
+            final int id = world.create();
+
+            final EntityEdit edit = world.edit(id);
+
+            edit.add(new Name(template.name, tag));
+
+            // TODO find a way to do this dynamically. Right now I cannot figure out a way
+            // of deserialising an array of Components, because it's an abstract class that I cannot annotate.
+            if (template.wearable != null)
+                edit.add(template.wearable);
+            if (template.weapon != null)
+                edit.add(template.weapon);
+            if (template.sprite != null)
+                edit.add(template.sprite);
+            if (template.obstacle != null)
+                edit.add(template.obstacle);
+            if (template.crushable != null)
+                edit.add(template.crushable);
+            if (template.cuttable != null)
+                edit.add(template.cuttable);
+
+            return id;
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+
+            return -1;
+        }
+    }
 
     public GetAction get(final int actorId)
     {
@@ -81,12 +219,12 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
-    int getArmour(final int entityId)
+    public int getArmour(final int entityId)
     {
         return getArmour(entityId, true);
     }
 
-    int getArmour(final int entityId, final boolean onlyEquipped)
+    public int getArmour(final int entityId, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
@@ -115,17 +253,7 @@ public class ItemSystem extends PassiveSystem
         return -1;
     }
 
-    int getWeapon(final int entityId)
-    {
-        return getWeapon(entityId, true);
-    }
-
-    int getWeapon(final int entityId, final boolean onlyEquipped)
-    {
-        return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
-    }
-
-    int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    public int getItem(final int entityId, final String tag, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
@@ -137,12 +265,40 @@ public class ItemSystem extends PassiveSystem
         {
             final int itemId = data[i];
 
-            if (itemId < 0)
-            {
-                // TODO: we could flag inventory as "dirty", and then use a system for periodic cleanup.
-
+            // we might only want an equipped item
+            if (!mName.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
                 continue;
-            }
+
+            final Name name = mName.get(itemId);
+
+            if (name.tag.equals(tag))
+                return itemId;
+        }
+
+        return -1;
+    }
+
+    public int getWeapon(final int entityId)
+    {
+        return getWeapon(entityId, true);
+    }
+
+    public int getWeapon(final int entityId, final boolean onlyEquipped)
+    {
+        return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
+    }
+
+    public int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
 
             // we might only want an equipped weapon
             if (!mWeapon.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
@@ -155,6 +311,19 @@ public class ItemSystem extends PassiveSystem
         }
 
         return -1;
+    }
+
+    public static class ItemTemplate
+    {
+        public String name;
+        public String tag;
+
+        public Wearable  wearable;
+        public Weapon    weapon;
+        public Sprite    sprite;
+        public Obstacle  obstacle;
+        public Crushable crushable;
+        public Cuttable  cuttable;
     }
 
     public class GetAction extends ActionContext

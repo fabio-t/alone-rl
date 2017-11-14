@@ -19,20 +19,18 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.artemis.EntityEdit;
-import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.Cuttable;
+import com.github.fabioticconi.alone.components.Position;
+import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CutMsg;
-import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rlforj.math.Point;
 
-import java.awt.*;
 import java.util.EnumSet;
 
 /**
@@ -43,11 +41,10 @@ public class TreeSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(TreeSystem.class);
 
-    ComponentMapper<Tree>     mTree;
+    ComponentMapper<Cuttable> mCuttable;
     ComponentMapper<Speed>    mSpeed;
     ComponentMapper<Strength> mStrength;
     ComponentMapper<Position> mPosition;
-    ComponentMapper<Name>     mName;
 
     StaminaSystem sStamina;
     ItemSystem    sItem;
@@ -65,62 +62,6 @@ public class TreeSystem extends PassiveSystem
         return c;
     }
 
-    public int makeTree(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('T', Color.GREEN.darker(), true);
-        edit.create(LightBlocker.class);
-        edit.create(Tree.class);
-        edit.add(new Name("A tree"));
-
-        map.obstacles.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeTrunk(final Point p)
-    {
-        return makeTrunk(p.x, p.y);
-    }
-
-    public int makeTrunk(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('-', Util.BROWN.brighter());
-        edit.add(new Name("A tree trunk"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
-    public int makeBranch(final Point p)
-    {
-        return makeBranch(p.x, p.y);
-    }
-
-    public int makeBranch(final int x, final int y)
-    {
-        final int id = world.create();
-
-        final EntityEdit edit = world.edit(id);
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('/', Util.BROWN.brighter());
-        edit.create(Weapon.class).set(WeaponType.BLUNT, 1);
-        edit.create(Wearable.class);
-        edit.add(new Name("A branch"));
-
-        map.items.set(id, x, y);
-
-        return id;
-    }
-
     public class CutAction extends ActionContext
     {
         @Override
@@ -131,7 +72,7 @@ public class TreeSystem extends PassiveSystem
 
             final int treeId = targets.get(0);
 
-            if (!mTree.has(treeId))
+            if (!mCuttable.has(treeId))
                 return false;
 
             final int axeId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.SLASH), false);
@@ -169,9 +110,9 @@ public class TreeSystem extends PassiveSystem
             map.obstacles.del(p.x, p.y);
             world.delete(treeId);
 
-            makeTrunk(map.getFirstTotallyFree(p.x, p.y, -1));
-            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
-            makeBranch(map.getFirstTotallyFree(p.x, p.y, -1));
+            sItem.makeItem("trunk", p.x, p.y);
+            sItem.makeItem("branch", p.x, p.y);
+            sItem.makeItem("vine", p.x, p.y);
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);

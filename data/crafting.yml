@@ -1,41 +1,20 @@
 
-branch:
-  name: a branch
-  #source:
-  #  external: tree
-
-tree-trunk:
-  name: a tree trunk
-  #source:
-  #  external: tree
-  tool: axe
-
-stone:
-  name: a stone
-  #source:
-  #  external: boulder
-  tool: stone
-  n: 3
-
 sharp-stone:
-  name: a sharp stone
-  source: stone
-  tool: stone
+  sources: stone
+  tools: stone
 
-#small-sharp-stone:
-#  name: a small, sharp stone
-#  source: [sharp-stone]
-#  tool: stone
-#  n: 2
-#
-#stone-hammer:
-#  name: a stone hammer
-#  source: [stone, branch]
-#
-#stone-axe:
-#  name: a stone axe
-#  source: [sharp-stone, branch]
-#
-#stone-spear:
-#  name: a stone spear
-#  source: [small-sharp-stone, tree-trunk]
+small-sharp-stone:
+  sources: sharp-stone
+  tools: stone
+
+stone-hammer:
+  sources: [stone, branch, vine]
+  tools: stone
+
+stone-axe:
+  sources: [sharp-stone, branch, vine]
+  tools: stone
+
+stone-spear:
+  sources: [small-sharp-stone, trunk, vine]
+  tools: stone

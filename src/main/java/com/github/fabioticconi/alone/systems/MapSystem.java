@@ -18,7 +18,7 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
-import com.github.fabioticconi.alone.components.LightBlocker;
+import com.github.fabioticconi.alone.components.Obstacle;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
@@ -30,7 +30,10 @@ import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.IBoard;
-import rlforj.los.*;
+import rlforj.los.BresLos;
+import rlforj.los.IFovAlgorithm;
+import rlforj.los.ILosAlgorithm;
+import rlforj.los.ShadowCasting;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 
@@ -54,14 +57,13 @@ public class MapSystem extends PassiveSystem implements IBoard
     final Cell terrain[][];
 
     /* FOV/LOS stuff */
-    final LongBag lastVisited;
-    final AStar   astar;
+    final LongBag       lastVisited;
+    final AStar         astar;
     final IFovAlgorithm fov;
     final ILosAlgorithm los;
-    ComponentMapper<LightBlocker> mLightBlocker;
-
     final SingleGrid obstacles;
     final SingleGrid items;
+    ComponentMapper<Obstacle> mObstacle;
 
     public MapSystem() throws IOException
     {
@@ -81,6 +83,12 @@ public class MapSystem extends PassiveSystem implements IBoard
         terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
         obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
         items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+
+        // TODO: we should make Cell a class, and obviously use a pool.
+        // This way we can load the cells from a yaml file, with their thresholds, colours, characters etc,
+        // and then we aren't stuck anymore with a few discrete terrain types but we can colour with a gradient,
+        // for example.
+        // movement costs should also be part of this cell.
 
         float value;
 
@@ -416,7 +424,7 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         // currently no tile blocks light by itself, so if there's no creature
         // here we know that light passes.
-        return entityId >= 0 && mLightBlocker.has(entityId);
+        return entityId >= 0 && mObstacle.has(entityId);
     }
 
     @Override

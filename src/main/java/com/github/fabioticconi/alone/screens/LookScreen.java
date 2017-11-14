@@ -24,6 +24,7 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Target;
 import com.github.fabioticconi.alone.components.attributes.Sight;
+import com.github.fabioticconi.alone.systems.ItemSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.systems.ThrowSystem;
 import com.github.fabioticconi.alone.utils.Coords;
@@ -47,6 +48,7 @@ public class LookScreen extends PlayScreen
 
     ThrowSystem sThrow;
     MapSystem   map;
+    ItemSystem  sItem;
 
     @Override
     public float handleKeys(final BitVector keys)

@@ -25,6 +25,10 @@ import com.artemis.WorldConfiguration;
 import com.artemis.link.EntityLinkManager;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.screens.*;
@@ -68,6 +72,10 @@ public class Main extends JFrame implements KeyListener
         final Properties properties = new Properties();
         properties.load(this.getClass().getResourceAsStream("/project.properties"));
 
+        final YAMLFactory factory = new YAMLFactory();
+        final ObjectMapper mapper = new ObjectMapper(factory).registerModule(new ParameterNamesModule())
+                                                             .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
         final WorldConfiguration config;
         config = new WorldConfiguration();
         // first thing to be loaded
@@ -75,6 +83,7 @@ public class Main extends JFrame implements KeyListener
         // POJO
         config.register(new Random());
         config.register(properties);
+        config.register(mapper);
         // passive systems, one-timers, managers etc
         config.setSystem(EntityLinkManager.class);
         config.setSystem(BootstrapSystem.class);
@@ -139,12 +148,11 @@ public class Main extends JFrame implements KeyListener
     }
 
     /**
-     * In real-time mode, space means pause/unpause the game, while
-     * in turn-based mode, space means unpause the game until SPACE is released.
+     * Makes sure that the game is paused
      */
     public static void pause()
     {
-        Main.paused = Main.realtime && !Main.paused;
+        Main.paused = true;
     }
 
     public void loop()
