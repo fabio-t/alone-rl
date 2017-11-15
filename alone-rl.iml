@@ -14,7 +14,7 @@
     <orderEntry type="library" name="Maven: com.github.trystan:AsciiPanel:e0c4372" level="project" />
     <orderEntry type="library" name="Maven: net.onedaybeard.artemis:artemis-odb:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.mostlyoriginal.artemis-odb:contrib-core:2.2.0" level="project" />
-    <orderEntry type="library" name="Maven: com.github.fabioticconi:rlforj-alt:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fabioticconi:rlforj-alt:0.3.0" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />

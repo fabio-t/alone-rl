@@ -36,6 +36,7 @@ import rlforj.los.ILosAlgorithm;
 import rlforj.los.ShadowCasting;
 import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
+import rlforj.pathfinding.IPathAlgorithm;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -57,12 +58,12 @@ public class MapSystem extends PassiveSystem implements IBoard
     final Cell terrain[][];
 
     /* FOV/LOS stuff */
-    final LongBag       lastVisited;
-    final AStar         astar;
-    final IFovAlgorithm fov;
-    final ILosAlgorithm los;
-    final SingleGrid obstacles;
-    final SingleGrid items;
+    final LongBag        lastVisited;
+    final IPathAlgorithm path;
+    final IFovAlgorithm  fov;
+    final ILosAlgorithm  los;
+    final SingleGrid     obstacles;
+    final SingleGrid     items;
     ComponentMapper<Obstacle> mObstacle;
 
     public MapSystem() throws IOException
@@ -139,7 +140,7 @@ public class MapSystem extends PassiveSystem implements IBoard
             }
         }
 
-        astar = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
+        path = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
     }
 
     /**
@@ -332,7 +333,7 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         lastVisited.clear();
 
-        fov.visitFieldOfView(this, x, y, r);
+        fov.visitFoV(this, x, y, r);
 
         int[] coords;
         Cell  cell;
@@ -443,25 +444,25 @@ public class MapSystem extends PassiveSystem implements IBoard
     {
         lastVisited.clear();
 
-        fov.visitFieldOfView(this, x, y, r);
+        fov.visitFoV(this, x, y, r);
 
         return lastVisited;
     }
 
     public List<Point> getLineOfSight(final int startX, final int startY, final int endX, final int endY)
     {
-        final boolean exists = los.existsLineOfSight(this, startX, startY, endX, endY, true);
+        final boolean exists = los.exists(this, startX, startY, endX, endY, true);
 
         // FIXME: rlforj-alt should either always return a list, or always an array
 
         if (exists)
-            return los.getProjectPath();
+            return los.getPath();
 
         return null;
     }
 
     public Point[] getPath(final int startX, final int startY, final int endX, final int endY, final int radius)
     {
-        return astar.findPath(startX, startY, endX, endY, radius);
+        return path.findPath(startX, startY, endX, endY, radius);
     }
 }
