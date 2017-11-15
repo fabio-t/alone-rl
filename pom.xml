@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.fabioticconi</groupId>
+    <groupId>com.github.fabio-t</groupId>
     <artifactId>alone-rl</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -161,9 +161,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:git@fabioticconi/alone-rl.git</connection>
-        <url>scm:git:git@fabioticconi/alone-rl.git</url>
-        <developerConnection>scm:git:git@fabioticconi/alone-rl.git</developerConnection>
+        <connection>scm:git:git@fabio-t/alone-rl.git</connection>
+        <url>scm:git:git@fabio-t/alone-rl.git</url>
+        <developerConnection>scm:git:git@fabio-t/alone-rl.git</developerConnection>
     </scm>
 
     <repositories>
