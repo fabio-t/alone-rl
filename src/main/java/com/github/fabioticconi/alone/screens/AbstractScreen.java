@@ -21,6 +21,7 @@ package com.github.fabioticconi.alone.screens;
 import asciiPanel.AsciiPanel;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.systems.ScreenSystem;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
@@ -38,6 +39,7 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
 {
     public static final Letter[] ALL = Letter.values();
 
+    ScreenSystem screen;
     PlayerManager pManager;
 
     public abstract String header();
