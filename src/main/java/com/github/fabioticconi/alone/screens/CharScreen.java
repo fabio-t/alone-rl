@@ -20,7 +20,6 @@ package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
 
@@ -59,6 +58,11 @@ public class CharScreen extends AbstractScreen
         {
             // TODO add one point to selected stat
         }
+        else if (keys.get(KeyEvent.VK_ENTER))
+        {
+            // confirmed, let's play!
+            screen.select(PlayScreen.class);
+        }
 
         keys.clear();
 
@@ -68,11 +72,13 @@ public class CharScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        terminal.clear();
+
         // TODO draw a list of three options, one for each character stat,
         // and keep track of how many stat points have been added
 
         // (colour currently selected stat in yellow?)
 
-        terminal.writeCenter("[type ENTER to confirm]", terminal.getHeightInCharacters() - 2);
+        terminal.writeCenter("[ENTER] to play, [ESC] to go back", terminal.getHeightInCharacters() - 2);
     }
 }

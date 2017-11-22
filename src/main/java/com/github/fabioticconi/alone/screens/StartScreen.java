@@ -24,6 +24,7 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.Properties;
@@ -42,10 +43,16 @@ public class StartScreen extends AbstractScreen
     @Override
     public float handleKeys(final BitVector keys)
     {
-        // TODO: eventually, "N" should re-run the world to start from scratch,
-        // while "C" either selects the PlayScreen, or (at first start) loads the save file
+        // TODO: [C] should load a saved game (if any), or if the world is already loaded
+        // (eg, if the player types ESC while playing), it must simply jump to the PlayScreen
 
-        if (keys.get(KeyEvent.VK_N) || keys.get(KeyEvent.VK_C))
+        if (keys.get(KeyEvent.VK_N))
+        {
+            keys.clear();
+
+            screen.select(MapScreen.class);
+        }
+        else if (keys.get(KeyEvent.VK_C))
         {
             keys.clear();
 
@@ -70,13 +77,13 @@ public class StartScreen extends AbstractScreen
         terminal.writeCenter(String.join("", Collections.nCopies(header.length(), "-")), 3);
 
         int y = terminal.getHeightInCharacters() / 2 - 4 * 2;
-        terminal.writeCenter("(N)ew", y);
+        terminal.writeCenter("[N]ew", y);
         y = y + 2;
-        terminal.writeCenter("(C)ontinue", y);
+        terminal.writeCenter("[C]ontinue", y, Color.GRAY);
         y = y + 2;
-        terminal.writeCenter("(O)ptions [inactive]", y);
+        terminal.writeCenter("[O]ptions [inactive]", y);
         y = y + 2;
-        terminal.writeCenter("Save & (Q)uit", y);
+        terminal.writeCenter("Save & [Q]uit", y);
 
         y = terminal.getHeightInCharacters() - 2;
         terminal.writeCenter("by Fabio Ticconi", y);

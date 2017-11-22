@@ -16,7 +16,7 @@
  *
  */
 
-package com.github.fabioticconi.alone.map;
+package com.github.fabioticconi.alone.utils;
 
 import com.artemis.utils.IntBag;
 import com.github.fabioticconi.alone.utils.Coords;

@@ -22,7 +22,7 @@ import com.github.fabioticconi.alone.components.Obstacle;
 import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.map.SingleGrid;
+import com.github.fabioticconi.alone.utils.SingleGrid;
 import com.github.fabioticconi.alone.utils.Coords;
 import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.Util;

@@ -43,7 +43,7 @@ public class MapScreen extends AbstractScreen
     {
         if (keys.get(KeyEvent.VK_ESCAPE))
             screen.select(StartScreen.class);
-        else if (keys.get(KeyEvent.VK_G))
+        else if (keys.get(KeyEvent.VK_R))
         {
             // TODO regenerate map (must call TerGen and store data somewhere)
         }
@@ -62,9 +62,12 @@ public class MapScreen extends AbstractScreen
     @Override
     public void display(final AsciiPanel terminal)
     {
+        terminal.clear();
+
         // TODO must take the full map, downscaled a lot (maybe take average colour per tile? or most common colour?)
         // and show it in a square/rectangle leaving some little black margin
 
-        terminal.writeCenter("[G]enerate or [ENTER]", terminal.getHeightInCharacters() - 2);
+        terminal.writeCenter("[R]egenerare world", terminal.getHeightInCharacters() - 4);
+        terminal.writeCenter("[ENTER] to confirm, [ESC] to go back", terminal.getHeightInCharacters() - 2);
     }
 }

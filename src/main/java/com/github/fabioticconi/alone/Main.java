@@ -127,6 +127,8 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(EquipScreen.class);
         config.setSystem(CraftScreen.class);
         config.setSystem(CraftItemScreen.class);
+        config.setSystem(MapScreen.class);
+        config.setSystem(CharScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
