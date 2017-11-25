@@ -20,8 +20,16 @@ package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.constants.Cell;
+import com.github.fabioticconi.alone.constants.Options;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Author: Fabio Ticconi
@@ -35,7 +43,7 @@ public class MapScreen extends AbstractScreen
     @Override
     public String header()
     {
-        return "Map Generation:";
+        return "World Generation:";
     }
 
     @Override
@@ -64,10 +72,65 @@ public class MapScreen extends AbstractScreen
     {
         terminal.clear();
 
+        // title:
+        drawHeader(terminal);
+
+        final int xmin = 1;
+        final int xmax = terminal.getWidthInCharacters() - 1;
+        final int ymin = 4;
+        final int ymax = terminal.getHeightInCharacters() - 5;
+
+        final int tileWidth  = Math.floorDiv(Options.MAP_SIZE_X, xmax - xmin);
+        final int tileHeight = Math.floorDiv(Options.MAP_SIZE_Y, ymax - ymin);
+
+        final ArrayList<Cell> cells = new ArrayList<>(tileWidth * tileHeight);
+
+        for (int x = xmin; x < xmax; x++)
+        {
+            for (int y = ymin; y < ymax; y++)
+            {
+                for (int tileX = 0; tileX < tileWidth; tileX++)
+                {
+                    for (int tileY = 0; tileY < tileHeight; tileY++)
+                    {
+                        final int posX = x * tileWidth + tileX;
+                        final int posY = y * tileHeight + tileY;
+
+                        // render terrain
+                        final Cell cell = map.get(posX, posY);
+
+                        cells.add(cell);
+                    }
+                }
+
+                float r=0,g=0,b=0;
+                for (Cell cell : cells)
+                {
+                    r += cell.bg.getRed()*cell.bg.getRed();
+                    g += cell.bg.getGreen()*cell.bg.getGreen();
+                    b += cell.bg.getBlue()*cell.bg.getBlue();
+                }
+
+                r = (float)Math.sqrt(r / cells.size());
+                g = (float)Math.sqrt(g / cells.size());
+                b = (float)Math.sqrt(b / cells.size());
+
+                final Color col = new Color(Math.round(r), Math.round(g), Math.round(b));
+                terminal.write(' ', x, y, Color.WHITE, col);
+
+                // final Cell cell = cells.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet()
+                //      .stream().max(Comparator.comparing(Map.Entry::getValue)).get().getKey();
+                //
+                // terminal.write(cell.c, x, y, cell.col, cell.bg);
+
+                cells.clear();
+            }
+        }
+
         // TODO must take the full map, downscaled a lot (maybe take average colour per tile? or most common colour?)
         // and show it in a square/rectangle leaving some little black margin
 
-        terminal.writeCenter("[R]egenerare world", terminal.getHeightInCharacters() - 4);
+        terminal.writeCenter("[R]egenerate", terminal.getHeightInCharacters() - 4);
         terminal.writeCenter("[ENTER] to confirm, [ESC] to go back", terminal.getHeightInCharacters() - 2);
     }
 }
