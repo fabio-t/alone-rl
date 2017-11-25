@@ -104,7 +104,7 @@ public class MapScreen extends AbstractScreen
                 }
 
                 float r=0,g=0,b=0;
-                for (Cell cell : cells)
+                for (final Cell cell : cells)
                 {
                     r += cell.bg.getRed()*cell.bg.getRed();
                     g += cell.bg.getGreen()*cell.bg.getGreen();
