@@ -23,7 +23,7 @@ import com.github.fabioticconi.alone.components.Hunger;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.constants.Cell;
+import com.github.fabioticconi.alone.constants.TerrainType;
 import com.github.fabioticconi.alone.systems.ActionSystem;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.HungerSystem;
@@ -53,7 +53,7 @@ public class GrazeBehaviour extends AbstractBehaviour
     // FIXME: this should be in a Context of sort
     private Hunger hunger;
 
-    private EnumSet<Cell> validCells = EnumSet.of(Cell.GRASS, Cell.HILL_GRASS);
+    final private EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.GRASS);
 
     @Override
     protected void initialize()

@@ -24,7 +24,7 @@ import com.artemis.systems.IntervalIteratingSystem;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Underwater;
-import com.github.fabioticconi.alone.constants.Cell;
+import com.github.fabioticconi.alone.constants.TerrainType;
 
 import java.util.EnumSet;
 
@@ -34,10 +34,11 @@ import java.util.EnumSet;
  */
 public class UnderwaterSystem extends IntervalIteratingSystem
 {
-    private final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
     ComponentMapper<Position> mPos;
     HealthSystem              sHealth;
     MapSystem                 map;
+
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     public UnderwaterSystem(final float interval)
     {
@@ -49,7 +50,7 @@ public class UnderwaterSystem extends IntervalIteratingSystem
     {
         final Position p = mPos.get(entityId);
 
-        final Cell c = map.get(p.x, p.y);
+        final MapSystem.Cell c = map.get(p.x, p.y);
 
         // if inside water, no problem
         if (validCells.contains(c))

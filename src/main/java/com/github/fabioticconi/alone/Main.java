@@ -176,6 +176,8 @@ public class Main extends JFrame implements KeyListener
         long repaintCooldown = 1L;
         long actionCooldown  = 0L;
 
+        world.process();
+
         while (keepRunning)
         {
             currentTime = System.nanoTime();

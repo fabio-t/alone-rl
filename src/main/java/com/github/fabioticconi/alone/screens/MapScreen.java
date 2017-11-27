@@ -20,16 +20,12 @@ package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
+import com.github.fabioticconi.alone.systems.MapSystem;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Author: Fabio Ticconi
@@ -83,7 +79,7 @@ public class MapScreen extends AbstractScreen
         final int tileWidth  = Math.floorDiv(Options.MAP_SIZE_X, xmax - xmin);
         final int tileHeight = Math.floorDiv(Options.MAP_SIZE_Y, ymax - ymin);
 
-        final ArrayList<Cell> cells = new ArrayList<>(tileWidth * tileHeight);
+        final ArrayList<MapSystem.Cell> cells = new ArrayList<>(tileWidth * tileHeight);
 
         for (int x = xmin; x < xmax; x++)
         {
@@ -97,18 +93,18 @@ public class MapScreen extends AbstractScreen
                         final int posY = y * tileHeight + tileY;
 
                         // render terrain
-                        final Cell cell = map.get(posX, posY);
+                        final MapSystem.Cell cell = map.get(posX, posY);
 
                         cells.add(cell);
                     }
                 }
 
                 float r=0,g=0,b=0;
-                for (final Cell cell : cells)
+                for (final MapSystem.Cell cell : cells)
                 {
-                    r += cell.bg.getRed()*cell.bg.getRed();
-                    g += cell.bg.getGreen()*cell.bg.getGreen();
-                    b += cell.bg.getBlue()*cell.bg.getBlue();
+                    r += cell.col.getRed()*cell.col.getRed();
+                    g += cell.col.getGreen()*cell.col.getGreen();
+                    b += cell.col.getBlue()*cell.col.getBlue();
                 }
 
                 r = (float)Math.sqrt(r / cells.size());

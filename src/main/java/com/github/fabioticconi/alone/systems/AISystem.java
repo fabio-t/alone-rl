@@ -132,7 +132,7 @@ public class AISystem extends DelayedIteratingSystem
         // run the new behaviour and update the context
         if (bestBehaviour != null && maxScore > 0f)
         {
-            System.out.println(entityId + ": " + bestBehaviour.getClass().getSimpleName() + " (" + maxScore + ")");
+            // System.out.println(entityId + ": " + bestBehaviour.getClass().getSimpleName() + " (" + maxScore + ")");
 
             ai.time = bestBehaviour.update();
             ai.activeBehaviour = bestBehaviour;

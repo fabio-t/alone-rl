@@ -23,8 +23,9 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Underwater;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.constants.TerrainType;
+import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class MovementSystem extends PassiveSystem
             if (!map.isFree(x2, y2))
                 return false;
 
-            final Cell cell = map.get(x2, y2);
+            final MapSystem.Cell cell = map.get(x2, y2);
 
             if (mUnderWater.has(actorId))
             {
@@ -95,33 +96,10 @@ public class MovementSystem extends PassiveSystem
                 return true;
             }
 
-            switch (cell)
-            {
-                case HILL:
-                case HILL_GRASS:
-                    cost = 1.5f;
-
-                    break;
-
-                case MOUNTAIN:
-                    cost = 2f;
-                    break;
-
-                case HIGH_MOUNTAIN:
-                    cost = 3f;
-                    break;
-
-                case WATER:
-                    cost = 3f;
-                    break;
-
-                case DEEP_WATER:
-                    cost = 4f;
-                    break;
-
-                default:
-                    cost = 1f;
-            }
+            if (cell.type == TerrainType.WATER)
+                cost = 2f - Util.bias(cell.theight, 0.97f);
+            else
+                cost = 1f + Util.bias(cell.theight, 0.75f);
 
             delay = speed.value * cost;
 

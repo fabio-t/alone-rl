@@ -26,7 +26,6 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.utils.SingleGrid;
@@ -325,19 +324,19 @@ public class PlayScreen extends AbstractScreen
                 if (map.contains(posX, posY))
                 {
                     // render terrain
-                    final Cell  cell = map.get(posX, posY);
-                    Color       tileFg;
-                    final Color tileBg;
+                    final MapSystem.Cell cell = map.get(posX, posY);
+                    Color                tileFg;
+                    final Color          tileBg;
 
                     if (cells.contains(key))
                     {
-                        tileFg = cell.col;
-                        tileBg = cell.bg;
+                        tileFg = cell.col.darker();
+                        tileBg = cell.col;
                     }
                     else
                     {
-                        tileFg = cell.col.darker().darker().darker();
-                        tileBg = cell.bg.darker().darker().darker();
+                        tileFg = cell.col.darker().darker().darker().darker();
+                        tileBg = cell.col.darker().darker().darker();
                     }
 
                     terminal.write(cell.c, x, y, tileFg, tileBg);

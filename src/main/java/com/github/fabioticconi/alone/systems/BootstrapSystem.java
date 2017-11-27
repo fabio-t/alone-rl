@@ -26,10 +26,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
+import com.github.fabioticconi.alone.constants.TerrainType;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.FileInputStream;
@@ -42,7 +44,7 @@ import java.util.Random;
  */
 public class BootstrapSystem extends PassiveSystem
 {
-    private final ClassLoader loader = getClass().getClassLoader();
+    static final Logger log = LoggerFactory.getLogger(BootstrapSystem.class);
 
     @Wire
     Random r;
@@ -247,12 +249,9 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
-                //     (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
-                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
-                    (cell.equals(Cell.WATER) && r.nextGaussian() > 5f))
+                if (cell.type.equals(TerrainType.WATER) && r.nextGaussian() > 5f)
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -288,11 +287,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 2.5f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3f))
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -307,14 +305,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
-                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 4f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3.5f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3f))
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -329,14 +323,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
-                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 2.5f))
                 {
                     if (!map.items.isEmpty(x, y))
                         continue;
@@ -351,11 +341,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 4f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3.5f))
                 {
                     if (!map.items.isEmpty(x, y))
                         continue;
@@ -367,7 +356,7 @@ public class BootstrapSystem extends PassiveSystem
             }
         }
 
-        System.out.println("Bootstrap done");
+        log.info("initialised");
     }
 
     public void loadBody(final String filename, final EntityEdit edit) throws IOException
