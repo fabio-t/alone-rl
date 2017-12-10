@@ -44,9 +44,7 @@ import rlforj.pathfinding.IPathAlgorithm;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -59,13 +57,13 @@ public class MapSystem extends PassiveSystem implements IBoard
 
     Cell terrain[][];
 
-    /* FOV/LOS stuff */ LongBag                   lastVisited;
-                        IPathAlgorithm            path;
-                        IFovAlgorithm             fov;
-                        ILosAlgorithm             los;
-                        SingleGrid                obstacles;
-                        SingleGrid                items;
-                        ComponentMapper<Obstacle> mObstacle;
+    /* FOV/LOS stuff */ LongBag lastVisited;
+    IPathAlgorithm            path;
+    IFovAlgorithm             fov;
+    ILosAlgorithm             los;
+    SingleGrid                obstacles;
+    SingleGrid                items;
+    ComponentMapper<Obstacle> mObstacle;
 
     @Wire
     ObjectMapper mapper;
@@ -105,43 +103,12 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         try
         {
-            final InputStream mapStream       = new FileInputStream("data/map/map.png");
-            final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
+            loadTerrain();
 
-            final BufferedImage img       = ImageIO.read(mapStream);
-            final byte[]        elevation = elevationStream.readAllBytes();
-
-            Options.MAP_SIZE_X = img.getWidth();
-            Options.MAP_SIZE_Y = img.getHeight();
-
-            terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
             obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
             items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
             path = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
-
-            loadTemplates();
-
-            // TODO: we should make Cell a class, and obviously use a pool.
-            // This way we can load the cells from a yaml file, with their thresholds, colours, characters etc,
-            // and then we aren't stuck anymore with a few discrete terrain types but we can colour with a gradient,
-            // for example.
-            // movement costs should also be part of this cell.
-
-            for (int x = 0; x < Options.MAP_SIZE_X; x++)
-            {
-                for (int y = 0; y < Options.MAP_SIZE_Y; y++)
-                {
-                    final byte h     = elevation[x * Options.MAP_SIZE_X + y];
-                    final int  uns_h = Byte.toUnsignedInt(h);
-                    final float value = (float) (uns_h) / 255f;
-
-                    final float key = cellAtHeight.higherKey(value);
-                    final Cell cell = cellAtHeight.get(key);
-
-                    terrain[x][y] = cell;
-                }
-            }
         } catch (final IOException e)
         {
             e.printStackTrace();
@@ -149,6 +116,65 @@ public class MapSystem extends PassiveSystem implements IBoard
         }
 
         log.info("initialised");
+    }
+
+    public void loadTerrain() throws IOException
+    {
+        loadTemplates();
+
+        final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
+
+        final byte[]        elevation = elevationStream.readAllBytes();
+
+        terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+
+        // TODO: we should make Cell a class, and obviously use a pool.
+        // This way we can load the cells from a yaml file, with their thresholds, colours, characters etc,
+        // and then we aren't stuck anymore with a few discrete terrain types but we can colour with a gradient,
+        // for example.
+        // movement costs should also be part of this cell.
+
+        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final byte  h     = elevation[x * Options.MAP_SIZE_X + y];
+                final int   uns_h = Byte.toUnsignedInt(h);
+                final float value = (float) (uns_h) / 255f;
+
+                final float key  = cellAtHeight.higherKey(value);
+                final Cell  cell = cellAtHeight.get(key);
+
+                terrain[x][y] = cell;
+            }
+        }
+    }
+
+    public void terrainFromHeightmap(final float[][] heightmap) throws IOException
+    {
+        loadTemplates();
+
+        final OutputStream elevationStream = new FileOutputStream("data/map/elevation.data");
+
+        // final byte[]        elevation = elevationStream.readAllBytes();
+
+        final BufferedImage img = new BufferedImage(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, 3);
+
+        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                final float key  = cellAtHeight.higherKey(heightmap[x][y]);
+                final Cell  cell = cellAtHeight.get(key);
+                img.setRGB(x, y, cell.col.getRGB());
+                elevationStream.write((byte)(heightmap[x][y]*255f));
+            }
+        }
+
+        ImageIO.write(img, "map", new File("data/map/map.png"));
+        elevationStream.close();
+
+        loadTerrain();
     }
 
     /**
@@ -483,8 +509,8 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         public String tag;
 
-        public char  c;
-        public Color col;
+        public char        c;
+        public Color       col;
         public TerrainType type;
 
         public float theight;

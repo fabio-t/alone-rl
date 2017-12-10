@@ -17,6 +17,7 @@
  */
 package com.github.fabioticconi.alone.systems;
 
+import com.artemis.BaseSystem;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -42,7 +43,7 @@ import java.util.Random;
 /**
  * @author Fabio Ticconi
  */
-public class BootstrapSystem extends PassiveSystem
+public class BootstrapSystem extends BaseSystem
 {
     static final Logger log = LoggerFactory.getLogger(BootstrapSystem.class);
 
@@ -59,10 +60,10 @@ public class BootstrapSystem extends PassiveSystem
     PlayerManager pManager;
 
     @Override
-    protected void initialize()
+    protected void processSystem()
     {
         // this must be only run once
-        // setEnabled(false);
+        setEnabled(false);
 
         int x;
         int y;

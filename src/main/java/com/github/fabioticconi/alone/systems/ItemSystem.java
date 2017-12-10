@@ -148,46 +148,36 @@ public class ItemSystem extends PassiveSystem
 
     public int makeItem(final String tag)
     {
-        try
+        final ItemTemplate template = templates.get(tag);
+
+        if (template == null)
         {
-            loadTemplates();
-
-            final ItemTemplate template = templates.get(tag);
-
-            if (template == null)
-            {
-                log.warn("Item named {} doesn't exist", tag);
-                return -1;
-            }
-
-            final int id = world.create();
-
-            final EntityEdit edit = world.edit(id);
-
-            edit.add(new Name(template.name, tag));
-
-            // TODO find a way to do this dynamically. Right now I cannot figure out a way
-            // of deserialising an array of Components, because it's an abstract class that I cannot annotate.
-            if (template.wearable != null)
-                edit.add(template.wearable);
-            if (template.weapon != null)
-                edit.add(template.weapon);
-            if (template.sprite != null)
-                edit.add(template.sprite);
-            if (template.obstacle != null)
-                edit.add(template.obstacle);
-            if (template.crushable != null)
-                edit.add(template.crushable);
-            if (template.cuttable != null)
-                edit.add(template.cuttable);
-
-            return id;
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-
+            log.warn("Item named {} doesn't exist", tag);
             return -1;
         }
+
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+
+        edit.add(new Name(template.name, tag));
+
+        // TODO find a way to do this dynamically. Right now I cannot figure out a way
+        // of deserialising an array of Components, because it's an abstract class that I cannot annotate.
+        if (template.wearable != null)
+            edit.add(template.wearable);
+        if (template.weapon != null)
+            edit.add(template.weapon);
+        if (template.sprite != null)
+            edit.add(template.sprite);
+        if (template.obstacle != null)
+            edit.add(template.obstacle);
+        if (template.crushable != null)
+            edit.add(template.crushable);
+        if (template.cuttable != null)
+            edit.add(template.cuttable);
+
+        return id;
     }
 
     public GetAction get(final int actorId)

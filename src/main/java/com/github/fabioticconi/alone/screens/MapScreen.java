@@ -22,9 +22,13 @@ import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.systems.MapSystem;
+import com.github.fabioticconi.tergen.HeightMap;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -33,8 +37,38 @@ import java.util.ArrayList;
  */
 public class MapScreen extends AbstractScreen
 {
-    // TODO if no map is present at startup, must generate it
-    // so that the first call to display will show it
+    MapSystem map;
+
+    float[][] heightmap;
+
+    @Override
+    protected void initialize()
+    {
+        regenerate();
+    }
+
+    void regenerate()
+    {
+        final int seed = (int)(System.currentTimeMillis() / 1000);
+        System.out.println(seed);
+        final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+
+        final HeightMap heightMap = new HeightMap()
+                                        .size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, seed)
+                                        .island(0.85f)
+                                        .noise(16, 0.5f, freq, 1f);
+
+        this.heightmap = heightMap.build();
+
+        try
+        {
+            map.terrainFromHeightmap(heightmap);
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     @Override
     public String header()
@@ -49,7 +83,7 @@ public class MapScreen extends AbstractScreen
             screen.select(StartScreen.class);
         else if (keys.get(KeyEvent.VK_R))
         {
-            // TODO regenerate map (must call TerGen and store data somewhere)
+            regenerate();
         }
         else if (keys.get(KeyEvent.VK_ENTER))
         {
