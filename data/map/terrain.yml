@@ -20,18 +20,18 @@ shallow-water:
 sand:
   c: 250
   col:
-    red: 76
-    green: 70
-    blue: 50
+    red: 170
+    green: 170
+    blue: 0
   theight: 0.08
   type: LAND
 
 ground:
   c: 250
   col:
-    red: 119
-    green: 93
-    blue: 61
+    red: 184
+    green: 134
+    blue: 11
   theight: 0.1
   type: LAND
 
@@ -56,18 +56,18 @@ hill-grass:
 hill:
   c: '^'
   col:
-    red: 170
-    green: 170
-    blue: 0
+    red: 119
+    green: 93
+    blue: 61
   theight: 0.8
   type: LAND
 
 mountain:
   c: '^'
   col:
-    red: 184
-    green: 134
-    blue: 11
+    red: 76
+    green: 70
+    blue: 50
   theight: 0.9
   type: LAND
 
