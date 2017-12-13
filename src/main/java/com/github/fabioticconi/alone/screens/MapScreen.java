@@ -37,8 +37,6 @@ import java.util.ArrayList;
  */
 public class MapScreen extends AbstractScreen
 {
-    MapSystem map;
-
     float heightmap[][];
 
     @Override

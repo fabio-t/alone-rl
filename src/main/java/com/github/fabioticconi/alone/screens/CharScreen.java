@@ -19,9 +19,18 @@
 package com.github.fabioticconi.alone.screens;
 
 import asciiPanel.AsciiPanel;
+import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
+import com.github.fabioticconi.alone.components.attributes.Agility;
+import com.github.fabioticconi.alone.components.attributes.Constitution;
+import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.systems.BootstrapSystem;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Author: Fabio Ticconi
@@ -29,6 +38,16 @@ import java.awt.event.KeyEvent;
  */
 public class CharScreen extends AbstractScreen
 {
+    BootstrapSystem sBoot;
+
+    ComponentMapper<Strength>     mStr;
+    ComponentMapper<Agility>      mAgi;
+    ComponentMapper<Constitution> mCon;
+
+    byte[] stats = new byte[3];
+    int curStat = 0;
+    int points = 1;
+
     @Override
     public String header()
     {
@@ -44,23 +63,42 @@ public class CharScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_DOWN))
         {
-            // TODO go to next stat
+            if (curStat < 2)
+                curStat++;
         }
         else if (keys.get(KeyEvent.VK_UP))
         {
-            // TODO go back to previous stat
+            if (curStat > 0)
+                curStat--;
         }
         else if (keys.get(KeyEvent.VK_LEFT))
         {
-            // TODO remove one point from selected stat
+            if (stats[curStat] > -2)
+            {
+                stats[curStat]--;
+                points++;
+            }
         }
         else if (keys.get(KeyEvent.VK_RIGHT))
         {
-            // TODO add one point to selected stat
+            if (stats[curStat] < 2 && points > 0)
+            {
+                stats[curStat]++;
+                points--;
+            }
         }
         else if (keys.get(KeyEvent.VK_ENTER))
         {
             // confirmed, let's play!
+
+            final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
+
+            mStr.create(playerId).value = stats[0];
+            mAgi.create(playerId).value = stats[1];
+            mCon.create(playerId).value = stats[2];
+
+            sBoot.makeDerivative(playerId);
+
             screen.select(PlayScreen.class);
         }
 
@@ -74,10 +112,22 @@ public class CharScreen extends AbstractScreen
     {
         terminal.clear();
 
-        // TODO draw a list of three options, one for each character stat,
-        // and keep track of how many stat points have been added
+        drawHeader(terminal);
 
-        // (colour currently selected stat in yellow?)
+        terminal.writeCenter("Available Attribute Points: [" + points + "]", 20);
+
+        int yoff = terminal.getHeightInCharacters() / 2 - 1;
+        final int xoff = terminal.getWidthInCharacters() / 2 - 12;
+
+        final String str = "[" + String.join("", Collections.nCopies(stats[0]+3, "=")) + "]";
+        final String agi = "[" + String.join("", Collections.nCopies(stats[1]+3, "=")) + "]";
+        final String con = "[" + String.join("", Collections.nCopies(stats[2]+3, "=")) + "]";
+
+        terminal.write("Strength:     " + str, xoff, yoff, curStat==0?Color.YELLOW:Color.WHITE);
+        yoff += 3;
+        terminal.write("Agility:      " + agi, xoff, yoff, curStat==1?Color.YELLOW:Color.WHITE);
+        yoff += 3;
+        terminal.write("Constitution: " + con, xoff, yoff, curStat==2?Color.YELLOW:Color.WHITE);
 
         terminal.writeCenter("[ENTER] to play, [ESC] to go back", terminal.getHeightInCharacters() - 2);
     }

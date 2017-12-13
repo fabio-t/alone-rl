@@ -18,6 +18,7 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.BaseSystem;
+import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -46,6 +47,12 @@ import java.util.Random;
 public class BootstrapSystem extends BaseSystem
 {
     static final Logger log = LoggerFactory.getLogger(BootstrapSystem.class);
+
+    ComponentMapper<Strength> mStr;
+    ComponentMapper<Agility> mAgi;
+    ComponentMapper<Constitution> mCon;
+    ComponentMapper<Herbivore> mHerbivore;
+    ComponentMapper<Carnivore> mCarnivore;
 
     @Wire
     Random r;
@@ -433,6 +440,28 @@ public class BootstrapSystem extends BaseSystem
 
         // a fish does not need to eat, for now
         if (herbivore || carnivore)
+            edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
+    }
+
+    public void makeDerivative(final int id)
+    {
+        final Strength str     = mStr.get(id);
+        final Agility agi      = mAgi.get(id);
+        final Constitution con = mCon.get(id);
+
+        final EntityEdit edit = world.edit(id);
+
+        // Secondary Attributes
+        final int size = Math.round((con.value - agi.value) / 2f);
+        edit.create(Size.class).set(size);
+        edit.create(Stamina.class).set((5 + str.value + con.value) * 100); // FIXME for debug, reduce/tweak later
+        edit.create(Speed.class).set((con.value - str.value - agi.value + 6) / 12f);
+        edit.create(Health.class).set((con.value + 3) * 10);
+
+        // Tertiary Attributes
+
+        // a fish does not need to eat, for now
+        if (mHerbivore.has(id) || mCarnivore.has(id))
             edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
     }
 }
