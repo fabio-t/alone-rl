@@ -293,13 +293,15 @@ public class PlayScreen extends AbstractScreen
         final Position p      = mPosition.get(playerId);
         final int      sight  = mSight.get(playerId).value;
 
+        final int xmin = 0;
+        final int ymin = 6;
         final int xmax = terminal.getWidthInCharacters();
         final int ymax = terminal.getHeightInCharacters();
 
         final int panelSize = 8;
 
         final int halfcols = xmax / 2;
-        final int halfrows = (ymax - panelSize) / 2;
+        final int halfrows = (ymax - panelSize + ymin) / 2;
 
         int posX;
         int posY;
@@ -312,9 +314,9 @@ public class PlayScreen extends AbstractScreen
 
         final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
 
-        for (int x = 0; x < xmax; x++)
+        for (int x = xmin; x < xmax; x++)
         {
-            for (int y = 0; y < ymax - panelSize; y++)
+            for (int y = ymin; y < ymax - panelSize; y++)
             {
                 posX = p.x + x - halfcols;
                 posY = p.y + y - halfrows;
@@ -399,6 +401,8 @@ public class PlayScreen extends AbstractScreen
             }
         }
 
+        terminal.clear(' ', 0, 0, terminal.getWidthInCharacters(), ymin-1);
+
         // title:
         drawHeader(terminal);
 
@@ -408,7 +412,7 @@ public class PlayScreen extends AbstractScreen
 
         int x;
 
-        final int yoff = 3;
+        final int yoff = ymin-3;
 
         // health bar
         terminal.write('[', 0, yoff, Color.RED);
