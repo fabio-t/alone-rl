@@ -39,18 +39,25 @@ public class MapScreen extends AbstractScreen
 {
     MapSystem map;
 
-    float[][] heightmap;
+    float heightmap[][];
 
     @Override
     protected void initialize()
     {
+        try
+        {
+            map.loadTemplates();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         regenerate();
     }
 
     void regenerate()
     {
         final int seed = (int)(System.currentTimeMillis() / 1000);
-        System.out.println(seed);
         final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
         final HeightMap heightMap = new HeightMap()
@@ -58,16 +65,9 @@ public class MapScreen extends AbstractScreen
                                         .island(0.85f)
                                         .noise(16, 0.5f, freq, 1f);
 
-        this.heightmap = heightMap.build();
+        heightmap = heightMap.build();
 
-        try
-        {
-            map.terrainFromHeightmap(heightmap);
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        map.terrainFromHeightmap(heightmap);
     }
 
     @Override
@@ -87,8 +87,15 @@ public class MapScreen extends AbstractScreen
         }
         else if (keys.get(KeyEvent.VK_ENTER))
         {
-            // TODO maybe must "confirm" the map through the MapSystem, somehow?
-            // Or we could achieve it just by copying the current map data to the data/map/ folder
+            try
+            {
+                map.saveTerrain(heightmap);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
             screen.select(CharScreen.class);
         }
 

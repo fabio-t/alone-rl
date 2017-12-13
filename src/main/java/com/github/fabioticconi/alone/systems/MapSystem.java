@@ -21,6 +21,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdArraySerializers;
 import com.github.fabioticconi.alone.components.Obstacle;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
@@ -45,6 +46,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 
@@ -71,25 +73,7 @@ public class MapSystem extends PassiveSystem implements IBoard
     Map<String, Cell>    templates;
     TreeMap<Float, Cell> cellAtHeight;
 
-    public void loadTemplates() throws IOException
-    {
-        final InputStream fileStream = new FileInputStream("data/map/terrain.yml");
-
-        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, Cell>>()
-        {
-        });
-
-        cellAtHeight = new TreeMap<>();
-
-        for (final Map.Entry<String, Cell> entry : templates.entrySet())
-        {
-            final Cell temp = entry.getValue();
-            temp.tag = entry.getKey();
-            cellAtHeight.put(temp.theight, temp);
-        }
-    }
-
-    public MapSystem() throws IOException
+    public MapSystem()
     {
 
     }
@@ -116,6 +100,24 @@ public class MapSystem extends PassiveSystem implements IBoard
         }
 
         log.info("initialised");
+    }
+
+    public void loadTemplates() throws IOException
+    {
+        final InputStream fileStream = new FileInputStream("data/map/terrain.yml");
+
+        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, Cell>>()
+        {
+        });
+
+        cellAtHeight = new TreeMap<>();
+
+        for (final Map.Entry<String, Cell> entry : templates.entrySet())
+        {
+            final Cell temp = entry.getValue();
+            temp.tag = entry.getKey();
+            cellAtHeight.put(temp.theight, temp);
+        }
     }
 
     public void loadTerrain() throws IOException
@@ -150,15 +152,29 @@ public class MapSystem extends PassiveSystem implements IBoard
         }
     }
 
-    public void terrainFromHeightmap(final float[][] heightmap) throws IOException
+    public void saveTerrain(final float[][] heightmap) throws IOException
     {
-        loadTemplates();
-
         final OutputStream elevationStream = new FileOutputStream("data/map/elevation.data");
 
-        // final byte[]        elevation = elevationStream.readAllBytes();
+        final byte[] elevation = new byte[heightmap.length * heightmap[0].length];
 
-        final BufferedImage img = new BufferedImage(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, 3);
+        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                elevation[x * Options.MAP_SIZE_X + y] = (byte)(heightmap[x][y]*255f);
+            }
+        }
+
+        elevationStream.write(elevation);
+
+        elevationStream.close();
+    }
+
+    public void terrainFromHeightmap(final float[][] heightmap)
+    {
+        if (terrain == null || terrain.length != Options.MAP_SIZE_X || terrain[0].length != Options.MAP_SIZE_Y)
+            terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
         for (int x = 0; x < Options.MAP_SIZE_X; x++)
         {
@@ -166,15 +182,10 @@ public class MapSystem extends PassiveSystem implements IBoard
             {
                 final float key  = cellAtHeight.higherKey(heightmap[x][y]);
                 final Cell  cell = cellAtHeight.get(key);
-                img.setRGB(x, y, cell.col.getRGB());
-                elevationStream.write((byte)(heightmap[x][y]*255f));
+
+                terrain[x][y] = cell;
             }
         }
-
-        ImageIO.write(img, "map", new File("data/map/map.png"));
-        elevationStream.close();
-
-        loadTerrain();
     }
 
     /**
