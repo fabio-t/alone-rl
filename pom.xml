@@ -78,19 +78,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.9.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.9.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.9.3</version>
         </dependency>
 
     </dependencies>
@@ -100,7 +100,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>[2,3)</version>
+                <version>2.9.3</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -111,7 +111,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>[3,4)</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>9</source>
                     <target>9</target>
@@ -129,7 +129,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>[3,4)</version>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <manifest>
