@@ -50,17 +50,13 @@ There are also some special commands:
 
 ## Screenshots
 
-This is how the game looks when run (**very** preliminary GUI):
+This is how the game looks when run:
 
 ![](screenshots/gameplay.gif)
 
 ### Map
 
-After the start screen, a world can be generated:
-
-![](screenshots/mapgen.png)
-
-This is a very downscaled version of the map (which is made `2048 x 2048` "cells", each representing a terrain type).
+After selecting a new game you have to generate the world, just before choosing the attributes.
 
 NB: trees cannot be seen here, but they are generated (as individual obstacles) with varying probability
 depending on terrain type.
