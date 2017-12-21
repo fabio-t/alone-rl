@@ -50,32 +50,33 @@ There are also some special commands:
 
 ## Screenshots
 
-This is how the game looks when run (**very** preliminary GUI):
+This is how the game looks when run:
 
 ![](screenshots/gameplay.gif)
 
 ### Map
 
-![](screenshots/orig_map.png)
+After selecting a new game you have to generate the world, just before choosing the attributes.
 
-Thanks to the map generator from [Red Blob Games](https://www.redblobgames.com/), I produced the map above. The one in
-the game is fundamentally based on this (eg, it uses this heightmap) but it then simplifies the terrains into less
-groups - so my map is much less coloured and it has less water mass.
+NB: trees cannot be seen here, but they are generated (as individual obstacles) with varying probability
+depending on terrain type.
 
-The rivers and lakes are also currently not present. The map is **2048x2048 pixels**, and it's pixel is one "cell" in
-game, so it's pretty big.
+The rivers and lakes are upcoming in release `0.3.0`. The terrain types are currently fixed. Ordered by
+height, they are:
 
-In game, if it could be zoomed out it would look more like this:
+* Deep water
+* Shallow water
+* Coast
+* Grass-less ground
+* Grass plain
+* Grassy Hill
+* Rocky Hill
+* Mountain
+* High Mountain
 
-![](screenshots/map.png)
+Some terrains are harder to move through: more stamina will be consumed, and a higher delay is to be expected.
 
-The elevation thresholds are simplified to reduce the amount of colours (and thus, terrains) shown.
-
-Later the terrain will be configurable by the user.
-
-You can also see some rivers (still in-progress, not in the game yet) flowing from high to low places.
-
-Note: this is only temporary. In the final game the terrain will be randomised.
+All this should be completely configurable by the user by release `0.4.0`, hopefully.
 
 ## Features
 

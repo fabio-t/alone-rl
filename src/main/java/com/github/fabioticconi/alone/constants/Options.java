@@ -24,6 +24,6 @@ public class Options
 {
     public static final int OUTPUT_SIZE_X = 55;
     public static final int OUTPUT_SIZE_Y = 55;
-    public static       int MAP_SIZE_X    = 1000;
-    public static       int MAP_SIZE_Y    = 1000;
+    public static       int MAP_SIZE_X    = 1024;
+    public static       int MAP_SIZE_Y    = 1024;
 }

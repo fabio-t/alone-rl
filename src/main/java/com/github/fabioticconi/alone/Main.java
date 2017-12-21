@@ -79,6 +79,7 @@ public class Main extends JFrame implements KeyListener
         final WorldConfiguration config;
         config = new WorldConfiguration();
         // first thing to be loaded
+        config.setSystem(MapScreen.class);
         config.setSystem(MapSystem.class);
         // POJO
         config.register(new Random());
@@ -127,6 +128,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(EquipScreen.class);
         config.setSystem(CraftScreen.class);
         config.setSystem(CraftItemScreen.class);
+        config.setSystem(CharScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
 
@@ -173,6 +175,8 @@ public class Main extends JFrame implements KeyListener
 
         long repaintCooldown = 1L;
         long actionCooldown  = 0L;
+
+        world.process();
 
         while (keepRunning)
         {

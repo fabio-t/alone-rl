@@ -24,8 +24,8 @@ import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Underwater;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Side;
+import com.github.fabioticconi.alone.constants.TerrainType;
 import com.github.fabioticconi.alone.systems.BumpSystem;
 import com.github.fabioticconi.alone.systems.MapSystem;
 
@@ -39,13 +39,16 @@ import java.util.Set;
  */
 public class UnderwaterBehaviour extends AbstractBehaviour
 {
-    final EnumSet<Cell> validCells = EnumSet.of(Cell.WATER, Cell.DEEP_WATER);
     ComponentMapper<Position> mPos;
     MapSystem                 map;
     BumpSystem                sBump;
+
     @Wire
     Random r;
+
     private Position curPos;
+
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     @Override
     protected void initialize()
@@ -63,9 +66,9 @@ public class UnderwaterBehaviour extends AbstractBehaviour
 
         curPos = mPos.get(entityId);
 
-        final Cell c = map.get(curPos.x, curPos.y);
+        final MapSystem.Cell c = map.get(curPos.x, curPos.y);
 
-        if (c != Cell.DEEP_WATER && c != Cell.WATER)
+        if (c.type != TerrainType.WATER)
         {
             // can't move at all if on solid ground
 

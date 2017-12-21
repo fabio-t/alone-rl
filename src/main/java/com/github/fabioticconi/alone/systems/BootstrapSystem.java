@@ -17,6 +17,8 @@
  */
 package com.github.fabioticconi.alone.systems;
 
+import com.artemis.BaseSystem;
+import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
@@ -26,10 +28,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
-import com.github.fabioticconi.alone.constants.Cell;
 import com.github.fabioticconi.alone.constants.Options;
+import com.github.fabioticconi.alone.constants.TerrainType;
 import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.FileInputStream;
@@ -40,9 +44,15 @@ import java.util.Random;
 /**
  * @author Fabio Ticconi
  */
-public class BootstrapSystem extends PassiveSystem
+public class BootstrapSystem extends BaseSystem
 {
-    private final ClassLoader loader = getClass().getClassLoader();
+    static final Logger log = LoggerFactory.getLogger(BootstrapSystem.class);
+
+    ComponentMapper<Strength> mStr;
+    ComponentMapper<Agility> mAgi;
+    ComponentMapper<Constitution> mCon;
+    ComponentMapper<Herbivore> mHerbivore;
+    ComponentMapper<Carnivore> mCarnivore;
 
     @Wire
     Random r;
@@ -57,10 +67,10 @@ public class BootstrapSystem extends PassiveSystem
     PlayerManager pManager;
 
     @Override
-    protected void initialize()
+    protected void processSystem()
     {
         // this must be only run once
-        // setEnabled(false);
+        setEnabled(false);
 
         int x;
         int y;
@@ -247,12 +257,9 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                // if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 3f) ||
-                //     (cell.equals(Cell.WATER) && r.nextGaussian() > 2.5f))
-                if ((cell.equals(Cell.DEEP_WATER) && r.nextGaussian() > 5f) ||
-                    (cell.equals(Cell.WATER) && r.nextGaussian() > 5f))
+                if (cell.type.equals(TerrainType.WATER) && r.nextGaussian() > 5f)
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -288,11 +295,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 2f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 2.5f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3f))
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -307,14 +313,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
-                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 4f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3.5f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3f))
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -329,14 +331,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if (((cell.equals(Cell.HIGH_MOUNTAIN)) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.MOUNTAIN) && r.nextGaussian() > 2.5f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3.5f) ||
-                    (cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.GROUND) && r.nextGaussian() > 2.5f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 2.5f))
                 {
                     if (!map.items.isEmpty(x, y))
                         continue;
@@ -351,11 +349,10 @@ public class BootstrapSystem extends PassiveSystem
         {
             for (y = 0; y < Options.MAP_SIZE_Y; y++)
             {
-                final Cell cell = sMap.get(x, y);
+                final MapSystem.Cell cell = sMap.get(x, y);
 
-                if ((cell.equals(Cell.GRASS) && r.nextGaussian() > 4f) ||
-                    (cell.equals(Cell.HILL_GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.equals(Cell.HILL) && r.nextGaussian() > 4f))
+                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
+                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3.5f))
                 {
                     if (!map.items.isEmpty(x, y))
                         continue;
@@ -367,7 +364,7 @@ public class BootstrapSystem extends PassiveSystem
             }
         }
 
-        System.out.println("Bootstrap done");
+        log.info("initialised");
     }
 
     public void loadBody(final String filename, final EntityEdit edit) throws IOException
@@ -443,6 +440,28 @@ public class BootstrapSystem extends PassiveSystem
 
         // a fish does not need to eat, for now
         if (herbivore || carnivore)
+            edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
+    }
+
+    public void makeDerivative(final int id)
+    {
+        final Strength str     = mStr.get(id);
+        final Agility agi      = mAgi.get(id);
+        final Constitution con = mCon.get(id);
+
+        final EntityEdit edit = world.edit(id);
+
+        // Secondary Attributes
+        final int size = Math.round((con.value - agi.value) / 2f);
+        edit.create(Size.class).set(size);
+        edit.create(Stamina.class).set((5 + str.value + con.value) * 100); // FIXME for debug, reduce/tweak later
+        edit.create(Speed.class).set((con.value - str.value - agi.value + 6) / 12f);
+        edit.create(Health.class).set((con.value + 3) * 10);
+
+        // Tertiary Attributes
+
+        // a fish does not need to eat, for now
+        if (mHerbivore.has(id) || mCarnivore.has(id))
             edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
     }
 }
