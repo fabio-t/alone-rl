@@ -24,12 +24,10 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Constitution;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.systems.BootstrapSystem;
+import com.github.fabioticconi.alone.systems.CreatureSystem;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -38,7 +36,7 @@ import java.util.Collections;
  */
 public class CharScreen extends AbstractScreen
 {
-    BootstrapSystem sBoot;
+    CreatureSystem sCreature;
 
     ComponentMapper<Strength>     mStr;
     ComponentMapper<Agility>      mAgi;
@@ -91,13 +89,17 @@ public class CharScreen extends AbstractScreen
         {
             // confirmed, let's play!
 
+            // but first, we place creatures, items, trees..
+            sCreature.reset();
+
+            // we also need to recalculate the player
             final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
             mStr.create(playerId).value = stats[0];
             mAgi.create(playerId).value = stats[1];
             mCon.create(playerId).value = stats[2];
 
-            sBoot.makeDerivative(playerId);
+            sCreature.makeDerivative(playerId);
 
             screen.select(PlayScreen.class);
         }

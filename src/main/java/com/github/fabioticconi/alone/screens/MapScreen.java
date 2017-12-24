@@ -24,10 +24,8 @@ import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.tergen.HeightMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -65,7 +63,7 @@ public class MapScreen extends AbstractScreen
 
         heightmap = heightMap.build();
 
-        map.terrainFromHeightmap(heightmap);
+        map.loadTerrain(heightmap);
     }
 
     @Override

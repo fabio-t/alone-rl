@@ -17,7 +17,6 @@
  */
 package com.github.fabioticconi.alone.systems;
 
-import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
@@ -44,15 +43,15 @@ import java.util.Random;
 /**
  * @author Fabio Ticconi
  */
-public class BootstrapSystem extends BaseSystem
+public class CreatureSystem extends PassiveSystem
 {
-    static final Logger log = LoggerFactory.getLogger(BootstrapSystem.class);
+    static final Logger log = LoggerFactory.getLogger(CreatureSystem.class);
 
-    ComponentMapper<Strength> mStr;
-    ComponentMapper<Agility> mAgi;
+    ComponentMapper<Strength>     mStr;
+    ComponentMapper<Agility>      mAgi;
     ComponentMapper<Constitution> mCon;
-    ComponentMapper<Herbivore> mHerbivore;
-    ComponentMapper<Carnivore> mCarnivore;
+    ComponentMapper<Herbivore>    mHerbivore;
+    ComponentMapper<Carnivore>    mCarnivore;
 
     @Wire
     Random r;
@@ -66,11 +65,21 @@ public class BootstrapSystem extends BaseSystem
 
     PlayerManager pManager;
 
-    @Override
-    protected void processSystem()
+    boolean loaded = false;
+
+    public void reset()
     {
-        // this must be only run once
-        setEnabled(false);
+        loaded = false;
+
+        placeObjects();
+    }
+
+    public void placeObjects()
+    {
+        if (loaded)
+            return;
+
+        loaded = true;
 
         int x;
         int y;
@@ -445,8 +454,8 @@ public class BootstrapSystem extends BaseSystem
 
     public void makeDerivative(final int id)
     {
-        final Strength str     = mStr.get(id);
-        final Agility agi      = mAgi.get(id);
+        final Strength     str = mStr.get(id);
+        final Agility      agi = mAgi.get(id);
         final Constitution con = mCon.get(id);
 
         final EntityEdit edit = world.edit(id);

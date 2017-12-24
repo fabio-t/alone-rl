@@ -78,16 +78,14 @@ public class Main extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
-        // first thing to be loaded
-        config.setSystem(MapScreen.class);
-        config.setSystem(MapSystem.class);
         // POJO
         config.register(new Random());
         config.register(properties);
         config.register(mapper);
         // passive systems, one-timers, managers etc
         config.setSystem(EntityLinkManager.class);
-        config.setSystem(BootstrapSystem.class);
+        config.setSystem(MapSystem.class);
+        config.setSystem(CreatureSystem.class);
         config.setSystem(PlayerManager.class);
         config.setSystem(GroupSystem.class);
         config.setSystem(ActionSystem.class);
@@ -128,6 +126,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(EquipScreen.class);
         config.setSystem(CraftScreen.class);
         config.setSystem(CraftItemScreen.class);
+        config.setSystem(MapScreen.class);
         config.setSystem(CharScreen.class);
         // last systems
         config.setSystem(DeadSystem.class);
