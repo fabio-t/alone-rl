@@ -26,7 +26,7 @@ import com.github.fabioticconi.tergen.HeightMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -53,13 +53,11 @@ public class MapScreen extends AbstractScreen
 
     void regenerate()
     {
-        final int seed = (int)(System.currentTimeMillis() / 1000);
+        final int   seed = (int) (System.currentTimeMillis() / 1000);
         final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
-        final HeightMap heightMap = new HeightMap()
-                                        .size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, seed)
-                                        .island(0.85f)
-                                        .noise(16, 0.5f, freq, 1f);
+        final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, seed).island(0.85f)
+                                                   .noise(16, 0.5f, freq, 1f);
 
         heightmap = heightMap.build();
 
@@ -136,17 +134,17 @@ public class MapScreen extends AbstractScreen
                     }
                 }
 
-                float r=0,g=0,b=0;
+                float r = 0, g = 0, b = 0;
                 for (final MapSystem.Cell cell : cells)
                 {
-                    r += cell.col.getRed()*cell.col.getRed();
-                    g += cell.col.getGreen()*cell.col.getGreen();
-                    b += cell.col.getBlue()*cell.col.getBlue();
+                    r += cell.col.getRed() * cell.col.getRed();
+                    g += cell.col.getGreen() * cell.col.getGreen();
+                    b += cell.col.getBlue() * cell.col.getBlue();
                 }
 
-                r = (float)Math.sqrt(r / cells.size());
-                g = (float)Math.sqrt(g / cells.size());
-                b = (float)Math.sqrt(b / cells.size());
+                r = (float) Math.sqrt(r / cells.size());
+                g = (float) Math.sqrt(g / cells.size());
+                b = (float) Math.sqrt(b / cells.size());
 
                 final Color col = new Color(Math.round(r), Math.round(g), Math.round(b));
                 terminal.write(' ', x, y, Color.WHITE, col);

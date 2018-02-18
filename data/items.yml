@@ -12,6 +12,7 @@ stone:
       red: 88
       green: 88
       blue: 88
+      alpha: 255
 
 branch:
   name: a sturdy branch
@@ -26,6 +27,7 @@ branch:
       red: 141
       green: 104
       blue: 21
+      alpha: 255
 
 vine:
   name: a thin, flexible branch
@@ -35,6 +37,7 @@ vine:
       red: 36
       green: 122
       blue: 7
+      alpha: 255
 
 trunk:
   name: a fallen tree
@@ -44,6 +47,7 @@ trunk:
       red: 141
       green: 104
       blue: 21
+      alpha: 255
 
 boulder:
   name: a big boulder
@@ -53,6 +57,7 @@ boulder:
       red: 88
       green: 88
       blue: 88
+      alpha: 255
     shadowView: true
   obstacle: {}
   crushable: {}
@@ -65,6 +70,7 @@ tree:
       red: 77
       green: 168
       blue: 59
+      alpha: 255
     shadowView: true
   obstacle: {}
   cuttable: {}
@@ -82,6 +88,7 @@ sharp-stone:
       red: 88
       green: 88
       blue: 88
+      alpha: 255
 
 small-sharp-stone:
   name: a small, sharp stone
@@ -96,6 +103,7 @@ small-sharp-stone:
       red: 88
       green: 88
       blue: 88
+      alpha: 255
 
 stone-hammer:
   name: a stone hammer
@@ -110,6 +118,7 @@ stone-hammer:
       red: 141
       green: 104
       blue: 21
+      alpha: 255
 
 stone-axe:
   name: a stone axe
@@ -124,6 +133,7 @@ stone-axe:
       red: 141
       green: 104
       blue: 21
+      alpha: 255
 
 stone-spear:
   name: a stone spear
@@ -138,3 +148,4 @@ stone-spear:
       red: 141
       green: 104
       blue: 21
+      alpha: 255

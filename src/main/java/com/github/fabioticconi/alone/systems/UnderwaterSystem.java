@@ -34,11 +34,10 @@ import java.util.EnumSet;
  */
 public class UnderwaterSystem extends IntervalIteratingSystem
 {
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
     ComponentMapper<Position> mPos;
     HealthSystem              sHealth;
     MapSystem                 map;
-
-    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     public UnderwaterSystem(final float interval)
     {

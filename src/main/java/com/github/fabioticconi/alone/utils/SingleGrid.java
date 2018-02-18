@@ -19,9 +19,6 @@
 package com.github.fabioticconi.alone.utils;
 
 import com.artemis.utils.IntBag;
-import com.github.fabioticconi.alone.utils.Coords;
-import com.github.fabioticconi.alone.utils.LongBag;
-import com.github.fabioticconi.alone.utils.Util;
 
 import java.util.Arrays;
 

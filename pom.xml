@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.github.trystan</groupId>
             <artifactId>AsciiPanel</artifactId>
-            <version>e0c4372</version>
+            <version>372dfbae98</version>
         </dependency>
 
         <dependency>

@@ -141,9 +141,9 @@ public class LookScreen extends PlayScreen
         if (t == null)
             return;
 
-        final int ymin = 6;
-        final int xmax = terminal.getWidthInCharacters();
-        final int ymax = terminal.getHeightInCharacters();
+        final int ymin      = 6;
+        final int xmax      = terminal.getWidthInCharacters();
+        final int ymax      = terminal.getHeightInCharacters();
         final int panelSize = 8;
 
         final int playerX = xmax / 2;

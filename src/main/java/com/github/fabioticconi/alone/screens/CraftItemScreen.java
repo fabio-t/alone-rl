@@ -39,8 +39,8 @@ public class CraftItemScreen extends AbstractScreen
 {
     ComponentMapper<Inventory> mInventory;
 
-    ScreenSystem screen;
-    CraftSystem  sCraft;
+    ScreenSystem  screen;
+    CraftSystem   sCraft;
     MessageSystem msg;
 
     CraftScreen craftScreen;

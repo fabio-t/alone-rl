@@ -42,9 +42,9 @@ public class CharScreen extends AbstractScreen
     ComponentMapper<Agility>      mAgi;
     ComponentMapper<Constitution> mCon;
 
-    byte[] stats = new byte[3];
-    int curStat = 0;
-    int points = 1;
+    byte[] stats   = new byte[3];
+    int    curStat = 0;
+    int    points  = 1;
 
     @Override
     public String header()
@@ -118,18 +118,18 @@ public class CharScreen extends AbstractScreen
 
         terminal.writeCenter("Available Attribute Points: [" + points + "]", 20);
 
-        int yoff = terminal.getHeightInCharacters() / 2 - 1;
+        int       yoff = terminal.getHeightInCharacters() / 2 - 1;
         final int xoff = terminal.getWidthInCharacters() / 2 - 12;
 
-        final String str = "[" + String.join("", Collections.nCopies(stats[0]+3, "=")) + "]";
-        final String agi = "[" + String.join("", Collections.nCopies(stats[1]+3, "=")) + "]";
-        final String con = "[" + String.join("", Collections.nCopies(stats[2]+3, "=")) + "]";
+        final String str = "[" + String.join("", Collections.nCopies(stats[0] + 3, "=")) + "]";
+        final String agi = "[" + String.join("", Collections.nCopies(stats[1] + 3, "=")) + "]";
+        final String con = "[" + String.join("", Collections.nCopies(stats[2] + 3, "=")) + "]";
 
-        terminal.write("Strength:     " + str, xoff, yoff, curStat==0?Color.YELLOW:Color.WHITE);
+        terminal.write("Strength:     " + str, xoff, yoff, curStat == 0 ? Color.YELLOW : Color.WHITE);
         yoff += 3;
-        terminal.write("Agility:      " + agi, xoff, yoff, curStat==1?Color.YELLOW:Color.WHITE);
+        terminal.write("Agility:      " + agi, xoff, yoff, curStat == 1 ? Color.YELLOW : Color.WHITE);
         yoff += 3;
-        terminal.write("Constitution: " + con, xoff, yoff, curStat==2?Color.YELLOW:Color.WHITE);
+        terminal.write("Constitution: " + con, xoff, yoff, curStat == 2 ? Color.YELLOW : Color.WHITE);
 
         terminal.writeCenter("[ENTER] to play, [ESC] to go back", terminal.getHeightInCharacters() - 2);
     }

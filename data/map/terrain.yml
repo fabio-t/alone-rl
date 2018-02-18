@@ -5,6 +5,7 @@ deep-water:
     red: 51
     green: 102
     blue: 153
+    alpha: 255
   theight: 0.01
   type: WATER
 
@@ -14,6 +15,7 @@ shallow-water:
     red: 20
     green: 152
     blue: 204
+    alpha: 255
   theight: 0.05
   type: WATER
 
@@ -23,6 +25,7 @@ sand:
     red: 170
     green: 170
     blue: 0
+    alpha: 255
   theight: 0.08
   type: LAND
 
@@ -32,6 +35,7 @@ ground:
     red: 184
     green: 134
     blue: 11
+    alpha: 255
   theight: 0.1
   type: LAND
 
@@ -41,6 +45,7 @@ grass:
     red: 31
     green: 138
     blue: 19
+    alpha: 255
   theight: 0.4
   type: GRASS
 
@@ -50,6 +55,7 @@ hill-grass:
     red: 74
     green: 105
     blue: 4
+    alpha: 255
   theight: 0.7
   type: GRASS
 
@@ -59,6 +65,7 @@ hill:
     red: 119
     green: 93
     blue: 61
+    alpha: 255
   theight: 0.8
   type: LAND
 
@@ -68,6 +75,7 @@ mountain:
     red: 76
     green: 70
     blue: 50
+    alpha: 255
   theight: 0.9
   type: LAND
 
@@ -77,5 +85,6 @@ high-mountain:
     red: 255
     green: 240
     blue: 220
+    alpha: 255
   theight: 1.1 # must be strictly greater than 1
   type: ICE

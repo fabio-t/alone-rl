@@ -39,16 +39,13 @@ import java.util.Set;
  */
 public class UnderwaterBehaviour extends AbstractBehaviour
 {
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
     ComponentMapper<Position> mPos;
     MapSystem                 map;
     BumpSystem                sBump;
-
     @Wire
     Random r;
-
     private Position curPos;
-
-    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     @Override
     protected void initialize()
