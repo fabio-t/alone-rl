@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -39,16 +39,13 @@ import java.util.Set;
  */
 public class UnderwaterBehaviour extends AbstractBehaviour
 {
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
     ComponentMapper<Position> mPos;
     MapSystem                 map;
     BumpSystem                sBump;
-
     @Wire
     Random r;
-
     private Position curPos;
-
-    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     @Override
     protected void initialize()

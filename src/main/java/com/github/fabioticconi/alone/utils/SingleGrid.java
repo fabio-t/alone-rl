@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -19,9 +19,6 @@
 package com.github.fabioticconi.alone.utils;
 
 import com.artemis.utils.IntBag;
-import com.github.fabioticconi.alone.utils.Coords;
-import com.github.fabioticconi.alone.utils.LongBag;
-import com.github.fabioticconi.alone.utils.Util;
 
 import java.util.Arrays;
 

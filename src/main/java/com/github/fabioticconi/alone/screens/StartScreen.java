@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -22,10 +22,13 @@ import asciiPanel.AsciiPanel;
 import com.artemis.annotations.Wire;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
+import com.github.fabioticconi.alone.systems.CreatureSystem;
+import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -35,7 +38,9 @@ import java.util.Properties;
  */
 public class StartScreen extends AbstractScreen
 {
-    ScreenSystem screen;
+    MapSystem      map;
+    CreatureSystem sCreature;
+    ScreenSystem   screen;
 
     @Wire
     Properties properties;
@@ -43,18 +48,33 @@ public class StartScreen extends AbstractScreen
     @Override
     public float handleKeys(final BitVector keys)
     {
-        // TODO: [C] should load a saved game (if any), or if the world is already loaded
-        // (eg, if the player types ESC while playing), it must simply jump to the PlayScreen
-
         if (keys.get(KeyEvent.VK_N))
         {
             keys.clear();
+
+            // every time "new" is selected, everything is lost, even if we don't proceed further
+            map.reset();
 
             screen.select(MapScreen.class);
         }
         else if (keys.get(KeyEvent.VK_C))
         {
             keys.clear();
+
+            // TODO: [C] should load a saved game (if any), or if the world is already loaded
+            // (eg, if the player types ESC while playing), it must simply jump to the PlayScreen
+
+            try
+            {
+                map.loadTerrain();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            // FIXME: remove this later, we should instead load the data from the last save
+            sCreature.placeObjects();
 
             screen.select(PlayScreen.class);
         }

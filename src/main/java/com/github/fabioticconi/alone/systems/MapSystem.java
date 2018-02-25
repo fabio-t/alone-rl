@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.std.StdArraySerializers;
 import com.github.fabioticconi.alone.components.Obstacle;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
@@ -42,11 +41,8 @@ import rlforj.math.Point;
 import rlforj.pathfinding.AStar;
 import rlforj.pathfinding.IPathAlgorithm;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 
@@ -85,21 +81,24 @@ public class MapSystem extends PassiveSystem implements IBoard
         fov = new ShadowCasting();
         los = new BresLos(true);
 
+        obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+        items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+
+        path = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
+    }
+
+    public void reset()
+    {
+        initialize();
+
         try
         {
-            loadTerrain();
-
-            obstacles = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
-            items = new SingleGrid(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
-
-            path = new AStar(this, Options.MAP_SIZE_X, Options.MAP_SIZE_Y, true);
-        } catch (final IOException e)
+            loadTemplates();
+        } catch (IOException e)
         {
             e.printStackTrace();
             System.exit(1);
         }
-
-        log.info("initialised");
     }
 
     public void loadTemplates() throws IOException
@@ -126,7 +125,7 @@ public class MapSystem extends PassiveSystem implements IBoard
 
         final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
 
-        final byte[]        elevation = elevationStream.readAllBytes();
+        final byte[] elevation = elevationStream.readAllBytes();
 
         terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
@@ -152,26 +151,7 @@ public class MapSystem extends PassiveSystem implements IBoard
         }
     }
 
-    public void saveTerrain(final float[][] heightmap) throws IOException
-    {
-        final OutputStream elevationStream = new FileOutputStream("data/map/elevation.data");
-
-        final byte[] elevation = new byte[heightmap.length * heightmap[0].length];
-
-        for (int x = 0; x < Options.MAP_SIZE_X; x++)
-        {
-            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
-            {
-                elevation[x * Options.MAP_SIZE_X + y] = (byte)(heightmap[x][y]*255f);
-            }
-        }
-
-        elevationStream.write(elevation);
-
-        elevationStream.close();
-    }
-
-    public void terrainFromHeightmap(final float[][] heightmap)
+    public void loadTerrain(final float[][] heightmap)
     {
         if (terrain == null || terrain.length != Options.MAP_SIZE_X || terrain[0].length != Options.MAP_SIZE_Y)
             terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
@@ -186,6 +166,25 @@ public class MapSystem extends PassiveSystem implements IBoard
                 terrain[x][y] = cell;
             }
         }
+    }
+
+    public void saveTerrain(final float[][] heightmap) throws IOException
+    {
+        final OutputStream elevationStream = new FileOutputStream("data/map/elevation.data");
+
+        final byte[] elevation = new byte[heightmap.length * heightmap[0].length];
+
+        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        {
+            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
+            {
+                elevation[x * Options.MAP_SIZE_X + y] = (byte) (heightmap[x][y] * 255f);
+            }
+        }
+
+        elevationStream.write(elevation);
+
+        elevationStream.close();
     }
 
     /**
@@ -514,7 +513,7 @@ public class MapSystem extends PassiveSystem implements IBoard
     /**
      * @author Fabio Ticconi
      */
-    public static class Cell implements Comparable<Float>
+    public static class Cell
     {
         public final static Cell EMPTY = new Cell("empty", ' ', Color.BLACK, null, 0f);
 
@@ -538,12 +537,6 @@ public class MapSystem extends PassiveSystem implements IBoard
             this.col = col;
             this.type = type;
             this.theight = theight;
-        }
-
-        @Override
-        public int compareTo(final Float o)
-        {
-            return Float.compare(theight, o);
         }
     }
 }

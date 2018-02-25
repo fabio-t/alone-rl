@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -34,11 +34,10 @@ import java.util.EnumSet;
  */
 public class UnderwaterSystem extends IntervalIteratingSystem
 {
+    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
     ComponentMapper<Position> mPos;
     HealthSystem              sHealth;
     MapSystem                 map;
-
-    private final EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.WATER);
 
     public UnderwaterSystem(final float interval)
     {

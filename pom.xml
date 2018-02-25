@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2017 Fabio Ticconi
+  ~ Copyright (C) 2015-2017 Fabio Ticconi
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as published
@@ -22,7 +22,7 @@
 
     <groupId>com.github.fabio-t</groupId>
     <artifactId>alone-rl</artifactId>
-    <version>0.2.5</version>
+    <version>0.2.6</version>
     <packaging>jar</packaging>
 
     <name>AloneRL</name>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.github.trystan</groupId>
             <artifactId>AsciiPanel</artifactId>
-            <version>e0c4372</version>
+            <version>372dfbae98</version>
         </dependency>
 
         <dependency>
@@ -51,15 +51,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.fabioticconi</groupId>
+            <groupId>com.github.fabio-t</groupId>
             <artifactId>rlforj-alt</artifactId>
             <version>0.3.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.fabioticconi</groupId>
+            <groupId>com.github.fabio-t</groupId>
             <artifactId>terrain-generator</artifactId>
-            <version>0.0.1</version>
+            <version>0.1.0</version>
         </dependency>
 
         <dependency>

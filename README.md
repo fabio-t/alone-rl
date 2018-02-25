@@ -61,8 +61,7 @@ After selecting a new game you have to generate the world, just before choosing 
 NB: trees cannot be seen here, but they are generated (as individual obstacles) with varying probability
 depending on terrain type.
 
-The rivers and lakes are upcoming in release `0.3.0`. The terrain types are currently fixed. Ordered by
-height, they are:
+The terrain types are currently fixed. Ordered by height, they are:
 
 * Deep water
 * Shallow water
@@ -74,9 +73,15 @@ height, they are:
 * Mountain
 * High Mountain
 
+Rivers and lakes are present, and they simply have Shallow or Deep water type. As of `0.2.6`, rivers
+don't have a "coast".
+
 Some terrains are harder to move through: more stamina will be consumed, and a higher delay is to be expected.
 
-All this should be completely configurable by the user by release `0.4.0`, hopefully.
+Some creatures prefer some terrains, but the differences are not huge.
+
+All this should be completely configurable by the user by release `0.4.0` - so that one could mod
+different terrain types, map generation parameters, biome details and so on.
 
 ## Features
 
@@ -89,7 +94,7 @@ Pathfinding is both precise and efficient thanks to an AStar implementation that
 to plan a course to a target position.
 
 What this means for the end user is that the game doesn't cheat. It doesn't magically make creatures see you
-if they shouldn't. The other creatures can only do what *you* can also do.
+if they shouldn't (eg, if you are hidden by a boulder). Other creatures can only do what *you* can also do.
 
 ### Simple Ecology
 

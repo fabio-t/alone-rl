@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -141,9 +141,9 @@ public class LookScreen extends PlayScreen
         if (t == null)
             return;
 
-        final int ymin = 6;
-        final int xmax = terminal.getWidthInCharacters();
-        final int ymax = terminal.getHeightInCharacters();
+        final int ymin      = 6;
+        final int xmax      = terminal.getWidthInCharacters();
+        final int ymax      = terminal.getHeightInCharacters();
         final int panelSize = 8;
 
         final int playerX = xmax / 2;

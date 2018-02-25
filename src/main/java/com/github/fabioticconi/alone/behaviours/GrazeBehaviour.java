@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -39,21 +39,16 @@ import java.util.EnumSet;
 public class GrazeBehaviour extends AbstractBehaviour
 {
     static final Logger log = LoggerFactory.getLogger(GrazeBehaviour.class);
-
+    final private EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.GRASS);
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
-
     HungerSystem sHunger;
     BumpSystem   sBump;
     ActionSystem sAction;
-
     MapSystem map;
-
     // FIXME: this should be in a Context of sort
     private Hunger hunger;
-
-    final private EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.GRASS);
 
     @Override
     protected void initialize()

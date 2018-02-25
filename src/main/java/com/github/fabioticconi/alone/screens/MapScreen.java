@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -18,17 +18,16 @@
 
 package com.github.fabioticconi.alone.screens;
 
+import asciiPanel.AsciiFont;
 import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.systems.MapSystem;
 import com.github.fabioticconi.tergen.HeightMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -55,17 +54,20 @@ public class MapScreen extends AbstractScreen
 
     void regenerate()
     {
-        final int seed = (int)(System.currentTimeMillis() / 1000);
+        final int   seed = (int) (System.currentTimeMillis() / 1000);
         final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
-        final HeightMap heightMap = new HeightMap()
-                                        .size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, seed)
-                                        .island(0.85f)
-                                        .noise(16, 0.5f, freq, 1f);
+        final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y)
+                                                   .island(0.85f)
+                                                   .rivers(0.8f, 0.03f, 0.001f);
+
+        heightMap.fractalNoise
+            .seed(seed)
+            .set(16, 0.5f, freq, 1f);
 
         heightmap = heightMap.build();
 
-        map.terrainFromHeightmap(heightmap);
+        map.loadTerrain(heightmap);
     }
 
     @Override
@@ -138,17 +140,17 @@ public class MapScreen extends AbstractScreen
                     }
                 }
 
-                float r=0,g=0,b=0;
+                float r = 0, g = 0, b = 0;
                 for (final MapSystem.Cell cell : cells)
                 {
-                    r += cell.col.getRed()*cell.col.getRed();
-                    g += cell.col.getGreen()*cell.col.getGreen();
-                    b += cell.col.getBlue()*cell.col.getBlue();
+                    r += cell.col.getRed() * cell.col.getRed();
+                    g += cell.col.getGreen() * cell.col.getGreen();
+                    b += cell.col.getBlue() * cell.col.getBlue();
                 }
 
-                r = (float)Math.sqrt(r / cells.size());
-                g = (float)Math.sqrt(g / cells.size());
-                b = (float)Math.sqrt(b / cells.size());
+                r = (float) Math.sqrt(r / cells.size());
+                g = (float) Math.sqrt(g / cells.size());
+                b = (float) Math.sqrt(b / cells.size());
 
                 final Color col = new Color(Math.round(r), Math.round(g), Math.round(b));
                 terminal.write(' ', x, y, Color.WHITE, col);

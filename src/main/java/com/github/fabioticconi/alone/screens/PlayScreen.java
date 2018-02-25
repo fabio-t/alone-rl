@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fabio Ticconi
+ * Copyright (C) 2015-2017 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -28,12 +28,12 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.constants.WeaponType;
-import com.github.fabioticconi.alone.utils.SingleGrid;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.Msg;
 import com.github.fabioticconi.alone.systems.*;
 import com.github.fabioticconi.alone.utils.LongBag;
+import com.github.fabioticconi.alone.utils.SingleGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,13 +327,31 @@ public class PlayScreen extends AbstractScreen
                 {
                     // render terrain
                     final MapSystem.Cell cell = map.get(posX, posY);
-                    Color                tileFg;
-                    final Color          tileBg;
+
+                    char        c = cell.c;
+                    Color       tileFg;
+                    final Color tileBg;
 
                     if (cells.contains(key))
                     {
+                        // terrain graphics
                         tileFg = cell.col.darker();
                         tileBg = cell.col;
+
+                        // if there's an item, we paint that instead
+                        if (!items.isEmpty(posX, posY))
+                        {
+                            final int itemId = items.get(posX, posY);
+
+                            sprite = mSprite.get(itemId);
+
+                            // we keep the terrain's background
+                            if (sprite != null)
+                            {
+                                c = sprite.c;
+                                tileFg = sprite.col;
+                            }
+                        }
                     }
                     else
                     {
@@ -341,55 +359,41 @@ public class PlayScreen extends AbstractScreen
                         tileBg = cell.col.darker().darker().darker();
                     }
 
-                    terminal.write(cell.c, x, y, tileFg, tileBg);
-
-                    // render items only on visible cells
-                    if (cells.contains(key) && !items.isEmpty(posX, posY))
+                    // if there's an obstacle, we paint that both in the light and in the shadow
+                    if (!obstacles.isEmpty(posX, posY))
                     {
-                        final int itemId = items.get(posX, posY);
+                        final int entityId = obstacles.get(posX, posY);
 
-                        sprite = mSprite.get(itemId);
+                        sprite = mSprite.get(entityId);
 
                         if (sprite == null)
                             continue;
 
-                        terminal.write(sprite.c, x, y, sprite.col, tileBg);
+                        if (cells.contains(key))
+                        {
+                            tileFg = sprite.col;
+                        }
+                        else if (sprite.shadowView)
+                        {
+                            // shadowed obstacles are darker than normal
+
+                            tileFg = sprite.col.darker().darker().darker();
+                        }
+                        else
+                        {
+                            // if the obstacle does not have a "shadow view" and it's
+                            // not among the visible cells, don't render it
+
+                            continue;
+                        }
+
+                        size = mSize.get(entityId);
+
+                        // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
+                        c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
                     }
 
-                    // render all solid obstacles in the view square
-
-                    if (obstacles.isEmpty(posX, posY))
-                        continue;
-
-                    final int entityId = obstacles.get(posX, posY);
-
-                    sprite = mSprite.get(entityId);
-
-                    if (sprite == null)
-                        continue;
-
-                    if (cells.contains(key))
-                    {
-                        tileFg = sprite.col;
-                    }
-                    else if (sprite.shadowView)
-                    {
-                        // shadowed obstacles are darker than normal
-
-                        tileFg = sprite.col.darker().darker().darker();
-                    }
-                    else
-                    {
-                        // if the obstacle does not have a "shadow view" and it's
-                        // not among the visible cells, don't render it
-
-                        continue;
-                    }
-
-                    size = mSize.get(entityId);
-
-                    // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
-                    final char c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
+                    // finally, we actually write this to terminal
 
                     terminal.write(c, x, y, tileFg, tileBg);
                 }
@@ -401,7 +405,7 @@ public class PlayScreen extends AbstractScreen
             }
         }
 
-        terminal.clear(' ', 0, 0, terminal.getWidthInCharacters(), ymin-1);
+        terminal.clear(' ', 0, 0, terminal.getWidthInCharacters(), ymin - 1);
 
         // title:
         drawHeader(terminal);
@@ -412,7 +416,7 @@ public class PlayScreen extends AbstractScreen
 
         int x;
 
-        final int yoff = ymin-3;
+        final int yoff = ymin - 3;
 
         // health bar
         terminal.write('[', 0, yoff, Color.RED);
