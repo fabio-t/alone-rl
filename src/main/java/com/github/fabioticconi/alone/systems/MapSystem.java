@@ -513,7 +513,7 @@ public class MapSystem extends PassiveSystem implements IBoard
     /**
      * @author Fabio Ticconi
      */
-    public static class Cell implements Comparable<Float>
+    public static class Cell
     {
         public final static Cell EMPTY = new Cell("empty", ' ', Color.BLACK, null, 0f);
 
@@ -537,12 +537,6 @@ public class MapSystem extends PassiveSystem implements IBoard
             this.col = col;
             this.type = type;
             this.theight = theight;
-        }
-
-        @Override
-        public int compareTo(final Float o)
-        {
-            return Float.compare(theight, o);
         }
     }
 }

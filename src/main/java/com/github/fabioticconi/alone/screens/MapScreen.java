@@ -18,6 +18,7 @@
 
 package com.github.fabioticconi.alone.screens;
 
+import asciiPanel.AsciiFont;
 import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.constants.Options;
@@ -56,8 +57,13 @@ public class MapScreen extends AbstractScreen
         final int   seed = (int) (System.currentTimeMillis() / 1000);
         final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
 
-        final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y, seed).island(0.85f)
-                                                   .noise(16, 0.5f, freq, 1f);
+        final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y)
+                                                   .island(0.85f)
+                                                   .rivers(0.8f, 0.03f, 0.001f);
+
+        heightMap.fractalNoise
+            .seed(seed)
+            .set(16, 0.5f, freq, 1f);
 
         heightmap = heightMap.build();
 

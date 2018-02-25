@@ -51,15 +51,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.fabioticconi</groupId>
+            <groupId>com.github.fabio-t</groupId>
             <artifactId>rlforj-alt</artifactId>
             <version>0.3.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.fabioticconi</groupId>
+            <groupId>com.github.fabio-t</groupId>
             <artifactId>terrain-generator</artifactId>
-            <version>0.0.1</version>
+            <version>0.1.0</version>
         </dependency>
 
         <dependency>
