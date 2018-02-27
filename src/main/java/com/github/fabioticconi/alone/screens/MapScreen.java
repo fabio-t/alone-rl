@@ -59,7 +59,7 @@ public class MapScreen extends AbstractScreen
 
         final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y)
                                                    .island(0.85f)
-                                                   .rivers(0.8f, 0.03f, 0.001f);
+                                                   .rivers(0.8f, 0.03f, 0.001f, 1);
 
         heightMap.fractalNoise
             .seed(seed)
