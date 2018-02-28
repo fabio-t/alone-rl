@@ -90,8 +90,8 @@ sharp-stone:
       blue: 88
       alpha: 255
 
-small-sharp-stone:
-  name: a small, sharp stone
+stone-knife:
+  name: a stone knife
   wearable:
     where: HANDS
   weapon:
