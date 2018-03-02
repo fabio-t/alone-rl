@@ -25,7 +25,7 @@ import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.Weapon;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CrushMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -77,7 +77,7 @@ public class CrushSystem extends PassiveSystem
             if (targetId < 0 || !mCrush.has(targetId))
                 return false;
 
-            final int hammerId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.BLUNT), true);
+            final int hammerId = sItem.getWeapon(actorId, EnumSet.of(DamageType.BLUNT), true);
 
             if (hammerId < 0)
             {

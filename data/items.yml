@@ -155,6 +155,8 @@ arrow:
   weapon:
     damageType: POINT
     damage: 2
+  ammo:
+    usableBy: bow
   sprite:
     c: 196
     col:
@@ -168,6 +170,8 @@ stone-arrow:
   weapon:
     damageType: POINT
     damage: 3
+  ammo:
+      usableBy: bow
   sprite:
     c: 26
     col:
@@ -180,6 +184,9 @@ bow:
   name: a simple bow
   wearable:
     where: HANDS
+  weapon:
+    damageType: SHOOTER
+    damage: 1
   sprite:
     c: '('
     col:

@@ -25,7 +25,7 @@ import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.DamageMsg;
 import com.github.fabioticconi.alone.messages.KillMsg;
 import com.github.fabioticconi.alone.messages.MissMsg;
@@ -35,6 +35,7 @@ import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.EnumSet;
 import java.util.Random;
 
 /**
@@ -137,23 +138,28 @@ public class AttackSystem extends PassiveSystem
 
             if (r.nextFloat() < toHit)
             {
-                float damage = cStrength.value + 2f;
-                float armour = tSkin.value;
-
-                // assuming the actor is unharmed, we use a generic "natural" attack
-                WeaponType dmgType = WeaponType.NATURAL;
+                float      damage  = cStrength.value + 2f;
+                float      armour  = tSkin.value;
+                DamageType dmgType = DamageType.NATURAL;
 
                 // the weapon damage is added to the strength-based one, so that creatures
                 // wielding weapons can overcome stronger, unharmed creatures
-                final int weaponId = sItem.getWeapon(actorId);
+                final int weaponId = sItem.getWeapon(actorId, EnumSet.allOf(DamageType.class), true);
                 if (weaponId >= 0)
                 {
                     final Weapon w = mWeapon.get(weaponId);
                     damage += w.damage;
                     dmgType = w.damageType;
                 }
+                // or maybe we ARE a weapon (eg, if thrown or shot)
+                else if (mWeapon.has(actorId))
+                {
+                    final Weapon w = mWeapon.get(actorId);
+                    damage += w.damage;
+                    dmgType = w.damageType;
+                }
 
-                final int armourId = sItem.getArmour(targetId);
+                final int armourId = sItem.getArmour(targetId, true);
                 if (armourId >= 0)
                 {
                     final Armour a = mArmour.get(armourId);

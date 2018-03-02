@@ -26,8 +26,8 @@ import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.Main;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.Sight;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.constants.WeaponType;
 import com.github.fabioticconi.alone.messages.AbstractMessage;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.Msg;
@@ -193,7 +193,7 @@ public class PlayScreen extends AbstractScreen
         {
             keys.clear();
 
-            final int weaponId = sItems.getWeapon(playerId, EnumSet.allOf(WeaponType.class), true);
+            final int weaponId = sItems.getWeapon(playerId, EnumSet.allOf(DamageType.class), true);
 
             if (weaponId < 0)
             {
@@ -204,6 +204,10 @@ public class PlayScreen extends AbstractScreen
 
                 return 0f;
             }
+
+            Main.pause();
+
+            screen.select(LookScreen.class);
         }
         else if (keys.get(KeyEvent.VK_W))
         {

@@ -20,13 +20,13 @@ stone-spear:
   tools: [stone-axe, stone-knife]
 
 arrow:
-  source: branch
+  sources: branch
   tools: stone-knife
 
 stone-arrow:
-  source: [stone-knife, branch, vine]
+  sources: [stone-knife, branch, vine]
   tools: stone-knife
 
 bow:
-  source: [trunk, vine]
+  sources: [trunk, vine]
   tools: [stone-axe, stone-knife]
