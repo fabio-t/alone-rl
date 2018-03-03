@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
@@ -58,6 +58,7 @@ public class ItemSystem extends PassiveSystem
     ComponentMapper<Armour>    mArmour;
     ComponentMapper<Name>      mName;
     ComponentMapper<Obstacle>  mObstacle;
+    ComponentMapper<Ammo>      mAmmo;
 
     MessageSystem msg;
     MapSystem     map;
@@ -176,6 +177,8 @@ public class ItemSystem extends PassiveSystem
             edit.add(template.crushable);
         if (template.cuttable != null)
             edit.add(template.cuttable);
+        if (template.ammo != null)
+            edit.add(template.ammo);
 
         return id;
     }
@@ -209,11 +212,6 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
-    public int getArmour(final int entityId)
-    {
-        return getArmour(entityId, true);
-    }
-
     public int getArmour(final int entityId, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
@@ -233,7 +231,7 @@ public class ItemSystem extends PassiveSystem
                 continue;
             }
 
-            // we might only want an equipped weapon
+            // we might only want a worn armour
             if (!mArmour.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
                 continue;
 
@@ -268,17 +266,36 @@ public class ItemSystem extends PassiveSystem
         return -1;
     }
 
-    public int getWeapon(final int entityId)
+    public int getAmmo(final int entityId, final String usableBy)
     {
-        return getWeapon(entityId, true);
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            if (!mAmmo.has(itemId))
+                continue;
+
+            final Ammo ammo = mAmmo.get(itemId);
+
+            if (ammo.usableBy.equals(usableBy))
+                return itemId;
+        }
+
+        return -1;
     }
 
     public int getWeapon(final int entityId, final boolean onlyEquipped)
     {
-        return getWeapon(entityId, EnumSet.allOf(WeaponType.class), onlyEquipped);
+        return getWeapon(entityId, EnumSet.allOf(DamageType.class), onlyEquipped);
     }
 
-    public int getWeapon(final int entityId, final EnumSet<WeaponType> weaponTypes, final boolean onlyEquipped)
+    public int getWeapon(final int entityId, final EnumSet<DamageType> damageTypes, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
@@ -296,7 +313,7 @@ public class ItemSystem extends PassiveSystem
 
             final Weapon weapon = mWeapon.get(itemId);
 
-            if (weaponTypes.contains(weapon.damageType))
+            if (damageTypes.contains(weapon.damageType))
                 return itemId;
         }
 
@@ -314,6 +331,7 @@ public class ItemSystem extends PassiveSystem
         public Obstacle  obstacle;
         public Crushable crushable;
         public Cuttable  cuttable;
+        public Ammo      ammo;
     }
 
     public class GetAction extends ActionContext

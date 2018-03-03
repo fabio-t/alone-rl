@@ -90,8 +90,8 @@ sharp-stone:
       blue: 88
       alpha: 255
 
-small-sharp-stone:
-  name: a small, sharp stone
+stone-knife:
+  name: a stone knife
   wearable:
     where: HANDS
   weapon:
@@ -143,7 +143,52 @@ stone-spear:
     damageType: POINT
     damage: 4
   sprite:
-    c: 244
+    c: 124
+    col:
+      red: 141
+      green: 104
+      blue: 21
+      alpha: 255
+
+arrow:
+  name: an arrow
+  weapon:
+    damageType: POINT
+    damage: 2
+  ammo:
+    usableBy: bow
+  sprite:
+    c: 196
+    col:
+      red: 141
+      green: 104
+      blue: 21
+      alpha: 255
+
+stone-arrow:
+  name: a stone-tip arrow
+  weapon:
+    damageType: POINT
+    damage: 3
+  ammo:
+      usableBy: bow
+  sprite:
+    c: 26
+    col:
+      red: 141
+      green: 104
+      blue: 21
+      alpha: 255
+
+bow:
+  name: a simple bow
+  wearable:
+    where: HANDS
+  weapon:
+    damageType: SHOOTER
+    damage: 1
+  sprite:
+    c: '('
     col:
       red: 141
       green: 104

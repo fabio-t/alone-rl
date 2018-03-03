@@ -24,7 +24,7 @@ import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Strength;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CutMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -75,7 +75,7 @@ public class TreeSystem extends PassiveSystem
             if (!mCuttable.has(treeId))
                 return false;
 
-            final int axeId = sItem.getWeapon(actorId, EnumSet.of(WeaponType.SLASH), false);
+            final int axeId = sItem.getWeapon(actorId, EnumSet.of(DamageType.SLASH), false);
 
             if (axeId < 0)
             {

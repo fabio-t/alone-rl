@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2018 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,33 +16,36 @@
  *
  */
 
-package com.github.fabioticconi.alone.components;
+package com.github.fabioticconi.alone.messages;
 
-import com.artemis.Component;
-import com.github.fabioticconi.alone.constants.DamageType;
+import com.github.fabioticconi.alone.constants.Side;
+
+import java.awt.*;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 01/11/17
  */
-public class Weapon extends Component
+public class ShootMsg extends AbstractMessage
 {
-    public DamageType damageType;
-    public float      damage;
+    public final String item;
+    public final Side   at;
 
-    public Weapon()
+    public ShootMsg(final String item, final Side at)
     {
-
+        this.item = item;
+        this.at = at;
     }
 
-    public Weapon(final DamageType damageType, final float damage)
+    @Override
+    public String format()
     {
-        set(damageType, damage);
-    }
+        fgCol = Color.RED;
 
-    public void set(final DamageType damageType, final float damage)
-    {
-        this.damageType = damageType;
-        this.damage = damage;
+        return String.format("%s %s %s towards %s",
+                             actor,
+                             thirdPerson ? "shoots" : "shoot",
+                             item.toLowerCase(),
+                             at.toString());
     }
 }

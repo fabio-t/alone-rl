@@ -3,7 +3,7 @@ sharp-stone:
   sources: stone
   tools: stone
 
-small-sharp-stone:
+stone-knife:
   sources: sharp-stone
   tools: stone
 
@@ -16,5 +16,17 @@ stone-axe:
   tools: stone
 
 stone-spear:
-  sources: [small-sharp-stone, trunk, vine]
-  tools: stone
+  sources: [stone-knife, trunk, vine]
+  tools: [stone-axe, stone-knife]
+
+arrow:
+  sources: branch
+  tools: stone-knife
+
+stone-arrow:
+  sources: [stone-knife, branch, vine]
+  tools: stone-knife
+
+bow:
+  sources: [trunk, vine]
+  tools: [stone-axe, stone-knife]

@@ -24,7 +24,7 @@ import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.Side;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
@@ -53,6 +53,7 @@ public class ThrowSystem extends PassiveSystem
     ComponentMapper<Agility>   mAgility;
     ComponentMapper<Name>      mName;
     ComponentMapper<Equip>     mEquip;
+    ComponentMapper<Weapon>    mWeapon;
 
     StaminaSystem sStamina;
     BumpSystem    sBump;
@@ -72,6 +73,8 @@ public class ThrowSystem extends PassiveSystem
     public class ThrowAction extends ActionContext
     {
         public List<Point> path;
+
+        float cooldown;
 
         @Override
         public boolean tryAction()
@@ -99,13 +102,34 @@ public class ThrowSystem extends PassiveSystem
             if (inventory == null)
                 return false;
 
-            final int weaponId = sItem.getWeapon(actorId, EnumSet.allOf(WeaponType.class), true);
+            int weaponId = sItem.getWeapon(actorId, EnumSet.allOf(DamageType.class), true);
 
             if (weaponId < 0)
             {
                 msg.send(actorId, new CannotMsg("throw", "without a weapon equipped"));
 
                 return false;
+            }
+
+            cooldown = 0.06f;
+
+            final Weapon weapon = mWeapon.get(weaponId);
+
+            if (weapon.damageType == DamageType.SHOOTER)
+            {
+                final Name bowName = mName.get(weaponId);
+
+                // the ammo will be thrown at the next step, not the bow
+                weaponId = sItem.getAmmo(actorId, bowName.tag);
+
+                cooldown = 0.04f;
+
+                if (weaponId < 0)
+                {
+                    msg.send(actorId, new CannotMsg("shoot", "with only ".concat(bowName.name)));
+
+                    return false;
+                }
             }
 
             // it's close enough to strike, so we transform this in a bump action
@@ -163,7 +187,6 @@ public class ThrowSystem extends PassiveSystem
 
                 // how long does it take the object to move one step?
                 // TODO should be based on thrower's strength and weapon characteristics, maybe
-                final float cooldown = 0.05f;
 
                 mSpeed.create(weaponId).set(cooldown);
                 mPath.create(weaponId).set(cooldown, path);

@@ -19,7 +19,7 @@
 package com.github.fabioticconi.alone.components;
 
 import com.artemis.Component;
-import com.github.fabioticconi.alone.constants.WeaponType;
+import com.github.fabioticconi.alone.constants.DamageType;
 
 import java.util.EnumMap;
 
@@ -29,22 +29,22 @@ import java.util.EnumMap;
  */
 public class Armour extends Component
 {
-    // TODO we can improve this by using a primitive float array and WeaponType ordinals as indeces.
+    // TODO we can improve this by using a primitive float array and DamageType ordinals as indeces.
     // which is what EnumMap does internally. We'd avoid autoboxing.
-    public final EnumMap<WeaponType, Float> defences;
+    public final EnumMap<DamageType, Float> defences;
 
     public Armour()
     {
-        this.defences = new EnumMap<>(WeaponType.class);
+        this.defences = new EnumMap<>(DamageType.class);
     }
 
     public void set(final float slash, final float point, final float blunt, final float natural)
     {
-        this.defences.put(WeaponType.SLASH, slash);
-        this.defences.put(WeaponType.POINT, point);
-        this.defences.put(WeaponType.BLUNT, blunt);
+        this.defences.put(DamageType.SLASH, slash);
+        this.defences.put(DamageType.POINT, point);
+        this.defences.put(DamageType.BLUNT, blunt);
 
         // a generic type for animal attacks
-        this.defences.put(WeaponType.NATURAL, natural);
+        this.defences.put(DamageType.NATURAL, natural);
     }
 }

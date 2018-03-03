@@ -16,33 +16,17 @@
  *
  */
 
-package com.github.fabioticconi.alone.components;
-
-import com.artemis.Component;
-import com.github.fabioticconi.alone.constants.DamageType;
+package com.github.fabioticconi.alone.constants;
 
 /**
  * Author: Fabio Ticconi
- * Date: 07/10/17
+ * Date: 04/11/17
  */
-public class Weapon extends Component
+public enum DamageType
 {
-    public DamageType damageType;
-    public float      damage;
-
-    public Weapon()
-    {
-
-    }
-
-    public Weapon(final DamageType damageType, final float damage)
-    {
-        set(damageType, damage);
-    }
-
-    public void set(final DamageType damageType, final float damage)
-    {
-        this.damageType = damageType;
-        this.damage = damage;
-    }
+    SLASH,
+    POINT,
+    BLUNT,
+    NATURAL,
+    SHOOTER
 }

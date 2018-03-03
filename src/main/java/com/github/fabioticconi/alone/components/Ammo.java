@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2018 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,16 +16,25 @@
  *
  */
 
-package com.github.fabioticconi.alone.constants;
+package com.github.fabioticconi.alone.components;
+
+import com.artemis.Component;
 
 /**
  * Author: Fabio Ticconi
- * Date: 04/11/17
+ * Date: 02/03/18
  */
-public enum WeaponType
+public class Ammo extends Component
 {
-    SLASH,
-    POINT,
-    BLUNT,
-    NATURAL
+    public String usableBy;
+
+    public Ammo()
+    {
+
+    }
+
+    public Ammo(final String usableBy)
+    {
+        this.usableBy = usableBy;
+    }
 }
