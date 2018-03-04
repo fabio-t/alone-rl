@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.actions.ActionContext;
+import com.github.fabioticconi.alone.constants.BodyPart;
 import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
@@ -214,7 +215,7 @@ public class ItemSystem extends PassiveSystem
         return a;
     }
 
-    public int getArmour(final int entityId, final boolean onlyEquipped)
+    public int getArmour(final int entityId, final EnumSet<BodyPart> bodyParts, final boolean onlyEquipped)
     {
         final Inventory items = mInventory.get(entityId);
 
@@ -237,7 +238,34 @@ public class ItemSystem extends PassiveSystem
             if (!mArmour.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
                 continue;
 
+            // we might only want armour wearable in specific places
+            if (!bodyParts.contains(mWearable.get(itemId).where))
+                continue;
+
             return itemId;
+        }
+
+        return -1;
+    }
+
+    public int getWearable(final int entityId, final EnumSet<BodyPart> bodyParts, final boolean onlyEquipped)
+    {
+        final Inventory items = mInventory.get(entityId);
+
+        if (items == null)
+            return -1;
+
+        final int[] data = items.items.getData();
+        for (int i = 0, size = items.items.size(); i < size; i++)
+        {
+            final int itemId = data[i];
+
+            // we might only want a worn wearable
+            if (!mWearable.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
+                continue;
+
+            if (bodyParts.contains(mWearable.get(itemId).where))
+                return itemId;
         }
 
         return -1;
@@ -290,11 +318,6 @@ public class ItemSystem extends PassiveSystem
         }
 
         return -1;
-    }
-
-    public int getWeapon(final int entityId, final boolean onlyEquipped)
-    {
-        return getWeapon(entityId, EnumSet.allOf(DamageType.class), onlyEquipped);
     }
 
     public int getWeapon(final int entityId, final EnumSet<DamageType> damageTypes, final boolean onlyEquipped)
@@ -479,6 +502,19 @@ public class ItemSystem extends PassiveSystem
             }
             else
             {
+                final Wearable target = mWearable.get(targetId);
+
+                // first check if body part is already covered by something else
+                // (weapon or armour)
+                final int wornId = getWearable(actorId, EnumSet.of(target.where), true);
+
+                if (wornId >= 0)
+                {
+                    msg.send(actorId, new CannotMsg("equip", "over ".concat(mName.get(wornId).name)));
+
+                    return;
+                }
+
                 mEquip.create(targetId);
 
                 msg.send(actorId, targetId, new EquipMsg(false));
