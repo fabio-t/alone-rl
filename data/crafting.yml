@@ -30,3 +30,11 @@ stone-arrow:
 bow:
   sources: [trunk, vine]
   tools: [stone-axe, stone-knife]
+
+bark:
+  sources: [trunk]
+  tools: [stone-axe, stone-knife]
+
+bark-armour:
+  sources: [bark, vine]
+  tools: [stone-knife]

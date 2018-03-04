@@ -134,9 +134,6 @@ public class HungerSystem extends IntervalIteratingSystem
 
             final Health health = mHealth.get(targetId);
 
-            if (health == null)
-                return;
-
             // remove 25% hunger (or less) and decrease food health accordingly
 
             final float food = Math.min(h.maxValue * 0.25f, h.value);

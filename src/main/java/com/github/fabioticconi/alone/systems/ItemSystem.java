@@ -179,6 +179,8 @@ public class ItemSystem extends PassiveSystem
             edit.add(template.cuttable);
         if (template.ammo != null)
             edit.add(template.ammo);
+        if (template.armour != null)
+            edit.add(template.armour);
 
         return id;
     }
@@ -332,6 +334,7 @@ public class ItemSystem extends PassiveSystem
         public Crushable crushable;
         public Cuttable  cuttable;
         public Ammo      ammo;
+        public Armour    armour;
     }
 
     public class GetAction extends ActionContext

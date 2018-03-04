@@ -312,7 +312,20 @@ public class CreatureSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sItems.makeItem("tree", x, y);
+                    // 1% of the trees are fallen remains
+                    if (r.nextFloat() < 0.1f)
+                    {
+                        sItems.makeItem("trunk", x, y);
+
+                        if (r.nextBoolean())
+                            sItems.makeItem("branch", x, y);
+                        if (r.nextBoolean())
+                            sItems.makeItem("vine", x, y);
+                    }
+                    else
+                    {
+                        sItems.makeItem("tree", x, y);
+                    }
                 }
             }
         }
@@ -349,26 +362,6 @@ public class CreatureSystem extends PassiveSystem
                         continue;
 
                     sItems.makeItem("stone", x, y);
-                }
-            }
-        }
-
-        // add random trunks and branches
-        for (x = 0; x < Options.MAP_SIZE_X; x++)
-        {
-            for (y = 0; y < Options.MAP_SIZE_Y; y++)
-            {
-                final MapSystem.Cell cell = sMap.get(x, y);
-
-                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3.5f))
-                {
-                    if (!map.items.isEmpty(x, y))
-                        continue;
-
-                    sItems.makeItem("trunk", x, y);
-                    sItems.makeItem("branch", x, y);
-                    sItems.makeItem("vine", x, y);
                 }
             }
         }

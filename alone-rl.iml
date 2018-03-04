@@ -11,6 +11,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.github.fabio-t:rlforj-alt:0.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fabio-t:terrain-generator:0.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.github.trystan:AsciiPanel:372dfbae98" level="project" />
     <orderEntry type="library" name="Maven: net.onedaybeard.artemis:artemis-odb:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.mostlyoriginal.artemis-odb:contrib-core:2.3.0" level="project" />
