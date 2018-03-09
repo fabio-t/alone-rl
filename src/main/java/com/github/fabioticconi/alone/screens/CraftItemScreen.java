@@ -41,7 +41,6 @@ public class CraftItemScreen extends AbstractScreen
 
     ScreenSystem  screen;
     CraftSystem   sCraft;
-    MessageSystem msg;
 
     CraftScreen craftScreen;
 
@@ -66,10 +65,7 @@ public class CraftItemScreen extends AbstractScreen
             {
                 final Inventory inv = mInventory.get(playerId);
                 inv.items.add(id);
-                msg.send(playerId, id, new CraftMsg());
             }
-            else
-                msg.send(playerId, id, new CannotMsg("craft"));
 
             screen.select(PlayScreen.class);
         }
@@ -96,6 +92,6 @@ public class CraftItemScreen extends AbstractScreen
         terminal.writeCenter("Tools needed:", height);
         terminal.writeCenter(Arrays.toString(craftScreen.craftItem.tools), height + 2);
 
-        terminal.writeCenter("[ type ENTER to confirm ]", terminal.getHeightInCharacters() - 2);
+        terminal.writeCenter("[ ENTER to confirm ]", terminal.getHeightInCharacters() - 2);
     }
 }
