@@ -38,7 +38,6 @@ buffalo:
       blue: 0
       alpha: 255
 
-
 fish:
   name: a colorful fish
   strength: -2
