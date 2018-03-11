@@ -92,6 +92,7 @@ public class Main extends JFrame implements KeyListener
         config.setSystem(MessageSystem.class);
         config.setSystem(screen);
         // actual game logic
+        config.setSystem(new TimeSystem(8, 60f));
         config.setSystem(new HealthSystem(5f));
         config.setSystem(new StaminaSystem(1f));
         config.setSystem(new HungerSystem(1f));

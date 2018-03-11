@@ -63,6 +63,7 @@ public class PlayScreen extends AbstractScreen
     MapSystem     map;
     MessageSystem msg;
     ScreenSystem  screen;
+    TimeSystem    sTime;
 
     @Wire
     Properties properties;
@@ -295,7 +296,6 @@ public class PlayScreen extends AbstractScreen
 
         final Player   player = mPlayer.get(playerId);
         final Position p      = mPosition.get(playerId);
-        final int      sight  = mSight.get(playerId).value;
 
         final int xmin = 0;
         final int ymin = 6;
@@ -315,6 +315,13 @@ public class PlayScreen extends AbstractScreen
 
         final SingleGrid obstacles = map.getObstacles();
         final SingleGrid items     = map.getItems();
+
+        int sight = mSight.get(playerId).value;
+
+        final float hours = sTime.getHoursFromMidnight();
+
+        if (hours < 8)
+            sight = Math.max((int)((hours / 7f) * sight), 1);
 
         final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
 
@@ -336,13 +343,14 @@ public class PlayScreen extends AbstractScreen
                     Color       tileFg;
                     final Color tileBg;
 
+                    // if visible, draw terrain and item, if present
                     if (cells.contains(key))
                     {
                         // terrain graphics
                         tileFg = cell.col.darker();
                         tileBg = cell.col;
 
-                        // if there's an item, we paint that instead
+                        // if there's an item, we paint that instead (keeping terrain's tileBg)
                         if (!items.isEmpty(posX, posY))
                         {
                             final int itemId = items.get(posX, posY);
@@ -359,6 +367,8 @@ public class PlayScreen extends AbstractScreen
                     }
                     else
                     {
+                        // if not visible, items are never visible and terrain is "shaded"
+
                         tileFg = cell.col.darker().darker().darker().darker();
                         tileBg = cell.col.darker().darker().darker();
                     }
