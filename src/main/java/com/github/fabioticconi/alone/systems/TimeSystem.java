@@ -54,8 +54,6 @@ public class TimeSystem extends BaseSystem
 
             if (inGameHour > 23)
                 inGameHour = 0;
-
-            System.out.println(inGameHour);
         }
     }
 

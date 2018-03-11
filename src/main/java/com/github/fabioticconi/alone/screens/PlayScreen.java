@@ -325,6 +325,12 @@ public class PlayScreen extends AbstractScreen
 
         final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
 
+        // clearing everything
+        terminal.clear(' ');
+
+        // title:
+        drawHeader(terminal);
+
         for (int x = xmin; x < xmax; x++)
         {
             for (int y = ymin; y < ymax - panelSize; y++)
@@ -373,6 +379,11 @@ public class PlayScreen extends AbstractScreen
                         tileBg = cell.col.darker().darker().darker();
                     }
 
+                    // to keep the following clean(er), we first write what we have (eg, either terrain or
+                    // terrain+item) on the terminal, THEN check if there's an obstacle either visible or
+                    // with shadowView on top and if there is, that one takes precedence.
+                    terminal.write(c, x, y, tileFg, tileBg);
+
                     // if there's an obstacle, we paint that both in the light and in the shadow
                     if (!obstacles.isEmpty(posX, posY))
                     {
@@ -418,11 +429,6 @@ public class PlayScreen extends AbstractScreen
                 }
             }
         }
-
-        terminal.clear(' ', 0, 0, terminal.getWidthInCharacters(), ymin - 1);
-
-        // title:
-        drawHeader(terminal);
 
         final Hunger  hunger  = mHunger.get(playerId);
         final Health  health  = mHealth.get(playerId);
