@@ -515,7 +515,7 @@ public class MapSystem extends PassiveSystem implements IBoard
      */
     public static class Cell
     {
-        public final static Cell EMPTY = new Cell("empty", ' ', Color.BLACK, null, 0f);
+        public final static Cell EMPTY = new Cell("empty", ' ', Color.BLACK, null, -1f);
 
         public String tag;
 
