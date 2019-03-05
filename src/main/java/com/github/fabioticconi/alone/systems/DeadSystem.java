@@ -56,7 +56,7 @@ public class DeadSystem extends IteratingSystem
 
         final Skin   oldSkin   = mSkin.get(entityId);
         final Sprite oldSprite = mSprite.get(entityId);
-        final char c = size.value > 0 ? Character.toUpperCase(oldSprite.c) : oldSprite.c;
+        final char   c         = size.value > 0 ? Character.toUpperCase(oldSprite.c) : oldSprite.c;
 
         // remove dead creature from the world
         map.obstacles.del(p.x, p.y);

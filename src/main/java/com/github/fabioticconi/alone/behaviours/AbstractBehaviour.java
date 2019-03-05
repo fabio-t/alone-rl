@@ -27,7 +27,7 @@ import net.mostlyoriginal.api.system.core.PassiveSystem;
 public abstract class AbstractBehaviour extends PassiveSystem implements Behaviour
 {
     @EntityId
-    protected int entityId = -1;
+    protected int    entityId = -1;
     protected Aspect aspect;
 
     public boolean interested(final int entityId)

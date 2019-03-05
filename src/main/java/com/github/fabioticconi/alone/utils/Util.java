@@ -18,8 +18,6 @@
 
 package com.github.fabioticconi.alone.utils;
 
-import java.awt.*;
-
 /**
  * Author: Fabio Ticconi
  * Date: 08/09/17

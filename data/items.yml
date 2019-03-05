@@ -1,4 +1,3 @@
-
 stone:
   name: a round stone
   wearable:
@@ -171,7 +170,7 @@ stone-arrow:
     damageType: POINT
     damage: 3
   ammo:
-      usableBy: bow
+    usableBy: bow
   sprite:
     c: 26
     col:

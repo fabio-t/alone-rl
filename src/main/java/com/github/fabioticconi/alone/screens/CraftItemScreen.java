@@ -22,10 +22,7 @@ import asciiPanel.AsciiPanel;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.Inventory;
-import com.github.fabioticconi.alone.messages.CannotMsg;
-import com.github.fabioticconi.alone.messages.CraftMsg;
 import com.github.fabioticconi.alone.systems.CraftSystem;
-import com.github.fabioticconi.alone.systems.MessageSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
@@ -39,8 +36,8 @@ public class CraftItemScreen extends AbstractScreen
 {
     ComponentMapper<Inventory> mInventory;
 
-    ScreenSystem  screen;
-    CraftSystem   sCraft;
+    ScreenSystem screen;
+    CraftSystem  sCraft;
 
     CraftScreen craftScreen;
 

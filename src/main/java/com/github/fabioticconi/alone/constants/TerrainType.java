@@ -27,5 +27,4 @@ public enum TerrainType
     WATER,
     GRASS,
     LAND,
-    ICE
-}
+    ICE}

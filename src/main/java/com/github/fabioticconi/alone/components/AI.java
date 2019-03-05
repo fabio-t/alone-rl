@@ -20,9 +20,6 @@ package com.github.fabioticconi.alone.components;
 import com.artemis.Component;
 import com.github.fabioticconi.alone.behaviours.Behaviour;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @author Fabio Ticconi
  */

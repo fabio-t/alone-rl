@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.EnumSet;
 import java.util.Properties;
@@ -296,7 +296,7 @@ public class PlayScreen extends AbstractScreen
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Player   player = mPlayer.get(playerId);
-        final Position pos      = mPosition.get(playerId);
+        final Position pos    = mPosition.get(playerId);
 
         // use for distance calculations
         final Point p = new Point(0, 0);
@@ -319,8 +319,8 @@ public class PlayScreen extends AbstractScreen
 
         int sight = mSight.get(playerId).value;
 
-        final float hours = sTime.getHoursFromMidnight();
-        final int darkTimes = Math.max((int)(5f - hours), 0);
+        final float hours     = sTime.getHoursFromMidnight();
+        final int   darkTimes = Math.max((int) (5f - hours), 0);
 
         if (hours < 8)
             sight = Math.max((int) ((hours / 7f) * sight), Math.min(sight, 3));
@@ -393,7 +393,9 @@ public class PlayScreen extends AbstractScreen
                             size = mSize.get(entityId);
 
                             // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
-                            final char tempC = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
+                            final char tempC = (size != null && size.value > 0) ?
+                                                   Character.toUpperCase(sprite.c) :
+                                                   sprite.c;
 
                             if (cells.contains(key))
                             {

@@ -120,5 +120,4 @@ public enum Side
             default:
                 return HERE;
         }
-    }
-}
+    }}

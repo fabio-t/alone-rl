@@ -45,13 +45,13 @@ import java.util.Random;
 
 public class Main extends JFrame implements KeyListener
 {
-    static final  Logger  log          = LoggerFactory.getLogger(Main.class);
-    public static boolean keepRunning  = true;
-    public static boolean paused       = false;
-    public static boolean realtime     = false;
-    private final int     fps          = 25;
-    private final long    deltaNanos   = Math.round(1000000000.0d / (double) fps);
-    private final float   deltaSeconds = 1.0f / (float) fps;
+    static final  Logger       log          = LoggerFactory.getLogger(Main.class);
+    public static boolean      keepRunning  = true;
+    public static boolean      paused       = false;
+    public static boolean      realtime     = false;
+    private final int          fps          = 25;
+    private final long         deltaNanos   = Math.round(1000000000.0d / (double) fps);
+    private final float        deltaSeconds = 1.0f / (float) fps;
     private final AsciiPanel   terminal;
     private final World        world;
     private final ScreenSystem screen;
@@ -78,6 +78,7 @@ public class Main extends JFrame implements KeyListener
 
         final WorldConfiguration config;
         config = new WorldConfiguration();
+        config.setAlwaysDelayComponentRemoval(true);
         // POJO
         config.register(new Random());
         config.register(properties);

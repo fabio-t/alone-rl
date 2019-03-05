@@ -27,9 +27,9 @@ import com.artemis.utils.IntBag;
 public abstract class ActionContext
 {
     final public IntBag targets;
-    public int actorId = -1;
-    public float cost;
-    public float delay;
+    public       int    actorId = -1;
+    public       float  cost;
+    public       float  delay;
 
     public ActionContext()
     {

@@ -43,7 +43,7 @@ public class CraftSystem extends PassiveSystem
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Name>      mName;
 
-    ItemSystem sItems;
+    ItemSystem    sItems;
     MessageSystem msg;
 
     @Wire
