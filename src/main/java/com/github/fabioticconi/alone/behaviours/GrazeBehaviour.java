@@ -38,15 +38,15 @@ import java.util.EnumSet;
  */
 public class GrazeBehaviour extends AbstractBehaviour
 {
-    static final Logger log = LoggerFactory.getLogger(GrazeBehaviour.class);
+    static final  Logger               log        = LoggerFactory.getLogger(GrazeBehaviour.class);
     final private EnumSet<TerrainType> validCells = EnumSet.of(TerrainType.GRASS);
     ComponentMapper<Hunger>   mHunger;
     ComponentMapper<Sight>    mSight;
     ComponentMapper<Position> mPosition;
-    HungerSystem sHunger;
-    BumpSystem   sBump;
-    ActionSystem sAction;
-    MapSystem map;
+    HungerSystem              sHunger;
+    BumpSystem                sBump;
+    ActionSystem              sAction;
+    MapSystem                 map;
     // FIXME: this should be in a Context of sort
     private Hunger hunger;
 

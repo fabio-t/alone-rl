@@ -25,6 +25,7 @@ import com.github.fabioticconi.alone.components.actions.ActionContext;
 import com.github.fabioticconi.alone.components.attributes.Agility;
 import com.github.fabioticconi.alone.components.attributes.Skin;
 import com.github.fabioticconi.alone.components.attributes.Strength;
+import com.github.fabioticconi.alone.constants.BodyPart;
 import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.messages.DamageMsg;
 import com.github.fabioticconi.alone.messages.KillMsg;
@@ -159,7 +160,7 @@ public class AttackSystem extends PassiveSystem
                     dmgType = w.damageType;
                 }
 
-                final int armourId = sItem.getArmour(targetId, true);
+                final int armourId = sItem.getArmour(targetId, EnumSet.of(BodyPart.BODY), true);
                 if (armourId >= 0)
                 {
                     final Armour a = mArmour.get(armourId);

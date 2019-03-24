@@ -20,9 +20,6 @@ package com.github.fabioticconi.alone.components;
 import com.artemis.Component;
 import com.github.fabioticconi.alone.behaviours.Behaviour;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @author Fabio Ticconi
  */
@@ -30,7 +27,7 @@ public class AI extends Component
 {
     public float cooldown;
 
-    public List<Behaviour> behaviours;
+    public String[] behaviours;
 
     public Behaviour activeBehaviour;
     public float     score;
@@ -38,7 +35,7 @@ public class AI extends Component
 
     public AI()
     {
-        behaviours = new LinkedList<>();
+        behaviours = new String[0];
         score = 0f;
         time = 0f;
     }
@@ -47,7 +44,7 @@ public class AI extends Component
     {
         this.cooldown = cooldown;
 
-        behaviours = new LinkedList<>();
+        behaviours = new String[0];
 
         score = 0f;
         time = 0f;

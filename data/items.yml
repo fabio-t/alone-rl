@@ -1,4 +1,3 @@
-
 stone:
   name: a round stone
   wearable:
@@ -171,7 +170,7 @@ stone-arrow:
     damageType: POINT
     damage: 3
   ammo:
-      usableBy: bow
+    usableBy: bow
   sprite:
     c: 26
     col:
@@ -194,3 +193,24 @@ bow:
       green: 104
       blue: 21
       alpha: 255
+
+bark:
+  name: tree bark
+  sprite:
+    c: '$'
+    col:
+      red: 141
+      green: 104
+      blue: 21
+      alpha: 255
+
+bark-armour:
+  name: bark armour
+  wearable:
+    where: BODY
+  armour:
+    defences:
+      SLASH: 2
+      BLUNT: 1
+      POINT: 1
+      NATURAL: 2

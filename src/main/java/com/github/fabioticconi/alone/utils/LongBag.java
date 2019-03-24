@@ -34,11 +34,11 @@ public class LongBag
     /**
      * The number of values stored by this bag.
      */
-    protected int size = 0;
+    protected int    size = 0;
     /**
      * The backing array.
      */
-    private long[] data;
+    private   long[] data;
 
     /**
      * Constructs an empty Bag with an initial capacity of 64.

@@ -21,12 +21,13 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.DelayedIteratingSystem;
-import com.github.fabioticconi.alone.behaviours.Behaviour;
+import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.components.AI;
 import com.github.fabioticconi.alone.components.Alertness;
 import com.github.fabioticconi.alone.components.Dead;
 import com.github.fabioticconi.alone.components.Stamina;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -45,6 +46,8 @@ public class AISystem extends DelayedIteratingSystem
     ComponentMapper<Alertness> mAlert;
     ComponentMapper<Stamina>   mStamina;
 
+    HashMap<String, Behaviour> behaviours;
+
     /**
      * General processing of AIs. Evaluates the best current strategy and
      * applies it.
@@ -52,6 +55,21 @@ public class AISystem extends DelayedIteratingSystem
     public AISystem()
     {
         super(Aspect.all(AI.class, Alertness.class, Stamina.class).exclude(Dead.class));
+
+        behaviours = new HashMap<>();
+    }
+
+    @Override
+    protected void initialize()
+    {
+        behaviours.put("flee", world.getSystem(FleeBehaviour.class));
+        behaviours.put("chase", world.getSystem(ChaseBehaviour.class));
+        behaviours.put("fleefromaction", world.getSystem(FleeFromActionBehaviour.class));
+        behaviours.put("flock", world.getSystem(FlockBehaviour.class));
+        behaviours.put("graze", world.getSystem(GrazeBehaviour.class));
+        behaviours.put("scavenge", world.getSystem(ScavengeBehaviour.class));
+        behaviours.put("underwater", world.getSystem(UnderwaterBehaviour.class));
+        behaviours.put("wander", world.getSystem(WanderBehaviour.class));
     }
 
     /*
@@ -118,8 +136,10 @@ public class AISystem extends DelayedIteratingSystem
         float     maxScore      = ai.score;
         Behaviour bestBehaviour = null;
 
-        for (final Behaviour behaviour : ai.behaviours)
+        for (final String bName : ai.behaviours)
         {
+            final Behaviour behaviour = behaviours.get(bName);
+
             final float temp = behaviour.evaluate(entityId);
 
             if (temp > maxScore)

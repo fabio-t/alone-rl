@@ -36,6 +36,7 @@ import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.SingleGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -63,6 +64,7 @@ public class PlayScreen extends AbstractScreen
     MapSystem     map;
     MessageSystem msg;
     ScreenSystem  screen;
+    TimeSystem    sTime;
 
     @Wire
     Properties properties;
@@ -294,8 +296,10 @@ public class PlayScreen extends AbstractScreen
         final int playerId = pManager.getEntitiesOfPlayer("player").get(0).getId();
 
         final Player   player = mPlayer.get(playerId);
-        final Position p      = mPosition.get(playerId);
-        final int      sight  = mSight.get(playerId).value;
+        final Position pos    = mPosition.get(playerId);
+
+        // use for distance calculations
+        final Point p = new Point(0, 0);
 
         final int xmin = 0;
         final int ymin = 6;
@@ -307,45 +311,57 @@ public class PlayScreen extends AbstractScreen
         final int halfcols = xmax / 2;
         final int halfrows = (ymax - panelSize + ymin) / 2;
 
-        int posX;
-        int posY;
-
         Sprite sprite;
         Size   size;
 
         final SingleGrid obstacles = map.getObstacles();
         final SingleGrid items     = map.getItems();
 
-        final LongBag cells = map.getVisibleCells(p.x, p.y, sight);
+        int sight = mSight.get(playerId).value;
+
+        final float hours     = sTime.getHoursFromMidnight();
+        final int   darkTimes = Math.max((int) (5f - hours), 0);
+
+        if (hours < 8)
+            sight = Math.max((int) ((hours / 7f) * sight), Math.min(sight, 3));
+
+        final LongBag cells = map.getVisibleCells(pos.x, pos.y, sight);
+
+        // clearing everything
+        terminal.clear(' ');
+
+        // title:
+        drawHeader(terminal);
 
         for (int x = xmin; x < xmax; x++)
         {
             for (int y = ymin; y < ymax - panelSize; y++)
             {
-                posX = p.x + x - halfcols;
-                posY = p.y + y - halfrows;
+                p.x = pos.x + x - halfcols;
+                p.y = pos.y + y - halfrows;
 
-                final long key = posX | ((long) posY << 32);
+                final long key = p.x | ((long) p.y << 32);
 
-                if (map.contains(posX, posY))
+                if (map.contains(p.x, p.y))
                 {
                     // render terrain
-                    final MapSystem.Cell cell = map.get(posX, posY);
+                    final MapSystem.Cell cell = map.get(p.x, p.y);
 
                     char        c = cell.c;
                     Color       tileFg;
                     final Color tileBg;
 
+                    // if visible, draw terrain and item, if present
                     if (cells.contains(key))
                     {
                         // terrain graphics
-                        tileFg = cell.col.darker();
+                        tileFg = darken(cell.col, 1);
                         tileBg = cell.col;
 
-                        // if there's an item, we paint that instead
-                        if (!items.isEmpty(posX, posY))
+                        // if there's an item, we paint that instead (keeping terrain's tileBg)
+                        if (!items.isEmpty(p.x, p.y))
                         {
-                            final int itemId = items.get(posX, posY);
+                            final int itemId = items.get(p.x, p.y);
 
                             sprite = mSprite.get(itemId);
 
@@ -359,47 +375,46 @@ public class PlayScreen extends AbstractScreen
                     }
                     else
                     {
-                        tileFg = cell.col.darker().darker().darker().darker();
-                        tileBg = cell.col.darker().darker().darker();
+                        // if not visible, items are never visible and terrain is "shaded"
+
+                        tileFg = darken(cell.col, 4);
+                        tileBg = darken(cell.col, 3);
                     }
 
                     // if there's an obstacle, we paint that both in the light and in the shadow
-                    if (!obstacles.isEmpty(posX, posY))
+                    if (!obstacles.isEmpty(p.x, p.y))
                     {
-                        final int entityId = obstacles.get(posX, posY);
+                        final int entityId = obstacles.get(p.x, p.y);
 
                         sprite = mSprite.get(entityId);
 
-                        if (sprite == null)
-                            continue;
-
-                        if (cells.contains(key))
+                        if (sprite != null)
                         {
-                            tileFg = sprite.col;
+                            size = mSize.get(entityId);
+
+                            // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
+                            final char tempC = (size != null && size.value > 0) ?
+                                                   Character.toUpperCase(sprite.c) :
+                                                   sprite.c;
+
+                            if (cells.contains(key))
+                            {
+                                tileFg = sprite.col;
+                                c = tempC;
+                            }
+                            else if (sprite.shadowView)
+                            {
+                                // shadowed obstacles are darker than normal
+
+                                tileFg = darken(sprite.col, 3);
+                                c = tempC;
+                            }
                         }
-                        else if (sprite.shadowView)
-                        {
-                            // shadowed obstacles are darker than normal
-
-                            tileFg = sprite.col.darker().darker().darker();
-                        }
-                        else
-                        {
-                            // if the obstacle does not have a "shadow view" and it's
-                            // not among the visible cells, don't render it
-
-                            continue;
-                        }
-
-                        size = mSize.get(entityId);
-
-                        // bigger obstacles letters are upper-cased (eg, B instead of b for buffalos)
-                        c = (size != null && size.value > 0) ? Character.toUpperCase(sprite.c) : sprite.c;
                     }
 
                     // finally, we actually write this to terminal
 
-                    terminal.write(c, x, y, tileFg, tileBg);
+                    terminal.write(c, x, y, darken(tileFg, darkTimes), darken(tileBg, darkTimes));
                 }
                 else
                 {
@@ -408,11 +423,6 @@ public class PlayScreen extends AbstractScreen
                 }
             }
         }
-
-        terminal.clear(' ', 0, 0, terminal.getWidthInCharacters(), ymin - 1);
-
-        // title:
-        drawHeader(terminal);
 
         final Hunger  hunger  = mHunger.get(playerId);
         final Health  health  = mHealth.get(playerId);
@@ -499,5 +509,21 @@ public class PlayScreen extends AbstractScreen
     public String header()
     {
         return properties.getProperty("name");
+    }
+
+    // FIXME: horribly inefficient, we should be using HSB values here
+    public static Color darken(final Color col, final int times)
+    {
+        if (times <= 0)
+            return col;
+
+        Color newCol = col;
+
+        for (int i = 0; i < times; i++)
+        {
+            newCol = newCol.darker();
+        }
+
+        return newCol;
     }
 }

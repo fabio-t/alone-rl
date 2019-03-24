@@ -23,6 +23,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.EntityEdit;
 import com.artemis.systems.IteratingSystem;
 import com.github.fabioticconi.alone.components.*;
+import com.github.fabioticconi.alone.components.attributes.Skin;
 import rlforj.math.Point;
 
 import java.awt.*;
@@ -36,6 +37,8 @@ public class DeadSystem extends IteratingSystem
     ComponentMapper<Position> mPos;
     ComponentMapper<Size>     mSize;
     ComponentMapper<Name>     mName;
+    ComponentMapper<Sprite>   mSprite;
+    ComponentMapper<Skin>     mSkin;
 
     MapSystem map;
 
@@ -51,6 +54,10 @@ public class DeadSystem extends IteratingSystem
         final Size     size = mSize.get(entityId);
         final Name     name = mName.get(entityId);
 
+        final Skin   oldSkin   = mSkin.get(entityId);
+        final Sprite oldSprite = mSprite.get(entityId);
+        final char   c         = size.value > 0 ? Character.toUpperCase(oldSprite.c) : oldSprite.c;
+
         // remove dead creature from the world
         map.obstacles.del(p.x, p.y);
         world.delete(entityId);
@@ -62,9 +69,10 @@ public class DeadSystem extends IteratingSystem
         final EntityEdit edit     = world.edit(corpseId);
 
         edit.create(Position.class).set(p2.x, p2.y);
-        edit.create(Sprite.class).set('$', Color.RED.darker().darker(), false);
+        edit.create(Sprite.class).set(c, Color.RED.darker().darker(), false);
         edit.create(Corpse.class);
         edit.create(Health.class).set(size.value + 3);
+        edit.create(Skin.class).value = oldSkin.value;
         edit.add(new Name(name.name + "'s corpse", "corpse"));
 
         map.items.set(corpseId, p2.x, p2.y);

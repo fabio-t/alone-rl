@@ -25,6 +25,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Name;
+import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.CraftMsg;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
 import java.io.FileInputStream;
@@ -41,7 +43,8 @@ public class CraftSystem extends PassiveSystem
     ComponentMapper<Inventory> mInventory;
     ComponentMapper<Name>      mName;
 
-    ItemSystem sItems;
+    ItemSystem    sItems;
+    MessageSystem msg;
 
     @Wire
     ObjectMapper mapper;
@@ -125,6 +128,9 @@ public class CraftSystem extends PassiveSystem
         if (inv == null)
             return -1;
 
+        // final String itemTag = sItems.templates.get(itemRecipe.tag).name.toLowerCase();
+        final String itemTag = itemRecipe.tag;
+
         final IntBag tempSources = new IntBag(itemRecipe.sources.length);
         Arrays.fill(tempSources.getData(), -1);
         final IntBag tempTools = new IntBag(itemRecipe.tools.length);
@@ -183,20 +189,53 @@ public class CraftSystem extends PassiveSystem
             }
         }
 
-        if (tempSources.size() < itemRecipe.sources.length || tempTools.size() < itemRecipe.tools.length)
-            return -1;
+        final int[] sources = tempSources.getData();
+        for (int i = 0; i < itemRecipe.sources.length; i++)
+        {
+            if (sources[i] < 0)
+            {
+                // we are missing a source item
+
+                final String missing = itemRecipe.sources[i];
+
+                msg.send(entityId, new CannotMsg("craft", String.format("%s without %s", itemTag, missing)));
+
+                return -1;
+            }
+        }
+
+        final int[] tools = tempTools.getData();
+        for (int i = 0; i < itemRecipe.tools.length; i++)
+        {
+            if (tools[i] < 0)
+            {
+                // we are missing a tool item
+
+                final String missing = itemRecipe.tools[i];
+
+                msg.send(entityId, new CannotMsg("craft", String.format("%s without %s", itemTag, missing)));
+
+                return -1;
+            }
+        }
 
         final int id = sItems.makeItem(itemRecipe.tag);
 
         if (id < 0)
+        {
+            msg.send(entityId, new CannotMsg("craft"));
+
             return -1;
+        }
 
         for (final int sourceId : tempSources.getData())
         {
             // destroying source items
-            world.delete(sourceId);
             inv.items.removeValue(sourceId);
+            world.delete(sourceId);
         }
+
+        msg.send(entityId, id, new CraftMsg());
 
         return id;
     }

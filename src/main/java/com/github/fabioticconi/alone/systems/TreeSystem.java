@@ -19,6 +19,7 @@
 package com.github.fabioticconi.alone.systems;
 
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.github.fabioticconi.alone.components.Cuttable;
 import com.github.fabioticconi.alone.components.Position;
 import com.github.fabioticconi.alone.components.Speed;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
+import java.util.Random;
 
 /**
  * Author: Fabio Ticconi
@@ -50,6 +52,9 @@ public class TreeSystem extends PassiveSystem
     ItemSystem    sItem;
     MessageSystem msg;
     MapSystem     map;
+
+    @Wire
+    Random r;
 
     public CutAction cut(final int entityId, final int treeId)
     {
@@ -111,8 +116,12 @@ public class TreeSystem extends PassiveSystem
             world.delete(treeId);
 
             sItem.makeItem("trunk", p.x, p.y);
-            sItem.makeItem("branch", p.x, p.y);
-            sItem.makeItem("vine", p.x, p.y);
+
+            if (r.nextBoolean())
+                sItem.makeItem("branch", p.x, p.y);
+
+            if (r.nextBoolean())
+                sItem.makeItem("vine", p.x, p.y);
 
             // consume a fixed amount of stamina
             sStamina.consume(actorId, cost);

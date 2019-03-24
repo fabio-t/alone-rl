@@ -22,22 +22,22 @@ import com.artemis.EntityEdit;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.IntBag;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
-import com.github.fabioticconi.alone.behaviours.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.TerrainType;
-import com.github.fabioticconi.alone.utils.Util;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rlforj.math.Point;
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -47,31 +47,186 @@ public class CreatureSystem extends PassiveSystem
 {
     static final Logger log = LoggerFactory.getLogger(CreatureSystem.class);
 
+    ComponentMapper<Name>         mName;
+    ComponentMapper<AI>           mAI;
+    ComponentMapper<Position>     mPosition;
     ComponentMapper<Strength>     mStr;
     ComponentMapper<Agility>      mAgi;
     ComponentMapper<Constitution> mCon;
     ComponentMapper<Herbivore>    mHerbivore;
     ComponentMapper<Carnivore>    mCarnivore;
 
-    @Wire
-    Random r;
-
     GroupSystem sGroup;
     MapSystem   sMap;
-    TreeSystem  sTree;
-    CrushSystem sCrush;
     ItemSystem  sItems;
     MapSystem   map;
 
     PlayerManager pManager;
 
+    @Wire
+    Random r;
+
+    @Wire
+    ObjectMapper mapper;
+
+    HashMap<String, CreatureTemplate> templates;
+
     boolean loaded = false;
+
+    @Override
+    protected void initialize()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public HashMap<String, CreatureTemplate> getTemplates()
+    {
+        try
+        {
+            loadTemplates();
+        } catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return templates;
+    }
+
+    public void loadTemplates() throws IOException
+    {
+        final InputStream fileStream = new FileInputStream("data/creatures.yml");
+
+        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, CreatureTemplate>>()
+        {
+        });
+
+        for (final Map.Entry<String, CreatureTemplate> entry : templates.entrySet())
+        {
+            final CreatureTemplate temp = entry.getValue();
+            temp.tag = entry.getKey();
+        }
+    }
+
+    public static class CreatureTemplate
+    {
+        public String name;
+        public String tag;
+
+        public Strength     strength;
+        public Agility      agility;
+        public Constitution constitution;
+        public Herbivore    herbivore;
+        public Carnivore    carnivore;
+        public Skin         skin;
+        public Sight        sight;
+        public AI           ai;
+        public Group        group;
+        public Sprite       sprite;
+        public Player       player;
+        public Inventory    inventory;
+        public Underwater   underwater;
+    }
 
     public void reset()
     {
         loaded = false;
 
         placeObjects();
+    }
+
+    /**
+     * It instantiates an object of the given type and places at that Point.
+     *
+     * @param tag
+     * @param p
+     * @return
+     */
+    public int makeCreature(final String tag, final Point p)
+    {
+        return makeCreature(tag, p.x, p.y);
+    }
+
+    /**
+     * It instantiates an object of the given type and places at that position.
+     *
+     * @param tag
+     * @param x
+     * @param y
+     * @return
+     */
+    public int makeCreature(final String tag, final int x, final int y)
+    {
+        final int id = makeCreature(tag);
+
+        if (id < 0)
+            return id;
+
+        final Point p = map.getFirstTotallyFree(x, y, -1);
+
+        mPosition.create(id).set(p.x, p.y);
+
+        map.obstacles.set(id, p.x, p.y);
+
+        return id;
+    }
+
+    public int makeCreature(final String tag)
+    {
+        final CreatureTemplate template = templates.get(tag);
+
+        if (template == null)
+        {
+            log.warn("Creature named {} doesn't exist", tag);
+            return -1;
+        }
+
+        final int id = world.create();
+
+        final EntityEdit edit = world.edit(id);
+
+        edit.add(new Name(template.name, tag));
+
+        if (template.strength != null)
+            edit.add(template.strength);
+        if (template.agility != null)
+            edit.add(template.agility);
+        if (template.constitution != null)
+            edit.add(template.constitution);
+        if (template.skin != null)
+            edit.add(template.skin);
+        if (template.sight != null)
+            edit.add(template.sight);
+        if (template.herbivore != null)
+            edit.add(template.herbivore);
+        if (template.carnivore != null)
+            edit.add(template.carnivore);
+        if (template.ai != null)
+        {
+            template.ai.cooldown = r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f;
+            edit.add(template.ai);
+        }
+        if (template.group != null)
+            edit.add(template.group);
+        if (template.sprite != null)
+            edit.add(template.sprite);
+        if (template.player != null)
+            edit.add(template.player);
+        if (template.inventory != null)
+            edit.add(template.inventory);
+        if (template.underwater != null)
+            edit.add(template.underwater);
+
+        edit.create(Alertness.class).value = 0.0f;
+
+        makeDerivative(id);
+
+        return id;
     }
 
     public void placeObjects()
@@ -85,103 +240,32 @@ public class CreatureSystem extends PassiveSystem
         int y;
 
         // add player
-        int        id   = world.create();
-        EntityEdit edit = world.edit(id);
-
-        // load the player's data
-        try
-        {
-            loadBody("data/player.yml", edit);
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        edit.create(Player.class);
         x = Options.MAP_SIZE_X / 2;
         y = Options.MAP_SIZE_Y / 2;
-        edit.create(Position.class).set(x, y);
-        edit.create(Sprite.class).set('@', Color.WHITE);
-        map.obstacles.set(id, x, y);
+        int id = makeCreature("player", x, y);
         pManager.setPlayer(world.getEntity(id), "player");
-        edit.create(Inventory.class);
-        edit.add(new Name("You", "you"));
+        world.edit(id).add(new Name("You", "you"));
 
         // add a herd of buffalos
         int    groupId = sGroup.createGroup();
         IntBag group   = sGroup.getGroup(groupId);
         for (int i = 0; i < 4; i++)
         {
-            // before doing anything, we must ensure the position is free!
-            do
-            {
-                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
-                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!map.obstacles.isEmpty(x, y));
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
 
-            id = world.create();
-            edit = world.edit(id);
-
-            try
-            {
-                loadBody("data/creatures/buffalo.yml", edit);
-            } catch (final IOException e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
-            ai.behaviours.add(world.getSystem(FleeBehaviour.class));
-            ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
-            ai.behaviours.add(world.getSystem(FlockBehaviour.class));
-            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
-            edit.add(ai);
-            edit.create(Position.class).set(x, y);
-            edit.create(Group.class).groupId = groupId;
+            id = makeCreature("buffalo", x, y);
+            world.edit(id).create(Group.class).groupId = groupId;
             group.add(id);
-            edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('b', Util.BROWN.darker().darker());
-            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker().darker());
-            edit.add(new Name("A big buffalo", "buffalo"));
-
-            map.obstacles.set(id, x, y);
         }
 
         // add small, independent rabbits/hares
         for (int i = 0; i < 7; i++)
         {
-            // before doing anything, we must ensure the position is free!
-            do
-            {
-                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
-                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!map.obstacles.isEmpty(x, y));
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
 
-            id = world.create();
-            edit = world.edit(id);
-
-            try
-            {
-                loadBody("data/creatures/rabbit.yml", edit);
-            } catch (final IOException e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
-            ai.behaviours.add(world.getSystem(FleeBehaviour.class));
-            ai.behaviours.add(world.getSystem(GrazeBehaviour.class));
-            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
-            edit.add(ai);
-            edit.create(Position.class).set(x, y);
-            edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('r', Color.LIGHT_GRAY);
-            edit.add(new Name("A cute rabbit", "rabbit"));
-
-            map.obstacles.set(id, x, y);
+            makeCreature("rabbit", x, y);
         }
 
         // add a pack of wolves
@@ -189,76 +273,21 @@ public class CreatureSystem extends PassiveSystem
         group = sGroup.getGroup(groupId);
         for (int i = 0; i < 5; i++)
         {
-            // before doing anything, we must ensure the position is free!
-            do
-            {
-                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
-                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!map.obstacles.isEmpty(x, y));
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
 
-            id = world.create();
-            edit = world.edit(id);
-
-            try
-            {
-                loadBody("data/creatures/wolf.yml", edit);
-            } catch (final IOException e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
-            ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
-            ai.behaviours.add(world.getSystem(FlockBehaviour.class));
-            ai.behaviours.add(world.getSystem(ScavengeBehaviour.class));
-            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
-            edit.add(ai);
-            edit.create(Position.class).set(x, y);
-            edit.create(Group.class).groupId = groupId;
+            id = makeCreature("wolf", x, y);
+            world.edit(id).create(Group.class).groupId = groupId;
             group.add(id);
-            edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('w', Color.DARK_GRAY);
-            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Color.DARK_GRAY);
-            edit.add(new Name("A ferocious wolf", "wolf"));
-
-            map.obstacles.set(id, x, y);
         }
 
         // add solitary pumas
         for (int i = 0; i < 5; i++)
         {
-            // before doing anything, we must ensure the position is free!
-            do
-            {
-                x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
-                y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
-            } while (!map.obstacles.isEmpty(x, y));
+            x = (Options.MAP_SIZE_X / 2) + r.nextInt(12) - 6;
+            y = (Options.MAP_SIZE_Y / 2) + r.nextInt(12) - 6;
 
-            id = world.create();
-            edit = world.edit(id);
-
-            try
-            {
-                loadBody("data/creatures/puma.yml", edit);
-            } catch (final IOException e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
-            ai.behaviours.add(world.getSystem(ChaseBehaviour.class));
-            ai.behaviours.add(world.getSystem(ScavengeBehaviour.class));
-            ai.behaviours.add(world.getSystem(WanderBehaviour.class));
-            edit.add(ai);
-            edit.create(Position.class).set(x, y);
-            edit.create(Alertness.class).value = 0.0f;
-            edit.create(Sprite.class).set('p', Util.BROWN.darker().darker());
-            // edit.create(Sprite.class).set(Character.forDigit(id, 10), Util.BROWN.darker());
-            edit.add(new Name("A strong puma", "puma"));
-
-            map.obstacles.set(id, x, y);
+            makeCreature("puma", x, y);
         }
 
         // add fish in the sea
@@ -273,28 +302,7 @@ public class CreatureSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    id = world.create();
-                    edit = world.edit(id);
-
-                    try
-                    {
-                        loadBody("data/creatures/fish.yml", edit);
-                    } catch (final IOException e)
-                    {
-                        e.printStackTrace();
-                        System.exit(1);
-                    }
-
-                    final AI ai = new AI(r.nextFloat() * AISystem.BASE_TICKTIME + 1.0f);
-                    ai.behaviours.add(world.getSystem(UnderwaterBehaviour.class));
-                    ai.behaviours.add(world.getSystem(FleeFromActionBehaviour.class));
-                    edit.add(ai);
-                    edit.create(Position.class).set(x, y);
-                    edit.create(Alertness.class).value = 0.0f;
-                    edit.create(Sprite.class).set('f', Color.CYAN.darker());
-                    edit.add(new Name("A colorful fish", "fish"));
-
-                    map.obstacles.set(id, x, y);
+                    makeCreature("fish", x, y);
                 }
             }
         }
@@ -312,7 +320,20 @@ public class CreatureSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    sItems.makeItem("tree", x, y);
+                    // 1% of the trees are fallen remains
+                    if (r.nextFloat() < 0.1f)
+                    {
+                        sItems.makeItem("trunk", x, y);
+
+                        if (r.nextBoolean())
+                            sItems.makeItem("branch", x, y);
+                        if (r.nextBoolean())
+                            sItems.makeItem("vine", x, y);
+                    }
+                    else
+                    {
+                        sItems.makeItem("tree", x, y);
+                    }
                 }
             }
         }
@@ -353,103 +374,7 @@ public class CreatureSystem extends PassiveSystem
             }
         }
 
-        // add random trunks and branches
-        for (x = 0; x < Options.MAP_SIZE_X; x++)
-        {
-            for (y = 0; y < Options.MAP_SIZE_Y; y++)
-            {
-                final MapSystem.Cell cell = sMap.get(x, y);
-
-                if ((cell.type.equals(TerrainType.GRASS) && r.nextGaussian() > 3f) ||
-                    (cell.type.equals(TerrainType.LAND) && r.nextGaussian() > 3.5f))
-                {
-                    if (!map.items.isEmpty(x, y))
-                        continue;
-
-                    sItems.makeItem("trunk", x, y);
-                    sItems.makeItem("branch", x, y);
-                    sItems.makeItem("vine", x, y);
-                }
-            }
-        }
-
         log.info("initialised");
-    }
-
-    public void loadBody(final String filename, final EntityEdit edit) throws IOException
-    {
-        // final InputStream fileStream = loader.getResourceAsStream(filename);
-        final InputStream fileStream = new FileInputStream(filename);
-
-        final YAMLFactory factory = new YAMLFactory();
-        final YAMLParser  parser  = factory.createParser(fileStream);
-
-        int     str       = 0, agi = 0, con = 0, skin = 0, sight = 0;
-        boolean herbivore = false, carnivore = false;
-
-        parser.nextToken(); // START_OBJECT
-
-        while (parser.nextToken() != null)
-        {
-            final String name = parser.getCurrentName();
-
-            if (name == null)
-                break;
-
-            parser.nextToken(); // get value for this "name"
-
-            switch (name)
-            {
-                case "strength":
-                    str = parser.getIntValue();
-                    edit.create(Strength.class).value = Util.clamp(str, -2, 2);
-                    break;
-                case "agility":
-                    agi = parser.getIntValue();
-                    edit.create(Agility.class).value = Util.clamp(agi, -2, 2);
-                    break;
-                case "constitution":
-                    con = parser.getIntValue();
-                    edit.create(Constitution.class).value = Util.clamp(con, -2, 2);
-                    break;
-                case "skin":
-                    skin = parser.getIntValue();
-                    edit.create(Skin.class).value = Util.clamp(skin, -2, 2);
-                    break;
-                case "sight":
-                    sight = parser.getIntValue();
-                    edit.create(Sight.class).value = Util.clamp(sight, 1, 18);
-                    break;
-                case "herbivore":
-                    herbivore = parser.getBooleanValue();
-
-                    if (herbivore)
-                        edit.create(Herbivore.class);
-                    break;
-                case "carnivore":
-                    carnivore = parser.getBooleanValue();
-
-                    if (carnivore)
-                        edit.create(Carnivore.class);
-                    break;
-                case "underwater":
-                    edit.create(Underwater.class);
-                    break;
-            }
-        }
-
-        // Secondary Attributes
-        final int size = Math.round((con - agi) / 2f);
-        edit.create(Size.class).set(size);
-        edit.create(Stamina.class).set((5 + str + con) * 100); // FIXME for debug, reduce/tweak later
-        edit.create(Speed.class).set((con - str - agi + 6) / 12f);
-        edit.create(Health.class).set((con + 3) * 10);
-
-        // Tertiary Attributes
-
-        // a fish does not need to eat, for now
-        if (herbivore || carnivore)
-            edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
     }
 
     public void makeDerivative(final int id)

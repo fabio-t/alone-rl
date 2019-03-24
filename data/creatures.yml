@@ -1,0 +1,112 @@
+player:
+  name: you
+  player: {}
+  inventory: {}
+  strength: 2
+  agility: 2
+  constitution: 2
+  skin: -2
+  sight: 18
+  #  herbivore: {}
+  carnivore: {}
+  sprite:
+    c: '@'
+    col:
+      red: 255
+      green: 255
+      blue: 255
+      alpha: 255
+
+buffalo:
+  name: a big buffalo
+  strength: 2
+  agility: -2
+  constitution: 2
+  skin: 2
+  sight: 6
+  herbivore: {}
+  group:
+    groupId: -1
+  ai:
+    behaviours: [flee, flock, graze, wander]
+  sprite:
+    c: 'b'
+    col:
+      red: 102
+      green: 51
+      blue: 0
+      alpha: 255
+
+fish:
+  name: a colorful fish
+  strength: -2
+  agility: 2
+  constitution: -2
+  skin: -2
+  sight: 5
+  underwater: {}
+  ai:
+    behaviours: [underwater, fleefromaction]
+  sprite:
+    c: 'p'
+    col:
+      red: 0
+      green: 255
+      blue: 255
+      alpha: 255
+
+puma:
+  name: a strong puma
+  strength: 2
+  agility: 2
+  constitution: 2
+  skin: 1
+  sight: 10
+  carnivore: {}
+  ai:
+    behaviours: [chase, scavenge, wander]
+  sprite:
+    c: 'p'
+    col:
+      red: 102
+      green: 51
+      blue: 0
+      alpha: 255
+
+wolf:
+  name: a ferocious wolf
+  strength: 1
+  agility: 1
+  constitution: 0
+  skin: 1
+  sight: 10
+  carnivore: {}
+  group:
+    groupId: -1
+  ai:
+    behaviours: [chase, flock, scavenge, wander]
+  sprite:
+    c: 'w'
+    col:
+      red: 64
+      green: 64
+      blue: 64
+      alpha: 255
+
+rabbit:
+  name: a cute rabbit
+  strength: -2
+  agility: 2
+  constitution: -1
+  skin: -1
+  sight: 12
+  herbivore: {}
+  ai:
+    behaviours: [flee, graze, wander]
+  sprite:
+    c: 'r'
+    col:
+      red: 192
+      green: 192
+      blue: 192
+      alpha: 255

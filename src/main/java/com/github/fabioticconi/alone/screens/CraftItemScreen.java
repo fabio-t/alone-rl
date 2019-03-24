@@ -22,10 +22,7 @@ import asciiPanel.AsciiPanel;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.components.Inventory;
-import com.github.fabioticconi.alone.messages.CannotMsg;
-import com.github.fabioticconi.alone.messages.CraftMsg;
 import com.github.fabioticconi.alone.systems.CraftSystem;
-import com.github.fabioticconi.alone.systems.MessageSystem;
 import com.github.fabioticconi.alone.systems.ScreenSystem;
 
 import java.awt.event.KeyEvent;
@@ -39,9 +36,8 @@ public class CraftItemScreen extends AbstractScreen
 {
     ComponentMapper<Inventory> mInventory;
 
-    ScreenSystem  screen;
-    CraftSystem   sCraft;
-    MessageSystem msg;
+    ScreenSystem screen;
+    CraftSystem  sCraft;
 
     CraftScreen craftScreen;
 
@@ -66,10 +62,7 @@ public class CraftItemScreen extends AbstractScreen
             {
                 final Inventory inv = mInventory.get(playerId);
                 inv.items.add(id);
-                msg.send(playerId, id, new CraftMsg());
             }
-            else
-                msg.send(playerId, id, new CannotMsg("craft"));
 
             screen.select(PlayScreen.class);
         }
@@ -96,6 +89,6 @@ public class CraftItemScreen extends AbstractScreen
         terminal.writeCenter("Tools needed:", height);
         terminal.writeCenter(Arrays.toString(craftScreen.craftItem.tools), height + 2);
 
-        terminal.writeCenter("[ type ENTER to confirm ]", terminal.getHeightInCharacters() - 2);
+        terminal.writeCenter("[ ENTER to confirm ]", terminal.getHeightInCharacters() - 2);
     }
 }

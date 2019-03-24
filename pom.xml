@@ -22,7 +22,7 @@
 
     <groupId>com.github.fabio-t</groupId>
     <artifactId>alone-rl</artifactId>
-    <version>0.2.7</version>
+    <version>0.2.8</version>
     <packaging>jar</packaging>
 
     <name>AloneRL</name>
@@ -41,13 +41,13 @@
         <dependency>
             <groupId>net.onedaybeard.artemis</groupId>
             <artifactId>artemis-odb</artifactId>
-            <version>[2,3)</version>
+            <version>[2.2.0,3)</version>
         </dependency>
 
         <dependency>
             <groupId>net.mostlyoriginal.artemis-odb</groupId>
             <artifactId>contrib-core</artifactId>
-            <version>[2,3)</version>
+            <version>[2.2.0,3)</version>
         </dependency>
 
         <dependency>
@@ -78,19 +78,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.9.3</version>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.3</version>
+            <version>2.9.8</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
-            <version>2.9.3</version>
+            <version>2.9.8</version>
         </dependency>
 
     </dependencies>
@@ -100,7 +100,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.9.3</version>
+                <version>2.9.8</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -111,10 +111,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
 

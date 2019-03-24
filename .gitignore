@@ -1,4 +1,4 @@
-alone-the-roguelite.iml
+alone*.iml
 .idea/
 target/
 .classpath
@@ -11,4 +11,4 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-/map.png
+data/map/elevation.data
