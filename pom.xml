@@ -22,7 +22,7 @@
 
     <groupId>com.github.fabio-t</groupId>
     <artifactId>alone-rl</artifactId>
-    <version>0.2.8</version>
+    <version>0.2.9</version>
     <packaging>jar</packaging>
 
     <name>AloneRL</name>
