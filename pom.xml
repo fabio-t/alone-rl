@@ -22,7 +22,7 @@
 
     <groupId>com.github.fabio-t</groupId>
     <artifactId>alone-rl</artifactId>
-    <version>0.2.9</version>
+    <version>0.2.10-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>AloneRL</name>
@@ -78,19 +78,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.11.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.11.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
-            <version>[2.9,3)</version>
+            <version>2.11.2</version>
         </dependency>
     </dependencies>
 
@@ -99,7 +99,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>[2.9,3)</version>
+                <version>2.11.2</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -179,4 +179,19 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub fabio-t Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/fabio-t/alone-rl</url>
+        </repository>
+    </distributionManagement>
 </project>

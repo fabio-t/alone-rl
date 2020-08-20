@@ -113,26 +113,6 @@ public class CreatureSystem extends PassiveSystem
         }
     }
 
-    public static class CreatureTemplate
-    {
-        public String name;
-        public String tag;
-
-        public Strength     strength;
-        public Agility      agility;
-        public Constitution constitution;
-        public Herbivore    herbivore;
-        public Carnivore    carnivore;
-        public Skin         skin;
-        public Sight        sight;
-        public AI           ai;
-        public Group        group;
-        public Sprite       sprite;
-        public Player       player;
-        public Inventory    inventory;
-        public Underwater   underwater;
-    }
-
     public void reset()
     {
         loaded = false;
@@ -397,5 +377,25 @@ public class CreatureSystem extends PassiveSystem
         // a fish does not need to eat, for now
         if (mHerbivore.has(id) || mCarnivore.has(id))
             edit.create(Hunger.class).set(0f, (size / 2f) + 2f);
+    }
+
+    public static class CreatureTemplate
+    {
+        public String name;
+        public String tag;
+
+        public Strength     strength;
+        public Agility      agility;
+        public Constitution constitution;
+        public Herbivore    herbivore;
+        public Carnivore    carnivore;
+        public Skin         skin;
+        public Sight        sight;
+        public AI           ai;
+        public Group        group;
+        public Sprite       sprite;
+        public Player       player;
+        public Inventory    inventory;
+        public Underwater   underwater;
     }
 }

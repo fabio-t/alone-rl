@@ -162,7 +162,7 @@ public class GroupSystem extends PassiveSystem
 
         final IntBag group = groups.get(groupId);
 
-        group.remove(entityId);
+        group.removeIndex(entityId);
 
         mGroup.remove(entityId);
     }
@@ -183,7 +183,7 @@ public class GroupSystem extends PassiveSystem
 
         final IntBag group = groups.get(g.groupId);
 
-        group.remove(entityId);
+        group.removeIndex(entityId);
 
         mGroup.remove(entityId);
     }
