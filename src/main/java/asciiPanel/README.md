@@ -11,4 +11,23 @@ needs it. Local changes, if any, should be noted below.
 
 ## Local changes
 
-None yet — identical to upstream `372dfbae98`.
+Modernized and fixed relative to upstream `372dfbae98`; behavior-compatible
+public API. Tested by `src/test/java/asciiPanel/AsciiPanelTest.java`
+(headless, including pixel-level rendering checks).
+
+- The dirty-tile repaint check compared `Color`s with `==`, so callers
+  allocating fresh `Color` instances each frame (as this game does)
+  redrew every tile on every repaint; it now uses `equals`.
+- Painting allocated a fresh 256-entry lookup table, `LookupOp` and
+  filtered image per changed tile per frame; ops are now cached per
+  fore/background color pair.
+- Legacy AWT `paint`/`update` overrides replaced with Swing's
+  `paintComponent`.
+- A missing or unreadable font sheet now fails fast with a clear error
+  instead of printing to stderr and NPE-ing later.
+- `write(char)` had an off-by-one glyph bound (`>` instead of `>=`).
+- `setAsciiFont` reset the offscreen buffer but not the dirty-tile state,
+  so a font change could leave stale cells undrawn.
+- Color constants and fields made `final` where possible; the duplicated
+  argument validation across the many `write`/`clear` overloads is
+  centralised; `TileTransformer` is a `@FunctionalInterface`.
