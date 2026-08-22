@@ -138,9 +138,9 @@ All currently implemented recipes can be seen (and modified, added or removed) i
 ## Building
 
 You need **Java (JDK) 25** and, for the native terrain library, a
-[Rust toolchain](https://rustup.rs) (1.91 or newer). AsciiPanel and rlforj-alt are
-git submodules (pinned upstream revisions, compiled as part of the build), so clone with
-`--recursive` or initialise them afterwards:
+[Rust toolchain](https://rustup.rs) (1.91 or newer). rlforj-alt is a git submodule
+(pinned upstream revision, compiled as part of the build), so clone with `--recursive`
+or initialise it afterwards:
 
 ```sh
 git submodule update --init
