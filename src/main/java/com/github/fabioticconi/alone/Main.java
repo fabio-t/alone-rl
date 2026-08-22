@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -38,6 +38,7 @@ import com.github.fabioticconi.alone.behaviours.*;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.screens.*;
 import com.github.fabioticconi.alone.systems.*;
+import com.github.fabioticconi.alone.utils.NativeLibraries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,6 +162,10 @@ public class Main extends JFrame implements KeyListener
 
     public static void main(final String[] args) throws IOException
     {
+        // must happen before any terrain generation: the tergen binding
+        // resolves the native library location when it is first loaded
+        NativeLibraries.locateTerrainGenerator();
+
         final Main app = new Main();
         app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         app.setLocationRelativeTo(null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -26,6 +26,7 @@ import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.constants.TerrainType;
 import com.github.fabioticconi.alone.utils.Coords;
+import com.github.fabioticconi.alone.utils.DataFiles;
 import com.github.fabioticconi.alone.utils.LongBag;
 import com.github.fabioticconi.alone.utils.SingleGrid;
 import com.github.fabioticconi.alone.utils.Util;
@@ -103,11 +104,12 @@ public class MapSystem extends PassiveSystem implements IBoard
 
     public void loadTemplates() throws IOException
     {
-        final InputStream fileStream = new FileInputStream("data/map/terrain.yml");
-
-        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, Cell>>()
+        try (InputStream fileStream = DataFiles.read("map/terrain.yml"))
         {
-        });
+            templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, Cell>>()
+            {
+            });
+        }
 
         cellAtHeight = new TreeMap<>();
 
@@ -123,11 +125,11 @@ public class MapSystem extends PassiveSystem implements IBoard
     {
         loadTemplates();
 
-        final InputStream elevationStream = new FileInputStream("data/map/elevation.data");
-
-        final byte[] elevation = elevationStream.readAllBytes();
-
-        terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
+        final byte[] elevation;
+        try (InputStream elevationStream = DataFiles.read("map/elevation.data"))
+        {
+            elevation = elevationStream.readAllBytes();
+        }
 
         // TODO: we should make Cell a class, and obviously use a pool.
         // This way we can load the cells from a yaml file, with their thresholds, colours, characters etc,
@@ -135,32 +137,30 @@ public class MapSystem extends PassiveSystem implements IBoard
         // for example.
         // movement costs should also be part of this cell.
 
-        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        final float[] heightmap = new float[Options.MAP_SIZE_X * Options.MAP_SIZE_Y];
+
+        for (int i = 0; i < heightmap.length; i++)
         {
-            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
-            {
-                final byte  h     = elevation[x * Options.MAP_SIZE_X + y];
-                final int   uns_h = Byte.toUnsignedInt(h);
-                final float value = (float) (uns_h) / 255f;
-
-                final float key  = cellAtHeight.higherKey(value);
-                final Cell  cell = cellAtHeight.get(key);
-
-                terrain[x][y] = cell;
-            }
+            heightmap[i] = (float) Byte.toUnsignedInt(elevation[i]) / 255f;
         }
+
+        loadTerrain(heightmap);
     }
 
-    public void loadTerrain(final float[][] heightmap)
+    /**
+     * Fills the terrain grid from a row-major heightmap (as produced by the
+     * terrain generator), indexed {@code [y * MAP_SIZE_X + x]}.
+     */
+    public void loadTerrain(final float[] heightmap)
     {
         if (terrain == null || terrain.length != Options.MAP_SIZE_X || terrain[0].length != Options.MAP_SIZE_Y)
             terrain = new Cell[Options.MAP_SIZE_X][Options.MAP_SIZE_Y];
 
-        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        for (int y = 0; y < Options.MAP_SIZE_Y; y++)
         {
-            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
+            for (int x = 0; x < Options.MAP_SIZE_X; x++)
             {
-                final float key  = cellAtHeight.higherKey(heightmap[x][y]);
+                final float key  = cellAtHeight.higherKey(heightmap[y * Options.MAP_SIZE_X + x]);
                 final Cell  cell = cellAtHeight.get(key);
 
                 terrain[x][y] = cell;
@@ -168,23 +168,19 @@ public class MapSystem extends PassiveSystem implements IBoard
         }
     }
 
-    public void saveTerrain(final float[][] heightmap) throws IOException
+    public void saveTerrain(final float[] heightmap) throws IOException
     {
-        final OutputStream elevationStream = new FileOutputStream("data/map/elevation.data");
+        final byte[] elevation = new byte[heightmap.length];
 
-        final byte[] elevation = new byte[heightmap.length * heightmap[0].length];
-
-        for (int x = 0; x < Options.MAP_SIZE_X; x++)
+        for (int i = 0; i < heightmap.length; i++)
         {
-            for (int y = 0; y < Options.MAP_SIZE_Y; y++)
-            {
-                elevation[x * Options.MAP_SIZE_X + y] = (byte) (heightmap[x][y] * 255f);
-            }
+            elevation[i] = (byte) (heightmap[i] * 255f);
         }
 
-        elevationStream.write(elevation);
-
-        elevationStream.close();
+        try (OutputStream elevationStream = DataFiles.write("map/elevation.data"))
+        {
+            elevationStream.write(elevation);
+        }
     }
 
     /**
@@ -237,7 +233,7 @@ public class MapSystem extends PassiveSystem implements IBoard
             xn = x + side.x;
             yn = y + side.y;
 
-            if (contains(xn, yn) && obstacles.get(xn, yn) < 0 && set.contains(terrain[x][y].type))
+            if (contains(xn, yn) && obstacles.get(xn, yn) < 0 && set.contains(terrain[xn][yn].type))
                 exits.add(side);
         }
 

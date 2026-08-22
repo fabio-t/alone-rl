@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -64,7 +64,7 @@ public class TimeSystem extends BaseSystem
 
     public int getHoursFromMidnight()
     {
-        if (inGameHour > 16)
+        if (inGameHour > 12)
             return 24 - inGameHour;
         else
             return inGameHour;

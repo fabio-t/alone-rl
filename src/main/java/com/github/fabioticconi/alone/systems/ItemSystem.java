@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -31,12 +31,12 @@ import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.DropMsg;
 import com.github.fabioticconi.alone.messages.EquipMsg;
 import com.github.fabioticconi.alone.messages.GetMsg;
+import com.github.fabioticconi.alone.utils.DataFiles;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
@@ -96,11 +96,12 @@ public class ItemSystem extends PassiveSystem
 
     public void loadTemplates() throws IOException
     {
-        final InputStream fileStream = new FileInputStream("data/items.yml");
-
-        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, ItemTemplate>>()
+        try (InputStream fileStream = DataFiles.read("items.yml"))
         {
-        });
+            templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, ItemTemplate>>()
+            {
+            });
+        }
 
         for (final Map.Entry<String, ItemTemplate> entry : templates.entrySet())
         {
@@ -137,6 +138,13 @@ public class ItemSystem extends PassiveSystem
             return id;
 
         final Point p = map.getFirstTotallyFree(x, y, -1);
+
+        if (p == null)
+        {
+            log.warn("no free cell around ({}, {}) to place a {}", x, y, tag);
+            world.delete(id);
+            return -1;
+        }
 
         mPos.create(id).set(p.x, p.y);
 
@@ -260,6 +268,9 @@ public class ItemSystem extends PassiveSystem
         {
             final int itemId = data[i];
 
+            if (itemId < 0)
+                continue;
+
             // we might only want a worn wearable
             if (!mWearable.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
                 continue;
@@ -282,6 +293,9 @@ public class ItemSystem extends PassiveSystem
         for (int i = 0, size = items.items.size(); i < size; i++)
         {
             final int itemId = data[i];
+
+            if (itemId < 0)
+                continue;
 
             // we might only want an equipped item
             if (!mName.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
@@ -308,6 +322,9 @@ public class ItemSystem extends PassiveSystem
         {
             final int itemId = data[i];
 
+            if (itemId < 0)
+                continue;
+
             if (!mAmmo.has(itemId))
                 continue;
 
@@ -331,6 +348,9 @@ public class ItemSystem extends PassiveSystem
         for (int i = 0, size = items.items.size(); i < size; i++)
         {
             final int itemId = data[i];
+
+            if (itemId < 0)
+                continue;
 
             // we might only want an equipped weapon
             if (!mWeapon.has(itemId) || (onlyEquipped && !mEquip.has(itemId)))
@@ -391,7 +411,7 @@ public class ItemSystem extends PassiveSystem
 
             if (itemId < 0)
             {
-                log.warn("position {} has a item with Id=", p, itemId);
+                log.warn("position {} has an item with Id={}", p, itemId);
 
                 return;
             }

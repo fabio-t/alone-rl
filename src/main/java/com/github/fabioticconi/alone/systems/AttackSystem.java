@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -164,14 +164,14 @@ public class AttackSystem extends PassiveSystem
                 if (armourId >= 0)
                 {
                     final Armour a = mArmour.get(armourId);
-                    armour += a.defences.get(dmgType);
+                    armour += a.defences.getOrDefault(dmgType, 0f);
                 }
 
-                // the armour absorbs some or all the damage
-                damage -= armour;
+                // the armour absorbs some or all the damage, but every
+                // successful hit removes at least one hp
+                damage = Math.max(damage - armour, 1f);
 
-                // every successful hit removes at least one hp, always
-                tHealth.value -= Math.max(damage, 1f);
+                tHealth.value -= damage;
 
                 msg.send(actorId, targetId, new DamageMsg(damage, tHealth.value));
 

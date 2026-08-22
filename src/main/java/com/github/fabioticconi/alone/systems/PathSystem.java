@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -72,6 +72,13 @@ public class PathSystem extends DelayedIteratingSystem
         final Point p = map.getFirstTotallyFree(pos.x, pos.y, -1);
 
         map.obstacles.del(pos.x, pos.y);
+
+        if (p == null)
+        {
+            log.warn("no free cell around ({}, {}) to place {}", pos.x, pos.y, entityId);
+            return;
+        }
+
         map.items.set(entityId, p.x, p.y);
     }
 
@@ -86,7 +93,7 @@ public class PathSystem extends DelayedIteratingSystem
             // for some reason the path has ended outside of us. Let's just terminate
             mPath.remove(entityId);
 
-            log.warn("{} was moving via a Path but there are no steps left");
+            log.warn("{} was moving via a Path but there are no steps left", entityId);
 
             return;
         }

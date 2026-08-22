@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -86,7 +86,7 @@ public class WanderBehaviour extends AbstractBehaviour
             i++;
         }
 
-        log.warn("size was %d and choice was %d but was never selected", exits.size(), choice);
+        log.warn("size was {} and choice was {} but was never selected", exits.size(), choice);
 
         return 0f;
     }

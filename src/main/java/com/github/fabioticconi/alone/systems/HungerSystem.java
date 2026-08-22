@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -151,9 +151,12 @@ public class HungerSystem extends IntervalIteratingSystem
 
                 msg.send(actorId, targetId, new EatFinishMsg());
 
+                // a corpse carried in the inventory has no position
                 final Position p = mPosition.get(targetId);
 
-                map.getItems().del(p.x, p.y);
+                if (p != null)
+                    map.getItems().del(p.x, p.y);
+
                 world.delete(targetId);
             }
         }

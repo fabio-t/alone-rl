@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -52,7 +52,7 @@ public class UnderwaterSystem extends IntervalIteratingSystem
         final MapSystem.Cell c = map.get(p.x, p.y);
 
         // if inside water, no problem
-        if (validCells.contains(c))
+        if (validCells.contains(c.type))
             return;
 
         // every time this ticks, 25% of the fish's life is gone.

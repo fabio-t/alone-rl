@@ -1,6 +1,7 @@
 # Alone
 
-[![Latest Github release](https://img.shields.io/github/release/fabioticconi/alone-rl.svg)](https://github.com/fabioticconi/alone-rl/releases/latest)
+[![CI](https://github.com/fabio-t/alone-rl/actions/workflows/ci.yml/badge.svg)](https://github.com/fabio-t/alone-rl/actions/workflows/ci.yml)
+[![Latest Github release](https://img.shields.io/github/release/fabio-t/alone-rl.svg)](https://github.com/fabio-t/alone-rl/releases/latest)
 
 Single-player ASCII roguelike focused on surviving, alone, on an island inhabited by animals.
 The main inspiration is from [Unreal World](http://unrealworld.fi) and [Wayward](http://www.waywardgame.com),
@@ -9,7 +10,7 @@ with a much simpler gameplay.
 It's a real-time game but it defaults to a turn-based modality where the world only advances during player actions,
 for as long as the player action runs. Pure real-time gameplay can be toggled.
 
-**NB: this is not ready yet.** Keep an eye on the [releases page](https://github.com/fabioticconi/alone-the-roguelite/releases)
+**NB: this is not ready yet.** Keep an eye on the [releases page](https://github.com/fabio-t/alone-rl/releases)
 for a stable release.
 
 ## Controls
@@ -17,7 +18,7 @@ for a stable release.
 * **`directional arrows` to move** (hold two together for diagonal movement, eg UP+RIGHT to go north-east)
 
   Move into creatures to attack them, trees to cut them, boulders to crush them.
-  For the last two you need proper tools (a cutting weapon for cutting three and a blunt weapon
+  For the last two you need proper tools (a cutting weapon for cutting trees and a blunt weapon
   for crushing boulders).
   
 * **`g` to get an item**. You must move onto it first. There is no inventory limit.
@@ -32,7 +33,7 @@ for a stable release.
   an equipped weapon in that direction.
   
 * **`c` to open the Craft screen**. A list of recipes is loaded anew from a yaml file and displayed. See
-  [Crafting](https://github.com/fabioticconi/alone-rl#crafting) for details.
+  [Crafting](https://github.com/fabio-t/alone-rl#crafting) for details.
 
 There are also some special commands:
 
@@ -73,8 +74,11 @@ The terrain types are currently fixed. Ordered by height, they are:
 * Mountain
 * High Mountain
 
-Rivers and lakes are present, and they simply have Shallow or Deep water type. As of `0.2.6`, rivers
-don't have a "coast".
+Since `0.3.0` the world is produced by [terrain-generator](https://github.com/fabio-t/terrain-generator),
+a native (Rust) library driven through Java's Foreign Function & Memory API: the island is carved by
+simulated hydraulic erosion, and rivers and lakes come out of an actual hydrology pass (flow routing over
+the eroded valleys) rather than random walks. In-game they simply have Shallow or Deep water type, and
+rivers don't have a "coast".
 
 Some terrains are harder to move through: more stamina will be consumed, and a higher delay is to be expected.
 
@@ -87,7 +91,7 @@ different terrain types, map generation parameters, biome details and so on.
 
 ### Field of view
 
-Powered by [`rlforj-alt`](http://github.com/fabioticconi/rlforj-alt), all creatures have their own field of view.
+Powered by [`rlforj-alt`](http://github.com/fabio-t/rlforj-alt), all creatures have their own field of view.
 Different species might have shorter or longer sight, but if you hide behind a tree you won't be seen.
 
 Pathfinding is both precise and efficient thanks to an AStar implementation that takes the sight into account
@@ -130,3 +134,48 @@ simple bark protection, a shelter, maybe rudimentary pit traps and extraction of
 
 All currently implemented recipes can be seen (and modified, added or removed) in the file 
 [crafting.yml](data/crafting.yml).
+
+## Building
+
+You need **Java (JDK) 25** and, for the native terrain library, a
+[Rust toolchain](https://rustup.rs) (1.91 or newer). Then:
+
+```sh
+./gradlew nativeLib   # builds the terrain-generator native library into natives/ (needs cargo)
+./gradlew run         # builds and runs the game
+```
+
+Other useful tasks:
+
+```sh
+./gradlew build        # compiles and runs the tests
+./gradlew shadowJar    # self-contained jar in build/libs/ (still needs natives/ and data/ next to it)
+./gradlew itchPackage  # itch.io-ready zip in build/itch/ for the current platform:
+                       # app image with bundled JRE + game data + native library + .itch.toml
+```
+
+To run the jar directly:
+
+```sh
+java --enable-native-access=ALL-UNNAMED -jar build/libs/alone-rl-<version>-all.jar
+```
+
+The game finds its files relative to the working directory (`data/` and `natives/`), or through the
+`-Dalone.data=<dir>` and `-Dtergen.library=<file>` system properties — the packaged app image sets
+these automatically.
+
+## Releasing (itch.io)
+
+Pushing a version tag (e.g. `0.3.0`) makes the `Release` GitHub workflow build itch.io-ready zips for
+Linux, Windows and macOS and attach them to a GitHub release. Each zip is a self-contained app image
+(bundled JRE, no Java install needed) with an `.itch.toml` manifest, ready for
+[butler](https://itch.io/docs/butler/):
+
+```sh
+butler push alone-rl-<version>-linux-x86_64.zip <user>/alone-rl:linux
+```
+
+## License
+
+`AloneRL` is free software, licensed under the [GNU AGPL 3.0](LICENSE). Third-party components are
+listed in [THIRD-PARTY.md](THIRD-PARTY.md).

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -74,7 +74,8 @@ public class MessageSystem extends PassiveSystem
                 if (msg.distance > sight.value)
                     return;
 
-                msg.direction = Side.getSide(p1.x, p1.y, p2.x, p2.y);
+                // where the actor is, as seen from the player
+                msg.direction = Side.getSide(p2.x, p2.y, p1.x, p1.y);
             }
             else
             {

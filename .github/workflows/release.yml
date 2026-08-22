@@ -1,0 +1,67 @@
+name: Release
+
+# Pushing a tag like 0.3.0 builds itch.io-ready zips for Linux, Windows and
+# macOS (bundled JRE + native terrain library + game data + .itch.toml) and
+# attaches them to a GitHub release. Push them to itch.io with butler:
+#
+#   butler push alone-rl-<version>-linux-x86_64.zip   <user>/alone-rl:linux
+#   butler push alone-rl-<version>-windows-x86_64.zip <user>/alone-rl:windows
+#   butler push alone-rl-<version>-macos-aarch64.zip  <user>/alone-rl:mac
+on:
+  push:
+    tags:
+      - "[0-9]*"
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest # Apple Silicon
+          - os: macos-13 # Intel
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build and test
+        run: ./gradlew build
+
+      - name: Package for itch.io
+        run: ./gradlew itchPackage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: itch-${{ matrix.os }}
+          path: build/itch/alone-rl-*.zip
+
+  release:
+    name: Create GitHub release
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/alone-rl-*.zip
+          generate_release_notes: true

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -28,12 +28,12 @@ import com.github.fabioticconi.alone.components.*;
 import com.github.fabioticconi.alone.components.attributes.*;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.constants.TerrainType;
+import com.github.fabioticconi.alone.utils.DataFiles;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rlforj.math.Point;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -100,11 +100,12 @@ public class CreatureSystem extends PassiveSystem
 
     public void loadTemplates() throws IOException
     {
-        final InputStream fileStream = new FileInputStream("data/creatures.yml");
-
-        templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, CreatureTemplate>>()
+        try (InputStream fileStream = DataFiles.read("creatures.yml"))
         {
-        });
+            templates = mapper.readValue(fileStream, new TypeReference<HashMap<String, CreatureTemplate>>()
+            {
+            });
+        }
 
         for (final Map.Entry<String, CreatureTemplate> entry : templates.entrySet())
         {
@@ -148,6 +149,13 @@ public class CreatureSystem extends PassiveSystem
             return id;
 
         final Point p = map.getFirstTotallyFree(x, y, -1);
+
+        if (p == null)
+        {
+            log.warn("no free cell around ({}, {}) to place a {}", x, y, tag);
+            world.delete(id);
+            return -1;
+        }
 
         mPosition.create(id).set(p.x, p.y);
 
@@ -277,7 +285,7 @@ public class CreatureSystem extends PassiveSystem
             {
                 final MapSystem.Cell cell = sMap.get(x, y);
 
-                if (cell.type.equals(TerrainType.WATER) && r.nextGaussian() > 5f)
+                if (cell.type.equals(TerrainType.WATER) && r.nextGaussian() > 3.5f)
                 {
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
@@ -300,7 +308,7 @@ public class CreatureSystem extends PassiveSystem
                     if (!map.obstacles.isEmpty(x, y))
                         continue;
 
-                    // 1% of the trees are fallen remains
+                    // 10% of the trees are fallen remains
                     if (r.nextFloat() < 0.1f)
                     {
                         sItems.makeItem("trunk", x, y);

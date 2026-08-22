@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -26,6 +26,7 @@ import com.github.fabioticconi.alone.components.attributes.Strength;
 import com.github.fabioticconi.alone.constants.DamageType;
 import com.github.fabioticconi.alone.constants.Side;
 import com.github.fabioticconi.alone.messages.CannotMsg;
+import com.github.fabioticconi.alone.messages.ShootMsg;
 import com.github.fabioticconi.alone.messages.ThrowMsg;
 import com.github.fabioticconi.alone.utils.Coords;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
@@ -115,7 +116,9 @@ public class ThrowSystem extends PassiveSystem
 
             final Weapon weapon = mWeapon.get(weaponId);
 
-            if (weapon.damageType == DamageType.SHOOTER)
+            final boolean shooting = weapon.damageType == DamageType.SHOOTER;
+
+            if (shooting)
             {
                 final Name bowName = mName.get(weaponId);
 
@@ -163,7 +166,12 @@ public class ThrowSystem extends PassiveSystem
             delay = 0.5f;
             cost = 1.5f;
 
-            msg.send(actorId, new ThrowMsg(mName.get(weaponId).name, Side.getSide(p.x, p.y, t.pos.x, t.pos.y)));
+            final Side towards = Side.getSide(p.x, p.y, t.pos.x, t.pos.y);
+
+            if (shooting)
+                msg.send(actorId, new ShootMsg(mName.get(weaponId).name, towards));
+            else
+                msg.send(actorId, new ThrowMsg(mName.get(weaponId).name, towards));
 
             return true;
         }
