@@ -138,9 +138,12 @@ All currently implemented recipes can be seen (and modified, added or removed) i
 ## Building
 
 You need **Java (JDK) 25** and, for the native terrain library, a
-[Rust toolchain](https://rustup.rs) (1.91 or newer). Then:
+[Rust toolchain](https://rustup.rs) (1.91 or newer). AsciiPanel and rlforj-alt are
+git submodules (pinned upstream revisions, compiled as part of the build), so clone with
+`--recursive` or initialise them afterwards:
 
 ```sh
+git submodule update --init
 ./gradlew nativeLib   # builds the terrain-generator native library into natives/ (needs cargo)
 ./gradlew run         # builds and runs the game
 ```

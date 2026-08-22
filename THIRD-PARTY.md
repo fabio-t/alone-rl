@@ -6,8 +6,8 @@ Alone/RL is licensed under the GNU AGPL 3.0 (see `LICENSE`). It builds on:
 |-----------|---------|-----|
 | [artemis-odb](https://github.com/junkdog/artemis-odb) | Apache-2.0 | Entity-component-system framework |
 | [artemis-odb-contrib](https://github.com/DaanVanYperen/artemis-odb-contrib) | MIT | Extra systems/utilities for artemis-odb |
-| [AsciiPanel](https://github.com/trystan/AsciiPanel) | MIT | ASCII terminal rendering (vendored under `src/main/java/asciiPanel/`, font sheets in `src/main/resources/`) |
-| [rlforj-alt](https://github.com/fabio-t/rlforj-alt) | BSD-3-Clause | Field of view, line of sight, pathfinding (vendored under `src/main/java/rlforj/`) |
+| [AsciiPanel](https://github.com/trystan/AsciiPanel) | MIT | ASCII terminal rendering (git submodule `vendor/AsciiPanel`, pinned at `372dfbae98`, compiled into the build) |
+| [rlforj-alt](https://github.com/fabio-t/rlforj-alt) | BSD-3-Clause | Field of view, line of sight, pathfinding (git submodule `vendor/rlforj-alt`, pinned at `0.3.0`, compiled into the build) |
 | [terrain-generator](https://github.com/fabio-t/terrain-generator) | Apache-2.0 | Island/terrain generation (native Rust library; its Java binding is vendored under `src/main/java/com/github/fabioticconi/tergen/`) |
 | [Jackson](https://github.com/FasterXML/jackson) | Apache-2.0 | YAML data files |
 | [Logback](https://logback.qos.ch) / [SLF4J](https://www.slf4j.org) | EPL-1.0/LGPL-2.1 dual · MIT | Logging |
