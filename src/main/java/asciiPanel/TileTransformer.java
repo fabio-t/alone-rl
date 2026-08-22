@@ -1,5 +1,6 @@
 package asciiPanel;
 
+@FunctionalInterface
 public interface TileTransformer {
-	public void transformTile(int x, int y, AsciiCharacterData data);
+    void transformTile(int x, int y, AsciiCharacterData data);
 }
