@@ -1,6 +1,3 @@
-[submodule "vendor/AsciiPanel"]
-	path = vendor/AsciiPanel
-	url = https://github.com/trystan/AsciiPanel
 [submodule "vendor/rlforj-alt"]
 	path = vendor/rlforj-alt
 	url = https://github.com/fabio-t/rlforj-alt

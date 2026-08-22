@@ -38,11 +38,15 @@ repositories {
     mavenCentral()
 }
 
-// AsciiPanel and rlforj-alt are not on Maven Central; rather than pulling
-// them from jitpack, their sources are referenced as git submodules pinned
-// to exact upstream revisions (see .gitmodules and THIRD-PARTY.md) and
-// compiled as part of this build.
-if (!file("vendor/AsciiPanel/src").exists() || !file("vendor/rlforj-alt/src").exists()) {
+// AsciiPanel is copied into the tree (src/main/java/asciiPanel — small,
+// dormant upstream, and modifiable this way; see the README there).
+//
+// rlforj-alt, not being on Maven Central, is compiled from the git
+// submodule vendor/rlforj-alt for now. Once its Gradle conversion is
+// tagged, drop the submodule and the sourceSets block below, uncomment
+// the sourceControl block in settings.gradle.kts, and use the ordinary
+// dependency line in the dependencies block instead.
+if (!file("vendor/rlforj-alt/src").exists()) {
     throw GradleException(
         "Git submodules are missing. Run: git submodule update --init"
     )
@@ -51,19 +55,17 @@ if (!file("vendor/AsciiPanel/src").exists() || !file("vendor/rlforj-alt/src").ex
 sourceSets {
     main {
         java {
-            srcDir("vendor/AsciiPanel/src/main/java")
             srcDir("vendor/rlforj-alt/src/main/java")
             // demo mains, not needed by the game
             exclude("rlforj/examples/**")
-        }
-        resources {
-            // AsciiPanel's font sheets
-            srcDir("vendor/AsciiPanel/src/main/resources")
         }
     }
 }
 
 dependencies {
+    // once rlforj-alt is a Gradle project (see settings.gradle.kts):
+    // implementation("com.github.fabio-t:rlforj-alt:0.4.0")
+
     implementation("net.onedaybeard.artemis:artemis-odb:2.3.0")
     implementation("net.mostlyoriginal.artemis-odb:contrib-core:2.5.0")
 
