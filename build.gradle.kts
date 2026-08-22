@@ -36,15 +36,14 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
 }
 
+// AsciiPanel and rlforj-alt are not on Maven Central; rather than pulling
+// them from jitpack they are vendored under src/main/java/asciiPanel and
+// src/main/java/rlforj (see the READMEs there, and THIRD-PARTY.md).
 dependencies {
     implementation("net.onedaybeard.artemis:artemis-odb:2.3.0")
     implementation("net.mostlyoriginal.artemis-odb:contrib-core:2.5.0")
-
-    implementation("com.github.trystan:AsciiPanel:372dfbae98")
-    implementation("com.github.fabio-t:rlforj-alt:0.3.0")
 
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
