@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -27,9 +27,9 @@ import com.github.fabioticconi.alone.components.Inventory;
 import com.github.fabioticconi.alone.components.Name;
 import com.github.fabioticconi.alone.messages.CannotMsg;
 import com.github.fabioticconi.alone.messages.CraftMsg;
+import com.github.fabioticconi.alone.utils.DataFiles;
 import net.mostlyoriginal.api.system.core.PassiveSystem;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -93,11 +93,12 @@ public class CraftSystem extends PassiveSystem
 
     public void loadRecipes() throws IOException
     {
-        final InputStream fileStream = new FileInputStream("data/crafting.yml");
-
-        recipes = mapper.readValue(fileStream, new TypeReference<HashMap<String, CraftItem>>()
+        try (InputStream fileStream = DataFiles.read("crafting.yml"))
         {
-        });
+            recipes = mapper.readValue(fileStream, new TypeReference<HashMap<String, CraftItem>>()
+            {
+            });
+        }
 
         // reload item templates
         sItems.loadTemplates();
@@ -150,9 +151,6 @@ public class CraftSystem extends PassiveSystem
             final int[] sources = tempSources.getData();
             while (ii < itemRecipe.sources.length)
             {
-                System.out.println("sources " + ii);
-                System.out.println(name.tag + " | " + itemRecipe.sources[ii]);
-                System.out.println(sources[ii]);
                 if (sources[ii] < 0 && name.tag.equals(itemRecipe.sources[ii]))
                 {
                     tempSources.set(ii, itemId);
@@ -175,9 +173,6 @@ public class CraftSystem extends PassiveSystem
             final int[] tools = tempTools.getData();
             while (ii < itemRecipe.tools.length)
             {
-                System.out.println("tools " + ii);
-                System.out.println(name.tag + " | " + itemRecipe.tools[ii]);
-                System.out.println(tools[ii]);
                 if (tools[ii] < 0 && name.tag.equals(itemRecipe.tools[ii]))
                 {
                     tempTools.set(ii, itemId);

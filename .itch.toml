@@ -1,0 +1,5 @@
+# itch.io app manifest, bundled into each platform zip by `gradle itchPackage`
+# (the launch path below is filled in with the platform's launcher).
+[[actions]]
+name = "play"
+path = "@LAUNCH_PATH@"

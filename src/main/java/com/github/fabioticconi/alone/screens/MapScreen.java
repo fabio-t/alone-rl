@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -22,7 +22,10 @@ import asciiPanel.AsciiPanel;
 import com.artemis.utils.BitVector;
 import com.github.fabioticconi.alone.constants.Options;
 import com.github.fabioticconi.alone.systems.MapSystem;
-import com.github.fabioticconi.tergen.HeightMap;
+import com.github.fabioticconi.tergen.Layer;
+import com.github.fabioticconi.tergen.Terrain;
+import com.github.fabioticconi.tergen.TerrainConfig;
+import com.github.fabioticconi.tergen.TerrainGenerator;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -35,7 +38,15 @@ import java.util.ArrayList;
  */
 public class MapScreen extends AbstractScreen
 {
-    float heightmap[][];
+    /**
+     * The terrain.yml threshold below which a cell is water: the generator's
+     * sea level is aligned to it, and rivers and lakes are carved down to it
+     * so that the height-to-cell mapping shows them as water.
+     */
+    private static final float WATER_HEIGHT = 0.05f;
+
+    /** Row-major elevation, indexed [y * MAP_SIZE_X + x]. */
+    float[] heightmap;
 
     @Override
     protected void initialize()
@@ -53,15 +64,30 @@ public class MapScreen extends AbstractScreen
 
     void regenerate()
     {
-        final int   seed = (int) (System.currentTimeMillis() / 1000);
-        final float freq = 3f / Math.max(Options.MAP_SIZE_X, Options.MAP_SIZE_Y);
+        final int seed = (int) (System.currentTimeMillis() / 1000);
 
-        final HeightMap heightMap = new HeightMap().size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y).island(0.85f)
-                                                   .rivers(0.8f, 0.03f, 0.001f, 1);
+        final TerrainConfig config = TerrainConfig.defaults()
+                                                  .size(Options.MAP_SIZE_X, Options.MAP_SIZE_Y)
+                                                  .seed(seed)
+                                                  .island(0.85f)
+                                                  .seaLevel(WATER_HEIGHT);
 
-        heightMap.fractalNoise.seed(seed).set(16, 0.5f, freq, 1f);
+        try (Terrain terrain = TerrainGenerator.generate(config))
+        {
+            heightmap = terrain.floats(Layer.HEIGHT);
 
-        heightmap = heightMap.build();
+            // the game maps elevation to terrain cells (see terrain.yml), so
+            // rivers and lakes are carved into the heightmap to show up as
+            // shallow water
+            final byte[] rivers = terrain.mask(Layer.RIVERS);
+            final byte[] lakes  = terrain.mask(Layer.LAKES);
+
+            for (int i = 0; i < heightmap.length; i++)
+            {
+                if (rivers[i] == 1 || lakes[i] == 1)
+                    heightmap[i] = Math.min(heightmap[i], WATER_HEIGHT - 0.01f);
+            }
+        }
 
         map.loadTerrain(heightmap);
     }
@@ -126,8 +152,8 @@ public class MapScreen extends AbstractScreen
                 {
                     for (int tileY = 0; tileY < tileHeight; tileY++)
                     {
-                        final int posX = x * tileWidth + tileX;
-                        final int posY = y * tileHeight + tileY;
+                        final int posX = (x - xmin) * tileWidth + tileX;
+                        final int posY = (y - ymin) * tileHeight + tileY;
 
                         // render terrain
                         final MapSystem.Cell cell = map.get(posX, posY);

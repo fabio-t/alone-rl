@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -180,7 +180,7 @@ public class SingleGrid
             for (; cur_x < max_x; cur_x++)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= width)
+                if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
@@ -194,7 +194,7 @@ public class SingleGrid
             // continue south, through the east column
             for (; cur_y < max_y; cur_y++)
             {
-                if (cur_y < 0 || cur_y >= height)
+                if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
@@ -209,7 +209,7 @@ public class SingleGrid
             for (; cur_x > min_x; cur_x--)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= width)
+                if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
@@ -223,7 +223,7 @@ public class SingleGrid
             // continue north, through the west column of this circle
             for (; cur_y >= min_y; cur_y--)
             {
-                if (cur_y < 0 || cur_y >= height)
+                if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
@@ -292,7 +292,7 @@ public class SingleGrid
         for (; cur_x < max_x; cur_x++)
         {
             // if we are out of bounds
-            if (cur_x < 0 || cur_x >= width)
+            if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
             {
                 continue;
             }
@@ -306,7 +306,7 @@ public class SingleGrid
         // continue south, through the east column
         for (; cur_y < max_y; cur_y++)
         {
-            if (cur_y < 0 || cur_y >= height)
+            if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
             {
                 continue;
             }
@@ -321,7 +321,7 @@ public class SingleGrid
         for (; cur_x > min_x; cur_x--)
         {
             // if we are out of bounds
-            if (cur_x < 0 || cur_x >= width)
+            if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
             {
                 continue;
             }
@@ -335,7 +335,7 @@ public class SingleGrid
         // continue north, through the west column of this circle
         for (; cur_y >= min_y; cur_y--)
         {
-            if (cur_y < 0 || cur_y >= height)
+            if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
             {
                 continue;
             }
@@ -388,7 +388,7 @@ public class SingleGrid
             for (; cur_x < max_x; cur_x++)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= width)
+                if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
@@ -402,7 +402,7 @@ public class SingleGrid
             // continue south, through the east column
             for (; cur_y < max_y; cur_y++)
             {
-                if (cur_y < 0 || cur_y >= height)
+                if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }
@@ -417,7 +417,7 @@ public class SingleGrid
             for (; cur_x > min_x; cur_x--)
             {
                 // if we are out of bounds
-                if (cur_x < 0 || cur_x >= width)
+                if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height)
                 {
                     continue;
                 }
@@ -431,7 +431,7 @@ public class SingleGrid
             // continue north, through the west column of this circle
             for (; cur_y >= min_y; cur_y--)
             {
-                if (cur_y < 0 || cur_y >= height)
+                if (cur_y < 0 || cur_y >= height || cur_x < 0 || cur_x >= width)
                 {
                     continue;
                 }

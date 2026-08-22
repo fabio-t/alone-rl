@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -53,12 +53,12 @@ public class DamageMsg extends AbstractMessage
                              target.toLowerCase(),
                              dmg,
                              remaining,
-                             direction.toString());
+                             direction.name);
     }
 
     String formatOther()
     {
         fgCol = Color.GRAY;
-        return String.format("%s hits %s (%s)", actor, target.toLowerCase(), direction.toString());
+        return String.format("%s hits %s (%s)", actor, target.toLowerCase(), direction.name);
     }
 }

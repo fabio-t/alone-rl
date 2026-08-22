@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -62,7 +62,12 @@ public class DeadSystem extends IteratingSystem
         map.obstacles.del(p.x, p.y);
         world.delete(entityId);
 
-        final Point p2 = map.getFirstTotallyFree(p.x, p.y, -1);
+        Point p2 = map.getFirstTotallyFree(p.x, p.y, -1);
+
+        // in the extreme case of no free cell anywhere, drop the corpse where
+        // the creature died (on top of whatever is there)
+        if (p2 == null)
+            p2 = new Point(p.x, p.y);
 
         // add corpse item
         final int        corpseId = world.create();

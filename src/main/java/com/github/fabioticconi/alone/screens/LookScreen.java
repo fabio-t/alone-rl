@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -155,6 +155,10 @@ public class LookScreen extends PlayScreen
             return;
 
         final List<Point> los = map.getLineOfSight(pos.x, pos.y, t.pos.x, t.pos.y);
+
+        // the target might have gone out of sight since the cursor last moved
+        if (los == null)
+            return;
 
         // we skip the first point for that's always the starting point
         for (final Point p : los.subList(1, los.size()))

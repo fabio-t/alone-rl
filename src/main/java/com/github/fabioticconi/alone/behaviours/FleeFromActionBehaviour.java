@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -109,7 +109,8 @@ public class FleeFromActionBehaviour extends AbstractBehaviour
     @Override
     public float update()
     {
-        Side direction = Side.getSide(curPos.x, curPos.y, fleeFrom.x, fleeFrom.y);
+        // move away from the danger: take the side opposite to where it is
+        Side direction = Side.getSide(fleeFrom.x, fleeFrom.y, curPos.x, curPos.y);
 
         if (!sMap.isFree(curPos.x, curPos.y, direction))
         {

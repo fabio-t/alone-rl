@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Fabio Ticconi
+ * Copyright (C) 2015-2026 Fabio Ticconi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -80,7 +80,7 @@ public class TreeSystem extends PassiveSystem
             if (!mCuttable.has(treeId))
                 return false;
 
-            final int axeId = sItem.getWeapon(actorId, EnumSet.of(DamageType.SLASH), false);
+            final int axeId = sItem.getWeapon(actorId, EnumSet.of(DamageType.SLASH), true);
 
             if (axeId < 0)
             {
