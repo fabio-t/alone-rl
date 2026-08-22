@@ -74,6 +74,22 @@ public class PlayScreen extends AbstractScreen
     // FIXME only for debug..
     private float savedSpeed = -1f;
 
+    // FIXME: horribly inefficient, we should be using HSB values here
+    public static Color darken(final Color col, final int times)
+    {
+        if (times <= 0)
+            return col;
+
+        Color newCol = col;
+
+        for (int i = 0; i < times; i++)
+        {
+            newCol = newCol.darker();
+        }
+
+        return newCol;
+    }
+
     public float handleKeys(final BitVector keys)
     {
         // FIXME: hackish, very crappy but it should work
@@ -509,21 +525,5 @@ public class PlayScreen extends AbstractScreen
     public String header()
     {
         return properties.getProperty("name");
-    }
-
-    // FIXME: horribly inefficient, we should be using HSB values here
-    public static Color darken(final Color col, final int times)
-    {
-        if (times <= 0)
-            return col;
-
-        Color newCol = col;
-
-        for (int i = 0; i < times; i++)
-        {
-            newCol = newCol.darker();
-        }
-
-        return newCol;
     }
 }

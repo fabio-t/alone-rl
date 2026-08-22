@@ -26,4 +26,5 @@ public enum BodyPart
 {
     HEAD,
     BODY,
-    HANDS}
+    HANDS
+}

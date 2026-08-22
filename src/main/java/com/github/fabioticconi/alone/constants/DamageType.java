@@ -28,4 +28,5 @@ public enum DamageType
     POINT,
     BLUNT,
     NATURAL,
-    SHOOTER}
+    SHOOTER
+}

@@ -25,8 +25,13 @@ import com.artemis.WorldConfiguration;
 import com.artemis.link.EntityLinkManager;
 import com.artemis.managers.PlayerManager;
 import com.artemis.utils.BitVector;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.github.fabioticconi.alone.behaviours.*;
@@ -37,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -58,6 +64,19 @@ public class Main extends JFrame implements KeyListener
     // currently pressed keys
     private final BitVector    pressed;
 
+    public static class ColorDeserializer extends JsonDeserializer<Color>
+    {
+        @Override
+        public Color deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            TreeNode root = p.getCodec().readTree(p);
+            ValueNode red = (ValueNode) root.get("red");
+            ValueNode green = (ValueNode) root.get("green");
+            ValueNode blue = (ValueNode) root.get("blue");
+            ValueNode alpha = (ValueNode) root.get("alpha");
+            return new Color(red.asInt(), green.asInt(), blue.asInt(), alpha.asInt());
+        }
+    }
+
     public Main() throws IOException
     {
         super();
@@ -72,8 +91,10 @@ public class Main extends JFrame implements KeyListener
         final Properties properties = new Properties();
         properties.load(this.getClass().getResourceAsStream("/project.properties"));
 
-        final YAMLFactory factory = new YAMLFactory();
-        final ObjectMapper mapper = new ObjectMapper(factory).registerModule(new ParameterNamesModule())
+        final YAMLFactory factory         = new YAMLFactory();
+        SimpleModule      colorSerializer = new SimpleModule();
+        colorSerializer.addDeserializer(Color.class, new ColorDeserializer());
+        final ObjectMapper mapper = new ObjectMapper(factory).registerModules(new ParameterNamesModule(), colorSerializer)
                                                              .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         final WorldConfiguration config;
