@@ -35,8 +35,8 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: windows-latest
-          - os: macos-latest # Apple Silicon
-          - os: macos-13 # Intel
+          # Apple Silicon only: GitHub retired the Intel (macos-13) runners
+          - os: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
