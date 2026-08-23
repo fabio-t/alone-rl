@@ -24,20 +24,11 @@ plugins {
 
 rootProject.name = "alone-rl"
 
-// Gradle source dependency: builds rlforj-alt straight from GitHub, checking
-// out the tag that matches the requested version. To activate (once the
-// rlforj-alt Gradle conversion is tagged), uncomment this and the dependency
-// in build.gradle.kts, and remove the vendor/rlforj-alt submodule plus the
-// sourceSets block that compiles it.
-//
-// For the version to resolve, the rlforj-alt build must declare:
-//   group = "com.github.fabio-t"        (matching producesModule below)
-//   rootProject.name = "rlforj-alt"
-// and each release must be tagged with the plain version (e.g. "0.4.0",
-// or "v0.4.0" — both prefixes are recognised).
-//
-// sourceControl {
-//     gitRepository(uri("https://github.com/fabio-t/rlforj-alt")) {
-//         producesModule("com.github.fabio-t:rlforj-alt")
-//     }
-// }
+// Gradle source dependency: rlforj-alt is built straight from GitHub, by
+// checking out the tag that matches the version requested in
+// build.gradle.kts and running its own Gradle build.
+sourceControl {
+    gitRepository(uri("https://github.com/fabio-t/rlforj-alt")) {
+        producesModule("com.github.fabio-t:rlforj-alt")
+    }
+}
