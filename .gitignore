@@ -2,9 +2,6 @@
 build/
 .gradle/
 
-# native terrain-generator libraries are built locally (gradle nativeLib)
-natives/
-
 # IDE
 alone*.iml
 .idea/

@@ -137,12 +137,12 @@ All currently implemented recipes can be seen (and modified, added or removed) i
 
 ## Building
 
-You need **Java (JDK) 25** and, for the native terrain library, a
-[Rust toolchain](https://rustup.rs) (1.91 or newer). rlforj-alt is a Gradle source
-dependency: Gradle checks it out from GitHub and builds it as part of the first build.
+You need **Java (JDK) 25** — nothing else. rlforj-alt is a Gradle source dependency
+(checked out from GitHub and built as part of the first build), and terrain-generator
+is a jar from its GitHub releases with the native libraries for every platform
+embedded, extracted automatically at runtime.
 
 ```sh
-./gradlew nativeLib   # builds the terrain-generator native library into natives/ (needs cargo)
 ./gradlew run         # builds and runs the game
 ```
 
@@ -150,9 +150,9 @@ Other useful tasks:
 
 ```sh
 ./gradlew build        # compiles and runs the tests
-./gradlew shadowJar    # self-contained jar in build/libs/ (still needs natives/ and data/ next to it)
+./gradlew shadowJar    # self-contained jar in build/libs/ (still needs data/ next to it)
 ./gradlew itchPackage  # itch.io-ready zip in build/itch/ for the current platform:
-                       # app image with bundled JRE + game data + native library + .itch.toml
+                       # app image with bundled JRE + game data + .itch.toml
 ```
 
 To run the jar directly:
@@ -161,9 +161,8 @@ To run the jar directly:
 java --enable-native-access=ALL-UNNAMED -jar build/libs/alone-rl-<version>-all.jar
 ```
 
-The game finds its files relative to the working directory (`data/` and `natives/`), or through the
-`-Dalone.data=<dir>` and `-Dtergen.library=<file>` system properties — the packaged app image sets
-these automatically.
+The game finds its data relative to the working directory (`data/`), or through the
+`-Dalone.data=<dir>` system property — the packaged app image sets it automatically.
 
 ## Releasing (itch.io)
 

@@ -1,7 +1,7 @@
 name: Release
 
 # Pushing a tag like 0.3.0 builds itch.io-ready zips for Linux, Windows and
-# macOS (bundled JRE + native terrain library + game data + .itch.toml) and
+# macOS (bundled JRE + game data + .itch.toml) and
 # attaches them to a GitHub release. The workflow can also be run manually
 # (Actions -> Release -> Run workflow) with a tag name: the tag is then
 # created at the chosen ref as part of the release. Push the zips to
@@ -46,8 +46,6 @@ jobs:
           java-version: 25
 
       - uses: gradle/actions/setup-gradle@v4
-
-      - uses: dtolnay/rust-toolchain@stable
 
       - name: Build and test
         run: ./gradlew build
