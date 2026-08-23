@@ -2,7 +2,10 @@ name: Release
 
 # Pushing a tag like 0.3.0 builds itch.io-ready zips for Linux, Windows and
 # macOS (bundled JRE + native terrain library + game data + .itch.toml) and
-# attaches them to a GitHub release. Push them to itch.io with butler:
+# attaches them to a GitHub release. The workflow can also be run manually
+# (Actions -> Release -> Run workflow) with a tag name: the tag is then
+# created at the chosen ref as part of the release. Push the zips to
+# itch.io with butler:
 #
 #   butler push alone-rl-<version>-linux-x86_64.zip   <user>/alone-rl:linux
 #   butler push alone-rl-<version>-windows-x86_64.zip <user>/alone-rl:windows
@@ -12,6 +15,12 @@ on:
     tags:
       - "[0-9]*"
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. 0.3.0); created at the chosen ref if it doesn't exist yet"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -65,5 +74,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: artifacts/alone-rl-*.zip
           generate_release_notes: true
