@@ -226,13 +226,21 @@ val itchAppImageTask = tasks.register("itchAppImage") {
         imageDir.deleteRecursively()
         imageDir.mkdirs()
 
+        // macOS requires the first CFBundleVersion component to be >= 1, so
+        // 0.x versions can't be used as the bundle version there; the real
+        // version is in the zip name either way
+        val appVersion = version.toString().substringBefore('-').let {
+            if (osName.contains("mac") && it.startsWith("0")) "1.0.0" else it
+        }
+
         val jpackage = launcher.get().metadata.installationPath.file("bin/jpackage").asFile
-        providers.exec {
+        val execOutput = providers.exec {
+            isIgnoreExitValue = true
             commandLine(
                 jpackage.absolutePath,
                 "--type", "app-image",
                 "--name", "AloneRL",
-                "--app-version", version.toString().substringBefore('-'),
+                "--app-version", appVersion,
                 "--input", staging.absolutePath,
                 "--main-jar", jarProvider.get().asFile.name,
                 "--dest", imageDir.absolutePath,
@@ -240,7 +248,15 @@ val itchAppImageTask = tasks.register("itchAppImage") {
                 "--java-options", "-Dtergen.library=\$APPDIR/$nativeLibFileName",
                 "--java-options", "-Dalone.data=\$APPDIR/data"
             )
-        }.result.get()
+        }
+        val execResult = execOutput.result.get()
+        if (execResult.exitValue != 0) {
+            throw GradleException(
+                "jpackage failed (exit ${execResult.exitValue}):\n" +
+                    execOutput.standardError.asText.get() +
+                    execOutput.standardOutput.asText.get()
+            )
+        }
     }
 }
 
