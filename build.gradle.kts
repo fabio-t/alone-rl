@@ -23,7 +23,7 @@ plugins {
 }
 
 group = "com.github.fabio-t"
-version = "0.3.0"
+version = "0.3.1-SNAPSHOT"
 
 // artemis-odb (2.3.0) runs fine on modern JVMs; the terrain-generator Java
 // binding uses the Foreign Function & Memory API and needs Java 22+.
@@ -40,31 +40,10 @@ repositories {
 
 // AsciiPanel is copied into the tree (src/main/java/asciiPanel — small,
 // dormant upstream, and modifiable this way; see the README there).
-//
-// rlforj-alt, not being on Maven Central, is compiled from the git
-// submodule vendor/rlforj-alt for now. Once its Gradle conversion is
-// tagged, drop the submodule and the sourceSets block below, uncomment
-// the sourceControl block in settings.gradle.kts, and use the ordinary
-// dependency line in the dependencies block instead.
-if (!file("vendor/rlforj-alt/src").exists()) {
-    throw GradleException(
-        "Git submodules are missing. Run: git submodule update --init"
-    )
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir("vendor/rlforj-alt/src/main/java")
-            // demo mains, not needed by the game
-            exclude("rlforj/examples/**")
-        }
-    }
-}
-
+// rlforj-alt is a Gradle source dependency built from GitHub (see the
+// sourceControl block in settings.gradle.kts).
 dependencies {
-    // once rlforj-alt is a Gradle project (see settings.gradle.kts):
-    // implementation("com.github.fabio-t:rlforj-alt:0.4.0")
+    implementation("com.github.fabio-t:rlforj-alt:0.4.0")
 
     implementation("net.onedaybeard.artemis:artemis-odb:2.3.0")
     implementation("net.mostlyoriginal.artemis-odb:contrib-core:2.5.0")

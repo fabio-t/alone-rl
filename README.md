@@ -138,12 +138,10 @@ All currently implemented recipes can be seen (and modified, added or removed) i
 ## Building
 
 You need **Java (JDK) 25** and, for the native terrain library, a
-[Rust toolchain](https://rustup.rs) (1.91 or newer). rlforj-alt is a git submodule
-(pinned upstream revision, compiled as part of the build), so clone with `--recursive`
-or initialise it afterwards:
+[Rust toolchain](https://rustup.rs) (1.91 or newer). rlforj-alt is a Gradle source
+dependency: Gradle checks it out from GitHub and builds it as part of the first build.
 
 ```sh
-git submodule update --init
 ./gradlew nativeLib   # builds the terrain-generator native library into natives/ (needs cargo)
 ./gradlew run         # builds and runs the game
 ```
