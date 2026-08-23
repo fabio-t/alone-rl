@@ -21,6 +21,3 @@ jobs:
 
       - name: Build and test
         run: ./gradlew build
-
-      - name: Build the native terrain library
-        run: ./gradlew nativeLib
