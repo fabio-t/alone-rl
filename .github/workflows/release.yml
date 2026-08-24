@@ -106,15 +106,27 @@ jobs:
       - name: Push builds with butler
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-          ITCH_TARGET: ${{ vars.ITCH_TARGET }}
+          # accepted as a repository variable or, if it was added there
+          # instead, as a secret — it is not sensitive either way
+          ITCH_TARGET: ${{ vars.ITCH_TARGET || secrets.ITCH_TARGET }}
           TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           set -euo pipefail
 
-          if [ -z "${BUTLER_API_KEY:-}" ] || [ -z "${ITCH_TARGET:-}" ]; then
-            echo "::notice::itch.io publish skipped: set the BUTLER_API_KEY secret and the ITCH_TARGET variable to enable it."
+          missing=""
+          if [ -z "${BUTLER_API_KEY:-}" ]; then
+            missing="BUTLER_API_KEY (secret)"
+          fi
+          if [ -z "${ITCH_TARGET:-}" ]; then
+            missing="${missing:+$missing and }ITCH_TARGET (variable, e.g. myuser/alone-rl)"
+          fi
+
+          if [ -n "$missing" ]; then
+            echo "::notice::itch.io publish skipped: $missing is not set on this repository."
             exit 0
           fi
+
+          echo "publishing to $ITCH_TARGET"
 
           curl -sSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
           unzip -q butler.zip
