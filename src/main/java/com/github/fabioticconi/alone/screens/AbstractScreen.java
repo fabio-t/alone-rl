@@ -62,11 +62,19 @@ public abstract class AbstractScreen extends PassiveSystem implements Screen
         final int size    = Math.min(maxSize, list.size());
         final int space   = Util.clamp(maxSize / size, 1, 4);
 
+        // the block as a whole is centred, but the entries are left-aligned
+        // within it, so the letters and names line up in a column
+        int width = 0;
+        for (int i = 0; i < size; i++)
+            width = Math.max(width, (ALL[i] + " " + list.get(i)).length());
+
+        final int startx = Math.max(0, (terminal.getWidthInCharacters() - width) / 2);
+
         for (int i = 0, starty = terminal.getHeightInCharacters() / 2 - (size * space / 2); i < size; i++)
         {
             final String entry = ALL[i] + " " + list.get(i);
 
-            terminal.writeCenter(entry, starty + i * space);
+            terminal.write(entry, startx, starty + i * space);
         }
     }
 
