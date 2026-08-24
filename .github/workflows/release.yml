@@ -38,6 +38,9 @@ jobs:
           - os: windows-latest
           # Apple Silicon only: GitHub retired the Intel (macos-13) runners
           - os: macos-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -48,11 +51,16 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Resolve the release version from the tag
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: echo "RELEASE_VERSION=${TAG#v}" >> "$GITHUB_ENV"
+
       - name: Build and test
-        run: ./gradlew build
+        run: ./gradlew build -PreleaseVersion="$RELEASE_VERSION"
 
       - name: Package for itch.io
-        run: ./gradlew itchPackage
+        run: ./gradlew itchPackage -PreleaseVersion="$RELEASE_VERSION"
 
       - uses: actions/upload-artifact@v4
         with:
