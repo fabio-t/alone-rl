@@ -126,6 +126,19 @@ jobs:
             exit 0
           fi
 
+          # tolerate the obvious spellings: surrounding whitespace, and a
+          # full page URL (https://user.itch.io/page) instead of user/page
+          ITCH_TARGET=$(printf '%s' "$ITCH_TARGET" \
+            | tr -d '[:space:]' \
+            | sed -E 's#^https?://([^./]+)\.itch\.io/([^/?#]+).*$#\1/\2#' \
+            | sed -E 's#/+$##')
+
+          if ! printf '%s' "$ITCH_TARGET" | grep -Eq '^[A-Za-z0-9_-]+/[A-Za-z0-9_-]+$'; then
+            slashes=$(printf '%s' "$ITCH_TARGET" | tr -cd '/' | wc -c | tr -d ' ')
+            echo "::error::ITCH_TARGET must be exactly user/page - your itch.io username and the page slug, e.g. fabioticconi/alone-rl. Received a value of ${#ITCH_TARGET} characters containing $slashes '/'; a bare page name or an unrecognised URL will not work."
+            exit 1
+          fi
+
           echo "publishing to $ITCH_TARGET"
 
           curl -sSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
