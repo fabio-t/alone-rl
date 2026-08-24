@@ -6,6 +6,10 @@ name: Release
 # manually (Actions -> Release -> Run workflow) with a tag name: the tag is
 # then created at the chosen ref as part of the release.
 #
+# Only stable tags reach itch.io: a tag with a pre-release suffix
+# (0.4.0-rc1, v1.0.0-beta2) is published as a GitHub pre-release and the
+# itch.io step is skipped.
+#
 # The itch.io step is optional and skips itself unless both are configured
 # in the repository settings (Settings -> Secrets and variables -> Actions):
 #
@@ -83,11 +87,16 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: artifacts/alone-rl-*.zip
           generate_release_notes: true
+          # a tag with a suffix (0.4.0-rc1, v1.0.0-beta2) is a pre-release
+          prerelease: ${{ contains(inputs.tag || github.ref_name, '-') }}
 
   itch:
     name: Publish to itch.io
     needs: package
     runs-on: ubuntu-latest
+    # players get stable releases only: a pre-release tag (0.4.0-rc1) still
+    # builds and lands on GitHub, but is never pushed to itch.io
+    if: ${{ !contains(inputs.tag || github.ref_name, '-') }}
     steps:
       - uses: actions/download-artifact@v4
         with:
