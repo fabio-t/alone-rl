@@ -183,6 +183,10 @@ The publish step skips itself when those aren't set, so the workflow still works
 Builds land on the `linux`, `windows` and `osx` channels, tagged with the release version, and
 itch.io shows the right download per visitor's platform automatically.
 
+**Only stable tags reach itch.io.** A tag with a pre-release suffix — `0.4.0-rc1`, `v1.0.0-beta2` —
+still builds all platforms and is published as a GitHub *pre-release*, but is not pushed to
+itch.io, so players only ever see finished releases.
+
 To push a build by hand instead, with [butler](https://itch.io/docs/butler/):
 
 ```sh
