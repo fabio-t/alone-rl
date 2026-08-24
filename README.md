@@ -164,12 +164,26 @@ java --enable-native-access=ALL-UNNAMED -jar build/libs/alone-rl-<version>-all.j
 The game finds its data relative to the working directory (`data/`), or through the
 `-Dalone.data=<dir>` system property — the packaged app image sets it automatically.
 
-## Releasing (itch.io)
+## Releasing
 
-Pushing a version tag (e.g. `0.3.0`) makes the `Release` GitHub workflow build itch.io-ready zips for
-Linux, Windows and macOS and attach them to a GitHub release. Each zip is a self-contained app image
-(bundled JRE, no Java install needed) with an `.itch.toml` manifest, ready for
-[butler](https://itch.io/docs/butler/):
+Pushing a version tag (e.g. `0.3.0`), or running the `Release` workflow manually from the Actions
+tab, builds zips for Linux, Windows and macOS, attaches them to a GitHub release, and publishes
+them to itch.io. Each zip is a self-contained app image (bundled JRE, no Java install needed)
+with an `.itch.toml` manifest.
+
+### itch.io setup (once)
+
+1. Create the game page on itch.io (Kind of project: **Downloadable**).
+2. Generate an API key at <https://itch.io/user/settings/api-keys>.
+3. In the repository, under *Settings → Secrets and variables → Actions*, add:
+   * secret `BUTLER_API_KEY` — the API key
+   * variable `ITCH_TARGET` — the project, e.g. `fabioticconi/alone-rl`
+
+The publish step skips itself when those aren't set, so the workflow still works without them.
+Builds land on the `linux`, `windows` and `osx` channels, tagged with the release version, and
+itch.io shows the right download per visitor's platform automatically.
+
+To push a build by hand instead, with [butler](https://itch.io/docs/butler/):
 
 ```sh
 butler push alone-rl-<version>-linux-x86_64.zip <user>/alone-rl:linux
