@@ -165,4 +165,7 @@ jobs:
           push_channel 'alone-rl-*-windows-x86_64.zip' windows
           push_channel 'alone-rl-*-macos-aarch64.zip' osx
 
-          ./butler status "$ITCH_TARGET"
+          # `butler status` here would report "No channel found": itch.io is
+          # still processing the builds this many seconds after the push
+          echo "uploaded; itch.io finishes processing the builds shortly."
+          echo "https://${ITCH_TARGET%%/*}.itch.io/${ITCH_TARGET##*/}"
