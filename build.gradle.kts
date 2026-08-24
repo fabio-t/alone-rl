@@ -23,7 +23,9 @@ plugins {
 }
 
 group = "com.github.fabio-t"
-version = "0.3.1-SNAPSHOT"
+// Release builds pass -PreleaseVersion=<tag> (see the release workflow), so
+// the tag is the version of record; everything else is a snapshot.
+version = providers.gradleProperty("releaseVersion").getOrElse("0.3.1-SNAPSHOT")
 
 // artemis-odb (2.3.0) runs fine on modern JVMs; the terrain-generator Java
 // binding uses the Foreign Function & Memory API and needs Java 22+.
