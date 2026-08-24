@@ -1,5 +1,11 @@
 # itch.io page copy
 
+Ready-made art lives beside this file and in `screenshots/`:
+
+* cover (630x500, itch's required ratio): `docs/assets/itch-cover.png`
+* screenshots: `screenshots/gameplay.png`, `worldgen.png`, `crafting.png`,
+  and the animated `gameplay.gif`
+
 Draft text for the store page — edit freely, then paste into the itch.io
 project editor. Page settings that matter:
 
